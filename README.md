@@ -16,6 +16,7 @@ QuizSail's competency system works by holding a certain number of questions from
 ➡️ New quizzes are dynamically loaded to start menu (add them to the public folder).  
 ➡️ Ability to add line breaks (\n) in the json file.  
 ➡️ Text font switches to monotype when wrapped in < code > tags.  
+➡️ Navigation link added to return to start page.  
 
 ➡️ Avoids giving the same question twice in a row (mostly) unless it's the last question.  
 ➡️ Upon completion of a quiz, the session is deleted and you are returned to the main page.  
