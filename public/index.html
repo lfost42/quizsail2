@@ -88,7 +88,10 @@
           <!-- json files load dynamically from index.js -->
         </select>
         <p>
-          <input type="checkbox" id="fastmode"/> Fast Mode (ask once if correct on the first try)
+          <input type="radio" id="fastmode" name="mode"/> Fast Mode (mastered when correct on the first try)
+        </p>
+        <p>
+          <input type="radio" id="reviewmode" name="mode"/> Review Mode (mastered when correct only once)
         </p>
         <p>
           <input type="button" value="Start" id="startButton" />

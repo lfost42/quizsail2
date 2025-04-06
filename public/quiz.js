@@ -11,7 +11,7 @@ if (!source) {
     window.location = window.location.origin; // Redirect to start
 }
 
-const allowQuickComplete = parseInt(getParam('quick')||0);
+const mode = getParam('mode') || 'default';
 const storageSessions = getStorageSessions();
 const MAX_WORKING = 10;
 
@@ -91,15 +91,18 @@ async function start() {
     
     content = quizContent;
     state = savedState || {
-        complete: [],
-        working: [],
-        unseen: Array.from({length: content.length}, (_, i) => ({
-            index: i,
-            count: 0,
-            tries: 0
-        })),
-        lastIndex: -1
-    };
+      complete: [],
+      working: [],
+      unseen: Array.from({length: content.length}, (_, i) => ({
+          index: i,
+          count: 0,
+          tries: 0,
+          firstAttemptCorrect: null,  // New field
+          currentStreak: 0           // New field
+      })),
+      lastIndex: -1
+  };
+  
     show();
 } catch (error) {
     console.error('Initialization error:', error);
@@ -279,6 +282,7 @@ function cur() {
 function submitAnswer() {
     console.log('submit!')
     const currentItem = cur();
+    const questionState = currentItem.ref;
     const item = currentItem.item;
     const answers = item.a;
     const numChoices = currentItem.item.c.length;
@@ -286,42 +290,74 @@ function submitAnswer() {
 
     let correct = true;
 
-    if (numAnswers==1 && numChoices==1) {
-        // handle the case where there was only one correct answer
-        // and only once choice, which means the answer
-        // had to be typed in.
-        // console.log(inputs.value.toUpperCase());
-        if (inputs.value.toUpperCase()!==currentItem.item.a[0].toUpperCase()) {
-            correct = false;
-            inputs.e.style.backgroundColor = 'rgba(128, 128, 128, 0.7)';
-        } else {
-            inputs.e.style.backgroundColor = '#009f00';            
-        }
-    } else {
-        // first, make sure all of the correct answers were checked true
-        answers.forEach((val,i)=>{
-            if (inputs[val].checked===false) {
-                correct = false;
-                labels[val].e.style.color = '#009f00';
-            } else {
-                labels[val].e.style.color = 'rgba(128, 128, 128, 0.7)';
-            }
-        });
-        // second, make sure none of the checked answers are incorrect
-        console.log(answers);
-        for (i in inputs) {
-            console.log(i, inputs[i].checked, answers.includes(i));
-            if (inputs[i].checked) {
-                if ( answers.includes(i)) {
-                    labels[i].e.style.color = '#009f00';                
-                } else {
-                    correct = false;
-                    labels[i].e.style.color = 'rgba(128, 128, 128, 0.7)';
-                }
-            } else {
-            }
-        }
-    }
+    if (numAnswers == 1 && numChoices == 1) {
+      // Text input validation
+      if (inputs.value.toUpperCase() !== answers[0].toUpperCase()) {
+          correct = false;
+          inputs.e.style.backgroundColor = 'rgba(128, 128, 128, 0.7)';
+      } else {
+          inputs.e.style.backgroundColor = '#009f00';
+      }
+  } else {
+      // Multiple choice validation
+      answers.forEach((val) => {
+          if (!inputs[val]?.checked) {
+              correct = false;
+              if (labels[val]) labels[val].e.style.color = '#009f00';
+          }
+      });
+
+      for (const key in inputs) {
+          if (inputs[key]?.checked) {
+              if (!answers.includes(key)) {
+                  correct = false;
+                  if (labels[key]) labels[key].e.style.color = 'rgba(128, 128, 128, 0.7)';
+              }
+          }
+      }
+  }
+  
+    if (correct) {
+      switch(mode) {
+          case 'review':
+              questionState.count = 3;
+              break;
+              
+          case 'fastmode':
+              if (questionState.firstAttemptCorrect === null) {
+                  // First attempt
+                  questionState.firstAttemptCorrect = true;
+                  questionState.count = 3;
+              } else {
+                  questionState.currentStreak++;
+                  if (questionState.currentStreak >= 3) {
+                      questionState.count = 3;
+                  }
+              }
+              break;
+              
+          default: // Default mode
+              questionState.count++;
+      }
+      
+      if (questionState.count >= 3) {
+          state.complete.push(questionState);
+          state.working.pop();
+      }
+  } else {
+      // Handle incorrect answers
+      switch(mode) {
+          case 'fastmode':
+              if (questionState.firstAttemptCorrect === null) {
+                  questionState.firstAttemptCorrect = false;
+              }
+              questionState.currentStreak = 0;
+              break;
+              
+          default:
+              questionState.count = 0;
+      }
+  }
     // console.log(`answer is ${correct}`)
     let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers}`;
     // Add explanation if available

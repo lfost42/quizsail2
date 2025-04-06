@@ -101,10 +101,10 @@ const renderSessions = () => {
 }
 
 const start = () => {
-    const src = document.getElementById('quiz').value;
-    const quick = document.getElementById('fastmode').checked ? 1 : 0;
-    const url = `quiz-engine.html?src=${src}&quick=${quick}`;
-    window.location = url;
+  const src = document.getElementById('quiz').value;
+  const mode = document.getElementById('reviewmode').checked ? 'review' : document.getElementById('fastmode').checked ? 'fastmode' : 'default';
+  const url = `quiz-engine.html?src=${src}&mode=${mode}`;
+  window.location = url;
 }
 
 document.addEventListener("DOMContentLoaded", () => {

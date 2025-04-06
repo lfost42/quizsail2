@@ -17,6 +17,7 @@ QuizSail's competency system works by holding a certain number of questions from
 ➡️ Ability to add line breaks (\n) in the json file.  
 ➡️ Text font switches to monotype when wrapped in < code > tags.  
 ➡️ Navigation link added to return to start page.  
+➡️ Added "Review Mode" which requires one correct answer to be mastered. 
 
 ➡️ Avoids giving the same question twice in a row (mostly) unless it's the last question.  
 ➡️ Upon completion of a quiz, the session is deleted and you are returned to the main page.  
@@ -47,7 +48,7 @@ Use pull requests.
 ## Authors
 * **John Matzen** - *Initial work* - [jmatzen](https://github.com/jmatzen)
 * L S - *Some CSS, HTML, JS* - [SkillAllHumans](https://github.com/SkillAllHumans)
-* lynda_ - *c191 data*
+* lynda_ - *added 2.0 upgrades* = [lfost42](https://github.com/lfost42)
 
 ## License
 This project is licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
