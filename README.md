@@ -13,7 +13,7 @@ QuizSail's competency system works by holding a certain number of questions from
 
 * New quizzes are dynamically loaded to start menu (add them to the public folder).
 * Ability to add line breaks (\n) in the json file.
-* Text font switches to monotype when wrapped in <code> tags.
+* Text font switches to monotype when wrapped in < code > tags.
 
 * Avoids giving the same question twice in a row (mostly) unless it's the last question.
 * Upon completion of a quiz, the session is deleted and you are returned to the main page.
@@ -26,22 +26,19 @@ These instructions will get you a copy of the project up and running on your loc
 * node
 
 ### Installing and Running
-* Clone this repo.  
-* Open a terminal at the folder. 
-* Run ```npm update```
-* Run ```npm install```  
-* Run ```npm start```.  
-* Open your browser and enter ```http://localhost:3000```  
-  
+* Clone this repo.
+* Open a terminal at the folder
+* Run `npm update`
+* Run `npm install`
+* Run `npm start`
+* Open your browser and enter ```http://localhost:3000``
+
 ## Deployment Notes
-```
- docker build -t quizsail .
- docker run --mount 'type=volume,src=quizsail,dst=/usr/src/app/data' --restart=always -i -p 49000:3000 -d quizsail
-```
+`docker build -t quizsail .`
+`docker run --mount 'type=volume,src=quizsail,dst=/usr/src/app/data' --restart=always -i -p 49000:3000 -d quizsail`
 
 ## Contributing
 Use pull requests.
-
 
 ## Authors
 * **John Matzen** - *Initial work* - [jmatzen](https://github.com/jmatzen)
