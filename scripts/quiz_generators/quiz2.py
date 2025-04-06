@@ -4,16 +4,18 @@ from pathlib import Path
 
 # Get the directory where the script is located
 script_dir = Path(__file__).parent
+output_dir = script_dir / "OutputFiles"
+output_dir.mkdir(exist_ok=True)  # Creates the directory if it doesn't exist
 
 # Dynamically locate the _q and _a files in the same directory
-q_file_path = next(script_dir.glob('*_q.txt'), None)
-a_file_path = next(script_dir.glob('*_a.txt'), None)
+q_file_path = next(output_dir.glob('*_q.txt'), None)
+a_file_path = next(output_dir.glob('*_a.txt'), None)
 
 if not q_file_path or not a_file_path:
     raise FileNotFoundError("Could not find files ending with '_q.txt' or '_a.txt' in the script directory.")
 
 # Generate the output JSON file name by replacing '_q' with '_quiz' in the _q file name
-output_json_path = script_dir / f"{q_file_path.stem.replace('_q', '_quiz')}.json"
+output_json_path = output_dir / f"{q_file_path.stem.replace('_q', '_quiz2')}.json"
 
 # Strip the capital letter and space from the beginning of a string
 def strip_choice_prefix(text):
@@ -104,10 +106,23 @@ def main():
                 break
 
     # Write to JSON file
+    output_json_path = output_dir / f"{q_file_path.stem.replace('_q', '_quiz2')}.json"
     with open(output_json_path, 'w') as json_file:
         json.dump(combined_data, json_file, indent=4)
     
     print(f"JSON file created successfully at {output_json_path}")
+
+    # Prompt user to delete input files
+    response = input("\nDo you want to delete the input files (both _q.txt and _a.txt)? (y/n): ").strip().lower()
+    if response == 'y':
+        try:
+            q_file_path.unlink()
+            a_file_path.unlink()
+            print("Input files deleted successfully.")
+        except Exception as e:
+            print(f"An error occurred while deleting the input files: {e}")
+    else:
+        print("Input files were not deleted.")
 
 if __name__ == '__main__':
     main()

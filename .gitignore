@@ -4,3 +4,4 @@ data/
 **net_*
 scripts/quiz_generators/*.json
 scripts/quiz_generators/*.txt
+scripts/quiz_generators/OutputFiles/*

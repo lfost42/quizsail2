@@ -287,11 +287,14 @@ function submitAnswer() {
     const answers = item.a;
     const numChoices = currentItem.item.c.length;
     const numAnswers = answers.length;
-
     let correct = true;
 
+    Object.values(labels).forEach(label => {
+      label.e.style.color = ''; // Reset to default
+    });
+
     if (numAnswers == 1 && numChoices == 1) {
-      // Text input validation
+      // Text input handling
       if (inputs.value.toUpperCase() !== answers[0].toUpperCase()) {
           correct = false;
           inputs.e.style.backgroundColor = 'rgba(128, 128, 128, 0.7)';
@@ -299,20 +302,18 @@ function submitAnswer() {
           inputs.e.style.backgroundColor = '#009f00';
       }
   } else {
-      // Multiple choice validation
-      answers.forEach((val) => {
-          if (!inputs[val]?.checked) {
-              correct = false;
-              if (labels[val]) labels[val].e.style.color = '#009f00';
+      // Highlight correct answers in green
+      answers.forEach(correctAnswer => {
+          if (labels[correctAnswer]) {
+              labels[correctAnswer].e.style.color = '#009f00';
           }
       });
 
-      for (const key in inputs) {
-          if (inputs[key]?.checked) {
-              if (!answers.includes(key)) {
-                  correct = false;
-                  if (labels[key]) labels[key].e.style.color = 'rgba(128, 128, 128, 0.7)';
-              }
+      // Mark incorrect selections
+      for (const [choice, input] of Object.entries(inputs)) {
+          if (input.checked && !answers.includes(choice)) {
+              labels[choice].e.style.color = 'rgba(128, 128, 128, 0.7)';
+              correct = false;
           }
       }
   }

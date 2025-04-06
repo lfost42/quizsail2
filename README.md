@@ -9,19 +9,21 @@ The test prep engine uses a technique called *assumed competency*.  This techniq
 QuizSail's competency system works by holding a certain number of questions from the pool in-flight.  Once the user has correctly answered a question in the in-flight state so many times in a row, the question is moved to the completed state and is not asked again.  As long as the in-flight pool is full, the next question to appear is randomly selected from the questions in the pool that aged the most so that the same question is not likely to be asked twice in a row.
 
 ## List of updates for QuizSail 2.0
-➡️ [Script](scripts/explanation_adder/) to add an json line item for explanations to any working json file.  
-➡️ Explanations added to the result if available (need to populate the "e" item in the json file).  
-➡️ [Scripts](scripts/quiz_generators) to create a new quiz json files with appropriately formatted question/answer files. See [instructions](scripts/README.md) for more info.  
 
-➡️ New quizzes are dynamically loaded to start menu (add them to the public folder).  
-➡️ Ability to add line breaks (\n) in the json file.  
-➡️ Text font switches to monotype when wrapped in < code > tags.  
-➡️ Navigation link added to return to start page.  
-➡️ Added "Review Mode" which requires one correct answer to be mastered. 
+⚙️ Functionality to adds line breaks (\n).  
+⚙️ Text font switches to monotype when wrapped in < code > tags.  
+⚙️ Upon completion of a quiz, the session is deleted and you are returned to start.  
+⚙️ Explanations added to the result if available (need to populate the "e" item in the json file).  
 
-➡️ Avoids giving the same question twice in a row (mostly) unless it's the last question.  
-➡️ Upon completion of a quiz, the session is deleted and you are returned to the main page.  
-➡️ Delete all sessions option added.  
+📃 [Script](scripts/explanation_adder/) to add an json line item for explanations to any working json file.  
+📃 [Scripts](scripts/quiz_generators) to create a new quiz json files with appropriately formatted question/answer files. See [instructions](scripts/README.md) for more info.  
+
+💡 New quizzes are dynamically loaded to start menu (add them to the public folder).  
+💡 Avoids giving the same question twice in a row (mostly) unless it's the last question.  
+
+📂 [Review Mode] added to Start: requires only one correct answer. I use this to validate a or quickly review a question set.  
+📂 [Delete All Sessions] option added to Start.  
+📂 [Return to Start] option added to Quiz.  
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine.

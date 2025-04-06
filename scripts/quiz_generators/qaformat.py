@@ -1,14 +1,10 @@
-import os
 import re
+from pathlib import Path
 
 def process_file(input_path, output_path):
-    # print(f"\n🔍 Processing: {input_path} → {output_path}")
-    
     try:
-        # Initialize 'lines' first
         with open(input_path, 'r') as infile:
-            lines = infile.readlines()  # Correctly initialized
-        # print(f"✅ Read {len(lines)} lines from input file")
+            lines = infile.readlines()
     except FileNotFoundError:
         print(f"Error: Input file {input_path} not found")
         return False
@@ -18,8 +14,6 @@ def process_file(input_path, output_path):
 
     processed = []
     error_line = None
-
-    # State variables
     current_question = []
     current_choices = []
     seen_choices = set()
@@ -31,7 +25,6 @@ def process_file(input_path, output_path):
         if not raw_line:
             continue
 
-        # State transitions
         if state == "start":
             if re.match(r'^\d+\. ', raw_line):
                 current_question.append(raw_line)
@@ -77,7 +70,6 @@ def process_file(input_path, output_path):
             else:
                 explanation.append(raw_line)
 
-    # Final cleanup
     if not error_line and state == "explanation" and explanation:
         processed.append("-- " + ' '.join(explanation))
 
@@ -90,13 +82,12 @@ def process_file(input_path, output_path):
         return False
 
 if __name__ == "__main__":
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    # print(f"📂 Script directory: {script_dir}")
+    script_dir = Path(__file__).parent
+    output_dir = script_dir / "OutputFiles"
+    output_dir.mkdir(exist_ok=True)
     
-    for filename in os.listdir(script_dir):
-        if filename.endswith("_raw.txt"):
-            input_path = os.path.join(script_dir, filename)
-            output_path = os.path.join(script_dir, filename.replace("_raw.txt", "_format.txt"))
-            # print(f"\n🔨 Processing {filename}")
-            success = process_file(input_path, output_path)
-            print(f"Formatted text has been saved as '{os.path.basename(output_path)}'.")
+    for input_path in script_dir.glob('*_raw.txt'):
+        output_filename = input_path.name.replace('_raw.txt', '_format.txt')
+        output_path = output_dir / output_filename
+        success = process_file(input_path, output_path)
+        print(f"Formatted text has been saved as '{output_path.name}'.")

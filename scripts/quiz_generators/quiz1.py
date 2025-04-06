@@ -1,6 +1,6 @@
 import json
 import re
-import os
+from pathlib import Path
 
 def parse_questions(content):
     questions = []
@@ -73,26 +73,38 @@ def process_file(input_path, output_path):
         
         with open(output_path, 'w') as f:
             json.dump(questions, f, indent=2)
-            
-        print(f"Successfully created: {output_path}")
-        return True
-    
+        return True  # Indicate success
     except Exception as e:
         print(f"Error processing {input_path}: {str(e)}")
-        return False
+        return False  # Indicate failure
 
 if __name__ == "__main__":
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = Path(__file__).parent
+    output_dir = Path.cwd() / "OutputFiles"  # Changed: Use current working directory
+    output_dir.mkdir(exist_ok=True)
     
-    # Process all files ending with _format.txt
-    processed_files = 0
-    for filename in os.listdir(script_dir):
-        if filename.endswith("_format.txt"):
-            input_path = os.path.join(script_dir, filename)
-            output_filename = filename.replace("_format.txt", ".json")
-            output_path = os.path.join(script_dir, output_filename)
-            
-            if process_file(input_path, output_path):
-                processed_files += 1
-                
-    # print(f"\nProcessing complete. {processed_files} files converted to JSON.")
+    processed_inputs = []
+    for input_path in output_dir.glob('*_format.txt'):
+        print(f"\nProcessing file: {input_path}")
+        output_filename = input_path.name.replace('_format.txt', '_quiz1.json')
+        output_path = output_dir / output_filename
+        if process_file(input_path, output_path):
+            processed_inputs.append(input_path)
+        print(f"\nFile '{output_filename}' created.")
+    
+    if processed_inputs:
+        response = input("\nWould you like to delete the original input files now? [y/N] ").strip().lower()
+        if response in ('y', 'yes'):
+            deleted_count = 0
+            for path in processed_inputs:
+                try:
+                    path.unlink()
+                    deleted_count += 1
+                except Exception as e:
+                    print(f"Error deleting {path}: {e}")
+            print(f"Deleted {deleted_count} input files.")
+        else:
+            print("Input files were not deleted.")
+    else:
+        print("No input files were processed.")
+        
