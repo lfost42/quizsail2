@@ -1,0 +1,54 @@
+[
+    {
+        "q": "Which network type is locally owned and managed by an organization and used to connect the organization's LAN together?",
+        "c": [
+            "MAN",
+            "CAN",
+            "WAN",
+            "PAN"
+        ],
+        "a": [
+            "CAN"
+        ],
+        "e": "A campus area network (CAN) is a connectivity method that is locally owned and managed by an organization to connect multiple LANs together. A metropolitan area network (MAN) is a connectivity method used in a metropolitan area, but it is owned and managed by someone other than the organization. A wide area network (WAN) is a connectivity method that is used for connectivity in a wide area, and it is owned and managed by someone other than the organization. A personal area network (PAN) is a network that connects personal devices within an extremely close vicinity."
+    },
+    {
+        "q": "Which network topology design has a centralized switch connecting all of the devices?",
+        "c": [
+            "Star topology",
+            "Full mesh topology",
+            "Partial mesh topology",
+            "Hybrid topology"
+        ],
+        "a": [
+            "Star topology"
+        ],
+        "e": "A star topology, also known as hub-and-spoke topology, has a centralized switch connecting all of the devices outward like a star. A full mesh topology allows for a decentralized switching design, where any link failure will not a\ufb00ect switching. A partial mesh topology is normally performed between the layers of core, distribution, and access to allow for a single link failure while maintaining switching services. A hybrid topology is where several di\ufb00erent topologies are employed, such as star and mesh."
+    },
+    {
+        "q": "Which protocol can be typically found inside a PAN?",
+        "c": [
+            "Bluetooth",
+            "MPLS",
+            "SDWAN",
+            "vNIC"
+        ],
+        "a": [
+            "Bluetooth"
+        ],
+        "e": "Bluetooth is a common networking protocol found inside a personal area network (PAN) connecting personal devices. Multiprotocol label switching (MPLS) is a technology that uses labels to switch packets. A software-defined wide area network (SDWAN) is a virtual WAN architecture that uses software to manage connectivity, devices, and services. A virtual NIC (vNIC) is used to connect a virtual machine (VM) to a virtual switch (vSwitch)."
+    },
+    {
+        "q": "When computers are logically grouped on a LAN based upon a functional department in the organization, what is the group called?",
+        "c": [
+            "Backbone",
+            "CAN",
+            "PAN",
+            "Workgroup"
+        ],
+        "a": [
+            "Workgroup"
+        ],
+        "e": "A workgroup is a logical grouping of computers on a local area network (LAN) based upon a department's function. A backbone is the connectivity method that connects multiple network segments together. A campus area network (CAN) is a network that connects multiple buildings together in close proximity. A personal area network (PAN) is a network that connects personal devices together in close proximity often using Bluetooth technology."
+    }
+]

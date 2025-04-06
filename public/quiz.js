@@ -5,10 +5,14 @@ let labels = {};
 var state = null;
 var content = null;
 
-const source=getParam('src') || 'c857';
+const source = getParam('src');
+if (!source) {
+    alert("Please select a quiz from the menu.");
+    window.location = window.location.origin; // Redirect to start
+}
+
 const allowQuickComplete = parseInt(getParam('quick')||0);
 const storageSessions = getStorageSessions();
-
 const MAX_WORKING = 10;
 
 const updateSessions = (url, course) => {
@@ -27,84 +31,162 @@ const updateSessions = (url, course) => {
     localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
 }
 
-function start() {
-    console.log("starting!", getParam('session'));
+// To delete session when a quiz is completed. 
+async function deleteSession() {
+  const session = getParam('session');
+  const fullUrl = document.location.href; // Keep full URL with session ID
+  
+  // Delete server session
+  try {
+      const hashedSession = await hash(session);
+      await fetch(`/state/${hashedSession}`, { 
+          method: 'DELETE' 
+      });
+  } catch (e) {
+      console.warn("Cleanup error:", e);
+  }
+  
+  // Delete client session using FULL URL as key
+  delete storageSessions[fullUrl];
+  localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
+  
+  // Navigate to start page
+  setTimeout(() => {
+      window.location.href = window.location.origin;
+  }, 3000);
+}
 
-    let session = getParam('session')
+async function start() {
+  console.log("starting!", getParam('session'));
+  let session = getParam('session');
+  
+  if (!session) {
+    const newSession = makeid(128);
+    // Use URLSearchParams to handle parameters correctly
+    const params = new URLSearchParams(window.location.search);
+    params.set('session', newSession);
+    window.location.search = params.toString();
+    return;
+}
 
-    if (session==null) {
-        session = makeid(128);
-        document.location=document.location+`&session=${session}`;
-        return;
-    }
-    updateSessions(document.location, source);
-
-    fetch(`${source}.json`)
-        .then((res)=>res.json())
-        .then(json=>{
-            content = json;
-            const session = getParam('session');
-            return fetch(`state/${session}`);
-        })
-        .then((res)=>{
-            console.log(res.status);
-            if (res.status==404) {
-                state = {
-                    complete: [],
-                    working: [],
-                    unseen: []
-                }
-                // initialize unseen array
-                for (let  i = 0; i != content.length; ++i) {
-                    state.unseen.push({index: i, count: 0, tries: 0});
-                }
-                show();
-                return;
-            }
+  updateSessions(document.location, source);
+  
+  try {
+    const h = await hash(session).catch(() => "fallback_hash");
+    const res = await fetch(`/state/${h}`);
+    const [quizContent, savedState] = await Promise.all([
+        fetch(`${source}.json`).then(res => {
+            if (!res.ok) throw new Error('Quiz not found');
             return res.json();
-        })
-        .then(json=>{
-            if (json) {
-                state=json;
-                show();    
-            }
-        });
+        }),
+        (async () => {
+            const h = await hash(session);
+            const res = await fetch(`/state/${h}`);
+            return res.status === 200 ? res.json() : null;
+        })()
+    ]);
 
+    // Ensure content is valid
+    if (!quizContent?.length) throw new Error('Invalid quiz format');
+    
+    content = quizContent;
+    state = savedState || {
+        complete: [],
+        working: [],
+        unseen: Array.from({length: content.length}, (_, i) => ({
+            index: i,
+            count: 0,
+            tries: 0
+        })),
+        lastIndex: -1
+    };
+    show();
+} catch (error) {
+    console.error('Initialization error:', error);
+    alert(`Failed to start quiz: ${error.message}`);
+    window.location = window.location.origin;
+}
 }
 
 const choiceLetters = "ABCDEFGHIJ";
 
 function show() {
-    // if the working set is at max, grab a question from the working set
-    if (state.working.length==MAX_WORKING) {
-        const nextid = Math.floor(Math.random()*state.working.length/2);
-        const nextitem = state.working.splice(nextid, 1);
-        state.working.push(nextitem[0]);
-    
-    }
-    // else grab a question from the unseen set
-    // only if there is no working set or the current item as been tried
-    else if (state.working.length==0||cur().ref.tries>0) {
-        if (state.working.length < MAX_WORKING && !state.unseen.empty()) {
-            let randomUnseen = Math.floor(Math.random() * state.unseen.length);
-            let item = state.unseen.splice(randomUnseen, 1)[0];
-            state.working.push(item);
-        }
-    }
-    
+  if (!content || !Array.isArray(content)) {
+    console.error('No quiz content loaded');
+    window.location = window.location.origin;
+    return;
+  }
+  if (!state || !state.unseen || !state.working) {
+    console.error('Invalid state:', state);
+    window.location = window.location.origin;
+    return;
+  }
 
+  // Check for quiz completion
+  if (state.unseen.length === 0 && state.working.length === 0) {
+    E("question").html = `Quiz Complete! 🎉`;
+    E("choice_form").html = "Returning to start .......";
+    E("result").html = "";
+    E("submitbtn").attr = false;
+    deleteSession();
+    return;
+  }
+  
+  let currentItem;
+  const lastIndex = state.lastIndex || -1;
+
+  if (state.unseen.length === 0 && state.working.length > 0) {
+    // Rotate questions ensuring no consecutive repeats
+    let nextIndex;
+        let attempts = 0;
+        do {
+            nextIndex = Math.floor(Math.random() * state.working.length);
+            attempts++;
+        } while (attempts < 100 && // Add escape clause
+              state.working.length > 1 && 
+              state.working[nextIndex].index === state.lastIndex);
+        
+        const nextItem = state.working.splice(nextIndex, 1)[0];
+        state.working.push(nextItem);
+        currentItem = nextItem; // Add this line
+    }
+    else {
+    // if the working set is at max, grab a question from the working set
+
+    if (state.working.length === MAX_WORKING) {
+    // Get from working set (ensure not last shown)
+      do {
+          const nextid = Math.floor(Math.random() * state.working.length/2);
+          currentItem = state.working.splice(nextid, 1)[0];
+          state.working.push(currentItem);
+      } while (currentItem.index === lastIndex);
+          } else if (state.working.length === 0 || cur().ref.tries > 0) {
+              // Get from unseen set (ensure not last shown)
+              if (state.working.length < MAX_WORKING && state.unseen.length > 0) {
+                  let randomUnseen;
+                  do {
+                      randomUnseen = Math.floor(Math.random() * state.unseen.length);
+                      currentItem = state.unseen[randomUnseen];
+                  } while (currentItem.index === lastIndex && state.unseen.length > 1);
+                  state.unseen.splice(randomUnseen, 1);
+                  state.working.push(currentItem);
+              }
+          }
+  }
+  // Store current index as last shown
+  state.lastIndex = currentItem?.index || -1;
 
     saveState(()=>{
-            
+        const currentItem = cur();
+        if (!currentItem) return; // Add null check
+
         E("stats").html = `mastered: ${state.complete.length} <BR>`
             + `in-flight:  ${state.working.length}<BR>`
             + `unseen: ${state.unseen.length}`;
         inputs = {};
         labels = {};
-
-        const currentItem = cur();
         
-        E("question").html = `${currentItem.item.q}`;
+        E("question").html = `${currentItem.item.q.replace(/\n/g, '<br>')}`;
         E("choice_form").html = "";
         E("result").html = "";
 
@@ -124,6 +206,16 @@ function show() {
                     .attr("id", `radio_${index}`)
                     .attr("value", val)
                     .attr("name", `answer_${index}`);
+
+                // Add change listener to handle choice limits
+        input.e.addEventListener('change', () => {
+          const checkboxes = document.querySelectorAll(`input[type="checkbox"][name^="answer_"]`);
+          const checked = Array.from(checkboxes).filter(cb => cb.checked);
+          
+          checkboxes.forEach(cb => {
+              cb.disabled = checked.length >= numAnswers && !cb.checked;
+          });
+      });
                 inputs[val] = input;
                 const label = New("LABEL")
                     .attr("for", `radio_${index}`);
@@ -168,18 +260,17 @@ function show() {
                 .attr("id","submitbtn")
                 .attr("onclick","submitAnswer()");
     });
-
 }
 
 /**
  * return reference to current question
  */
 function cur() {
-    if (state.working.empty()) {
+    if (!state.working || state.working.length === 0) {
         return null;
     }
-    let questionRef = state.working[state.working.length-1];
-    return state.working.empty() ? null : {
+    const questionRef = state.working[state.working.length-1];
+    return {
         item: content[questionRef.index],
         ref: questionRef
     }
@@ -199,7 +290,7 @@ function submitAnswer() {
         // handle the case where there was only one correct answer
         // and only once choice, which means the answer
         // had to be typed in.
-        console.log(inputs.value.toUpperCase());
+        // console.log(inputs.value.toUpperCase());
         if (inputs.value.toUpperCase()!==currentItem.item.a[0].toUpperCase()) {
             correct = false;
             inputs.e.style.backgroundColor = 'rgba(128, 128, 128, 0.7)';
@@ -226,16 +317,21 @@ function submitAnswer() {
                 } else {
                     correct = false;
                     labels[i].e.style.color = 'rgba(128, 128, 128, 0.7)';
-                        
                 }
             } else {
-
             }
         }
-
     }
-    console.log(`answer is ${correct}`)
-    E("result").text = correct ? "CORRECT!" : `Wrong. The correct answer is ${answers}`;
+    // console.log(`answer is ${correct}`)
+    let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers}`;
+    // Add explanation if available
+    if (item.e) {
+        resultMessage += `<br><br>${item.e.replace(/\n/g, '<br>')}`;
+      } else {
+        resultMessage += `<br><br>Explanation not provided.`;
+    }
+    E("result").html = resultMessage;
+
     //remove classes, then add new class based on correct/incorrect answer
     E("result").e.className = "";
     var newClass = correct ? "correct" : "incorrect";
@@ -247,15 +343,16 @@ function submitAnswer() {
     }
     ++currentItem.ref.tries;
     if (correct===true) {
-        if (allowQuickComplete===1 && currentItem.ref.tries===1) {
+        if (allowQuickComplete===1) {
             currentItem.ref.count=3;
         } else
-         {
+        {
             currentItem.ref.count+=1;
         }
         if (currentItem.ref.count>=3) {
             state.complete.push(currentItem.ref);
             state.working.pop();
+            state.lastIndex = currentItem.ref.index; // Track the last shown question
         }
     } else {
         currentItem.ref.count = 0;
@@ -338,19 +435,19 @@ function getParam(name) {
     return searchParams.get(name);
 }
 
-function saveState(callback) {
-    const session = getParam('session');
-    fetch(`state/${session}`, {
-        method: 'POST',
-        cache: 'no-cache',
-        headers: { 'content-type': 'application/json'},
-        body: JSON.stringify(state)
-    }).then((req)=>{
-        if (req.status==200)  {
-            // show();
-            callback();
-        }
-    });
+async function saveState(callback) {
+  try {
+      const session = getParam('session');
+      const hashedSession = await hash(session);
+      await fetch(`/state/${hashedSession}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json'},
+          body: JSON.stringify(state)
+      });
+      callback();
+  } catch (e) {
+      console.error("Failed to save state:", e);
+  }
 }
 
 function makeid(length) {
@@ -365,22 +462,34 @@ function makeid(length) {
 
 document.addEventListener("DOMContentLoaded", start);
 
-document.addEventListener("keyup", e => {
-    let key = null;
-    if (e.key >= "a" && e.key <= "j") {
-        key = e.key.toUpperCase();
-    }
+document.addEventListener("keyup", async (e) => {
+  let key = null;
+  if (e.key >= "a" && e.key <= "j") {
+      key = e.key.toUpperCase();
+  }
 
-    if (key && choiceLetters.indexOf(key) >= 0) {
-        const el = document.getElementById(`radio_${choiceLetters.indexOf(key)}`);
-        if (el) {
-            el.checked = !el.checked;
-        }
-    } else if (e.key === "Enter") {
-        const el = document.getElementById("submitbtn");
-        if (el) {
-            el.click();
-        }
-    }
+  if (key && choiceLetters.indexOf(key) >= 0) {
+      const el = document.getElementById(`radio_${choiceLetters.indexOf(key)}`);
+      if (el) {
+          el.checked = !el.checked;
+      }
+  } else if (e.key === "Enter") {
+      const el = document.getElementById("submitbtn");
+      if (el) {
+          el.click();
+      }
+  }
 
 });
+
+function hash(value) {
+  // Simple hash for localhost development
+  if (window.location.hostname === 'localhost') {
+    let hash = 0;
+    for (let i = 0; i < value.length; i++) {
+      hash = (hash << 5) - hash + value.charCodeAt(i);
+      hash |= 0; // Convert to 32bit integer
+    }
+    return Promise.resolve(hash.toString());
+  }
+}

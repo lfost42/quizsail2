@@ -10,13 +10,14 @@
       window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter'||e.keyCode==13){if(e.target.nodeName=='INPUT'&&e.target.type=='text'){e.preventDefault();return false;}}},true);
       </script>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
       * {
         font-family: 'Roboto',
         sans-serif;
         font-size: large;
       }
-       html {
+      html {
         height: 100%;
       }
       body {
@@ -82,6 +83,14 @@
       .input {
         padding: 5px;
       }
+      code {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 14px;
+        background-color: #ffffff;
+        border: 5px solid #ffffff;
+        overflow-x: auto; 
+        border-radius: 4px;
+      }
       @media screen and (max-width: 767px) {
         input, form, #stats{
           padding: 1vw;
@@ -124,7 +133,7 @@
     <div id="content"></div>
 
     <footer class="footer">
-      <small>QuizSail 1.0</small>
+      <small>QuizSail 2.0</small>
     </footer>
   </body>
 </html>

@@ -15,7 +15,7 @@
         sans-serif;
         font-size: large;
       }
-       html {
+      html {
         height: 100%;
       }
       body {
@@ -24,8 +24,13 @@
       }
       form {
         margin: 0 auto;
-        max-width: 80vw;
         padding: 5vh 5vw;
+        text-align: center;
+      }
+      #quiz {
+        margin: 0 auto;
+        min-width: 30vh;
+        max-width: 80vw;
         text-align: center;
       }
       input[type="button"] {
@@ -74,23 +79,22 @@
       <h1>Thanks for visiting QuizSail.</h1>
       <p>
         Feel free to contribute or submit issues: 
-        <a href="https://github.com/jmatzen/quizsail" target="_blank">github</a>
+        <a href="https://github.com/lfost42/quizsail2" target="_blank">github</a>
       </p>
     </div>
     <div>
       <form class="block">
         <select id="quiz" size=2>
-          <option value="c857">C857 - 248 Questions</option>
-          <option value="c191">C191 - 717 Questions</option>
+          <!-- json files load dynamically from index.js -->
         </select>
         <p>
-          <input type="checkbox" id="fastmode"/> Fast Mode (don't ask question again if correct answer first time)
+          <input type="checkbox" id="fastmode"/> Fast Mode (ask once if correct on the first try)
         </p>
         <p>
           <input type="button" value="Start" id="startButton" />
         </p>
       </form>
     </div>
-    <section id="savedSessions"></section>
+    <section id="savedSessions" display="none"></section>
   </body>
 </html>
