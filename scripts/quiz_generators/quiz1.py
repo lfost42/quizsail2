@@ -95,4 +95,4 @@ if __name__ == "__main__":
             if process_file(input_path, output_path):
                 processed_files += 1
                 
-    print(f"\nProcessing complete. {processed_files} files converted to JSON.")
+    # print(f"\nProcessing complete. {processed_files} files converted to JSON.")
