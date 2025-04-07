@@ -15,7 +15,7 @@ if not q_file_path or not a_file_path:
     raise FileNotFoundError("Could not find files ending with '_q.txt' or '_a.txt' in the script directory.")
 
 # Generate the output JSON file name by replacing '_q' with '_quiz' in the _q file name
-output_json_path = output_dir / f"{q_file_path.stem.replace('_q', '_quiz2')}.json"
+output_json_path = output_dir / f"{q_file_path.stem.replace('_q', '')}.json"
 
 # Strip the capital letter and space from the beginning of a string
 def strip_choice_prefix(text):
@@ -106,7 +106,7 @@ def main():
                 break
 
     # Write to JSON file
-    output_json_path = output_dir / f"{q_file_path.stem.replace('_q', '_quiz2')}.json"
+    output_json_path = output_dir / f"{q_file_path.stem.replace('_q', '')}.json"
     with open(output_json_path, 'w') as json_file:
         json.dump(combined_data, json_file, indent=4)
     

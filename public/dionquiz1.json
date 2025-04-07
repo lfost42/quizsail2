@@ -1,0 +1,1162 @@
+[
+  {
+    "q": "In the three-tier hierarchical model, which tier is in-between the other two and is responsible for providing connectivity as well as facilitating communication between different access layer devices?",
+    "c": [
+      "Distribution",
+      "Core",
+      "Aggregation",
+      "Access"
+    ],
+    "a": [
+      "Distribution"
+    ],
+    "e": "OBJ 1.6: The distribution tier in the three-tier hierarchical model is responsible for providing connectivity between the access layer and the core layer. It acts as an intermediary layer, facilitating communication between different access layer devices and forwarding traffic to the appropriate destination. The access tier focuses on connecting end-user devices, while the core tier handles high-speed backbone connectivity. The term \"aggregation\" is not typically used to describe a specific tier in this model. Therefore, the distribution tier is the correct choice in this context."
+  },
+  {
+    "q": "Herbert is configuring the Wi-Fi for a university campus. The network needs to support a large number of users, with individual credentials for students and staff to ensure security and manageability. Which Wi-Fi security method is Herbert most likely to implement, and why?",
+    "c": [
+      "Enterprise, because it supports individual authentication, making it ideal for environments with many users.",
+      "Pre-shared key (PSK), because it offers a higher level of encryption, which is necessary for large networks.",
+      "Enterprise, because it simplifies the password management process by using the same password for all users.",
+      "Pre-shared key (PSK), because it allows for easy management of large user groups with a single shared password."
+    ],
+    "a": [
+      "Enterprise, because it supports individual authentication, making it ideal for environments with many users."
+    ],
+    "e": "OBJ 2.3 - Enterprise security is the best choice for Herbert's university campus setup. It supports individual user authentication, which is essential in an environment with a large and diverse user base like a university. This method uses an authentication server (such as RADIUS) to manage credentials, providing enhanced security and the ability to assign unique access rights to students and staff. PSK is not suitable for large user groups in environments like a university, as it relies on a single shared password, which poses significant security risks. Enterprise security does not simplify password management by using the same password for all users; instead, it allows for individual credentials. While PSK and Enterprise both provide strong encryption, the level of encryption is not the primary concern in choosing between them for large networks; individual authentication capability is."
+  },
+  {
+    "q": "Jake, a system administrator, notices that users are experiencing high latency when accessing the company's cloud-based applications. He wants to reduce latency to improve user experience. Of the following options, what action should Jake take to best achieve this goal?",
+    "c": [
+      "Adding more storage servers",
+      "Optimizing routing paths",
+      "Increasing the network bandwidth",
+      "Implementing traffic shaping"
+    ],
+    "a": [
+      "Optimizing routing paths"
+    ],
+    "e": "OBJ 5.4 - Optimizing routing paths involves selecting the most efficient routes for network traffic, which can significantly reduce latency. Adding more storage servers and Increasing the network bandwidth may improve overall network performance but may not directly address latency issues. Implementing traffic shaping may help prioritize traffic but may not necessarily reduce latency."
+  },
+  {
+    "q": "You are a network technician troubleshooting connectivity issues in a large office building with multiple WiFi networks. To identify potential interference and optimize signal strength, which tool would be most effective for analyzing WiFi signals?",
+    "c": [
+      "Spectrum analyzer",
+      "Cable tester",
+      "WiFi analyzer",
+      "Multimeter"
+    ],
+    "a": [
+      "WiFi analyzer"
+    ],
+    "e": "OBJ 5.5: A WiFi analyzer is specifically designed to scan and analyze WiFi networks, providing detailed information on signal strength, channel utilization, and potential interference. Options, such as a multimeter, spectrum analyzer, and cable tester, are not tailored for WiFi signal analysis and would not provide the necessary insights for troubleshooting WiFi connectivity issues in a complex office environment."
+  },
+  {
+    "q": "(Select ALL that apply) Which of the following types of traffic flows describes network traffic that is transiting between various servers in your datacenter?",
+    "c": [
+      "West",
+      "South",
+      "East",
+      "North"
+    ],
+    "a": [
+      "West",
+      "East"
+    ],
+    "e": "OBJ 1.6: When we have North-South traffic or communication, this refers to traffic that enters or leaves the data center from a system physically residing outside the datacenter. When we talk specifically about North traffic, this is traffic that is exiting the datacenter. Southbound traffic, on the other hand, is referring to traffic that is entering the data center. In both cases, the data is existing or entering the data center through a firewall or other network infrastructure boundary device, such as a router. East-West traffic or communication refers to data flow within a datacenter. For example, if we are using a spine and leaf architecture, any data flow between the various servers in the datacenter, even if it goes between different leaves, would be considered east-west traffic."
+  },
+  {
+    "q": "In cybersecurity operations, which technology is primarily used for centralizing the collection, correlation, and analysis of security event logs from various sources?",
+    "c": [
+      "IDS",
+      "SIEM",
+      "IPS",
+      "WAF"
+    ],
+    "a": [
+      "SIEM"
+    ],
+    "e": "OBJ 3.2: SIEM (Security Information and Event Management) systems centralize security event logs, correlate data from multiple sources, and provide analysis for detecting and responding to security incidents effectively. IDS (Intrusion Detection System) monitors network traffic for suspicious activities, IPS (Intrusion Protection System) monitors network traffic and can block suspicious activity, and WAF (Web Application Firewall) protects web applications from attacks; however, none perform the comprehensive log management and analysis functions like SIEM."
+  },
+  {
+    "q": "Which of the following is used to remove heat from servers and networking gear within a datacenter?",
+    "c": [
+      "Generator",
+      "UPS",
+      "PDU",
+      "HVAC"
+    ],
+    "a": [
+      "HVAC"
+    ],
+    "e": "Heating Ventilation and Air Conditioning (HVAC) units are responsible for maintaining the proper temperature and humidity within a datacenter. An uninterruptible power supply or uninterruptible power source (UPS) is an electrical apparatus that provides emergency power to a load when the input power source or mains power fails. A power distribution unit (PDU) is a device fitted with multiple outputs designed to distribute electric power, especially to racks of computers and networking equipment located within a data center. PDUs use and distribute the available amperage more efficiently, allowing your equipment to receive the best available power to maintain operation. A generator is a device that converts motive power into electrical power for use in an external circuit. Generators can be powered by diesel, gasoline, or propane."
+  },
+  {
+    "q": "Your co-worker has just installed an unmanaged 24-port switch. He is concerned with the amount of broadcast traffic that may exist when using this device. How many broadcast domains are created when using this single 24-port switch?",
+    "c": [
+      "0",
+      "1",
+      "2",
+      "24"
+    ],
+    "a": [
+      "1"
+    ],
+    "e": "OBJ 1.2: A single 24-port unmanaged switch will have only 1 broadcast domain. Routers and VLANs split up broadcast domains. Since this is an unmanaged switch, it will only have a single broadcast domain, but it will have 24 collision domains. If this was a managed layer 3 switch, it could provide routing functions and break apart the broadcast domains. But, since this was an unmanaged switch, there must be only 1 broadcast domain on this switch."
+  },
+  {
+    "q": "Rowan, a network administrator is configuring a wireless network for a large corporate office with multiple floors. The office layout requires the deployment of several wireless access points to ensure complete coverage. To simplify the wireless network for end-users, they decide to use a single network name for the entire office. Why would Rowan use an Extended Service Set Identifier (ESSID) in this scenario?",
+    "c": [
+      "To limit the bandwidth each user can consume, ensuring fair usage of the network resources.",
+      "To create a unique identifier for each wireless access point to prevent interference between them.",
+      "To allow wireless devices to roam seamlessly between different access points without needing to reconnect.",
+      "To encrypt the data transmitted over the wireless network for enhanced security."
+    ],
+    "a": [
+      "To allow wireless devices to roam seamlessly between different access points without needing to reconnect."
+    ],
+    "e": "OBJ 2.3 - An Extended Service Set Identifier (ESSID) is used in wireless networks to allow multiple access points to be seen as a single network by end-users. This enables devices to roam seamlessly between access points within the same network without requiring the user to manually reconnect to a different network name as they move around, making it ideal for environments like a large office with multiple floors. ESSIDs do not provide unique identifiers to prevent interference; they help unify multiple access points under a single network name. Each access point has a unique BSSID (Basic Service Set Identifier) for identification purposes. ESSIDs do not control bandwidth consumption. Bandwidth management is typically handled by Quality of Service (QoS) settings or other network management tools. ESSIDs are used for network identification, not for encrypting data. Encryption is handled by security protocols like WPA2 or WPA3."
+  },
+  {
+    "q": "Timothy, a network engineer, is tasked with troubleshooting a network connectivity issue. He needs to determine which MAC addresses are associated with each switch port to identify the source of the problem efficiently. Which command should Timothy use to view these on a Cisco switch?",
+    "c": [
+      "show interface",
+      "show route",
+      "show mac-address-table",
+      "show config"
+    ],
+    "a": [
+      "show mac-address-table"
+    ],
+    "e": "OBJ 5.5 - The command to view the MAC address table on a Cisco switch really is \"show mac-address-table\". Yes, it was that simple and not a trick question. This command displays the MAC addresses learned by the switch and the corresponding switch ports. show route, show interface, and show config are commands used for different purposes, such as viewing routing information, interface status, and configuration settings, respectively."
+  },
+  {
+    "q": "Daisy is planning the network infrastructure for her new data center. The area is densely packed with equipment, and cables need to be routed in close proximity to power lines and other sources of interference. She wants to keep costs as low as possible, but have the ability to hold up to the interference mentioned. Given these requirements, which of these cable types is the most practical cable to ensure network reliability in this high-traffic area?",
+    "c": [
+      "STP Cat6a",
+      "UTP Cat6",
+      "Multimode fiber",
+      "Single-mode fiber"
+    ],
+    "a": [
+      "STP Cat6a"
+    ],
+    "e": "OBJ 5.2 - STP (Shielded Twisted Pair) Cat6a is the most suitable choice for environments with high potential for electromagnetic interference (EMI) and crosstalk, especially in densely packed, high-traffic areas like data centers. The shielding provides extra protection against EMI, maintaining signal integrity and network reliability. Single-mode and Multimode fiber are immune to EMI and excellent for long distances and high bandwidth, STP Cat6a is more practical for typical data center rack connections where costs are a significant factor. UTP Cat6, while capable of Gigabit speeds, lacks the additional shielding and would be more susceptible to interference in this scenario."
+  },
+  {
+    "q": "Which of the following types of network documentation would include labels to indicate which cables are connected to which switchports on an edge switch?",
+    "c": [
+      "Wiring diagram",
+      "Logical network diagram",
+      "Site survey report",
+      "Physical network diagram"
+    ],
+    "a": [
+      "Wiring diagram"
+    ],
+    "e": "OBJ 3.1: Wiring diagrams are used to clearly label which cables are connected to which ports. The more in-depth wiring diagrams will include a floorplan or rack diagram, so you can see how the cables are run in the physical environment. A wireless site survey is the process of planning and designing a wireless network to provide a wireless solution that will deliver the required wireless coverage, data rates, network capacity, roaming capability, and quality of service (QoS). The site survey report will contain a floorplan of the areas surveyed with the wireless coverage areas and signal strengths notated on it. A physical network diagram is used to show the actual physical arrangement of the components that make up the network, including cables and hardware. A logical diagram is used to illustrate the flow of data across a network and is used to show how devices communicate with each other. These logical diagrams usually include the subnets, network objects and devices, routing protocols and domains, voice gateways, traffic flow, and network segments in a given network."
+  },
+  {
+    "q": "Which definition best represents a network Heat-Map?",
+    "c": [
+      "A diagram showing the physical layout of networking devices",
+      "A visual representation of the electrical current flow in a network.",
+      "A graphical representation indicating areas of high and low network activity or performance",
+      "A chart illustrating the temperature variations in a data center\u2019s network that might affect infrastructure and personal devices"
+    ],
+    "a": [
+      "A graphical representation indicating areas of high and low network activity or performance"
+    ],
+    "e": "OBJ 3.1: Heat-Maps visually depict network activity or performance, highlighting areas of high and low activity. Physical diagrams show the physical arrangement of devices but do not represent network activity. While temperature monitoring is important in data centers, a Heat-Map in networking refers specifically to network activity. Electrical current flow diagrams are not synonymous with Heat-Maps in networking, which focus on data transmission and network activity."
+  },
+  {
+    "q": "In a network environment, how does the use of a jump box/host compare to direct management connections when administering remote servers and network devices?",
+    "c": [
+      "Direct management connections offer higher security by requiring multiple authentication steps for each device, compared to a jump box/host.",
+      "Using a jump box/host significantly increases the network's latency and decreases the overall performance compared to direct management connections.",
+      "Direct management connections allow for easier tracking and logging of user activities than using a jump box/host.",
+      "A jump box/host provides a secure, controlled gateway for administrators to connect to remote systems, minimize exposed entry points to the network."
+    ],
+    "a": [
+      "A jump box/host provides a secure, controlled gateway for administrators to connect to remote systems, minimize exposed entry points to the network."
+    ],
+    "e": "OBJ 3.5 - The primary purpose of a jump box (also known as a jump host) is to serve as a secure gateway through which administrators can access and manage remote servers and network devices. This method consolidates access points, enhancing security by limiting direct access to the network's internal resources. While a jump box/host might introduce a minor additional step in the connection process, it does not significantly impact the network's latency or performance in a way that would outweigh its security benefits. Direct management connections typically expose each managed device directly to potential threats, making them less secure compared to the controlled environment provided by a jump box/host, which centralizes access controls and authentication. A jump box/host can actually facilitate better tracking and logging of administrative activities by centralizing access."
+  },
+  {
+    "q": "Tamera and her husband are driving to the beach for the weekend. While her husband drives, she is using her iPhone to browse Facebook. Her phone shows only 1 bar of 3G signal in the current location. She can make and receive calls, but Facebook is refusing to load her news feed. Which of the following is MOST likely the problem?",
+    "c": [
+      "The data speeds are insufficient with only one bar of signal",
+      "The smartphone has been infected with a virus",
+      "The cellular radio cannot connect to the cellphone towers",
+      "The baseband firmware needs to be updated"
+    ],
+    "a": [
+      "The data speeds are insufficient with only one bar of signal"
+    ],
+    "e": "OBJ 1.5: To make and receive a call using a smartphone, you need at least one bar of signal. A phone call requires much less signal than using cellular data. As the signal strength decreases, so does the data speed. Depending on the frequency and type of signal being used, you may see speeds under 100 Kbps with one bar. This is too slow to load a Facebook news feed adequately."
+  },
+  {
+    "q": "Mathan has just purchased a domain name and created an A record to bind his domain name to an IP address. Which of the following tools should he use to verify the record was created properly?",
+    "c": [
+      "ipconfig",
+      "tcpdump",
+      "dig",
+      "arp"
+    ],
+    "a": [
+      "dig"
+    ],
+    "e": "OBJ 5.5: The dig command is used to query the domain name system (DNS) to obtain information about host addresses, mail exchanges, nameservers, and related information. The arp command is used to view and modify the local address resolution protocol (ARP) cache of a device, which contains recently resolved MAC addresses of IP hosts on the network. The tcpdump tool is a text-based packet capture and analysis tool that can capture packets and display the contents of a packet capture (pcap) file. The ipconfig command is used on Windows devices to display the current TCP/IP network configuration and refresh the DHCP and DNS settings on a given host."
+  },
+  {
+    "q": "When you arrived at work today, you saw a message on your computer screen stating that your hard drive has been encrypted and you must pay 1 ETH to get the decryption key. What type of attack has occurred against your workstation?",
+    "c": [
+      "Malware",
+      "Brute-force",
+      "Ransomware",
+      "Phishing"
+    ],
+    "a": [
+      "Ransomware"
+    ],
+    "e": "OBJ 4.2: Ransomware is a type of malware from cryptovirology that threatens to publish the victim's personal data or perpetually block access to it unless a ransom is paid. Malware is any software intentionally designed to cause damage to a computer, server, client, or computer network. By contrast, software that causes unintentional harm due to some deficiency is typically described as a software bug. Malware includes viruses, worms, logic bombs, and many other malicious types of code. Phishing is a type of social engineering where an attacker sends a fraudulent email designed to trick a human victim into revealing sensitive information to the attacker or to deploy malicious software on the victim's infrastructure like ransomware. A brute-force attack consists of an attacker submitting many passwords or passphrases with the hope of eventually guessing correctly. A brute-force attack consists of an attacker submitting many passwords or passphrases with the hope of eventually guessing correctly."
+  },
+  {
+    "q": "What distinguishes Security Service Edge (SSE) from traditional network security architectures?",
+    "c": [
+      "SSE leverages cloud-based security services to protect distributed users and devices.",
+      "SSE relies on physical appliances deployed at the network perimeter for security.",
+      "SSE prioritizes network performance over security functionalities.",
+      "SSE focuses solely on securing endpoints within the corporate network."
+    ],
+    "a": [
+      "SSE leverages cloud-based security services to protect distributed users and devices."
+    ],
+    "e": "OBJ 1.8 - Security Service Edge (SSE) is a network security architecture that shifts security enforcement from the traditional network perimeter to the cloud, leveraging cloud-based security services to protect distributed users and devices. SSE aims to provide comprehensive security coverage for users accessing applications and data from various locations, including remote offices, branch offices, and mobile devices. SSE extends security beyond just endpoints within the corporate network. SSE typically moves away from reliance on physical appliances at the network perimeter. SSE prioritizes security functionalities while also considering network performance."
+  },
+  {
+    "q": "Bessie is working as a network engineer for her organization and wants to diagnose a problem with a DNS server not resolving a specific hostname. Which of the following commands would provide her with the necessary information by querying DNS servers to resolve the hostname to an IP address?",
+    "c": [
+      "nslookup",
+      "traceroute/tracert",
+      "tcpdump",
+      "ping"
+    ],
+    "a": [
+      "nslookup"
+    ],
+    "e": "OBJ 5.5 - nslookup is the correct choice for querying DNS servers to resolve a hostname to its corresponding IP address, as mentioned in Objective 5.5, which deals with solving networking issues using appropriate tools. Ping tests the reachability of a host on an IP network but does not resolve hostnames to IP addresses. tcpdump is a network packet analyzer, not specifically designed for DNS querying or resolving hostnames to IP addresses. traceroute and tracert is used to determine the path packets take to a destination, not for DNS resolution tasks."
+  },
+  {
+    "q": "You are scanning a target as part of a penetration test. You discovered that the network uses Snort configured as a network-based IDS. Which of the following occurs when an alert rule has been matched in Snort during your scan?",
+    "c": [
+      "The entire packet will be evaluated until all of the IDS alert rules have been checked and the packet is allowed to continue its journey",
+      "The IDS will send an alert, stop checking the rest of the rules, and allow the packet to continue its journey",
+      "The source IP address will be blocked and its connection with the network terminated",
+      "The packet matching the rule will be dropped and the IDS will continue scanning new packets"
+    ],
+    "a": [
+      "The entire packet will be evaluated until all of the IDS alert rules have been checked and the packet is allowed to continue its journey"
+    ],
+    "e": "OBJ 1.2: If Snort is operating as an IDS, it will not block the connection or drop the packet. Instead, Snort will evaluate the entire packet and check all the alert rules, logging any matches it finds, and then allow it to continue onward to its destination."
+  },
+  {
+    "q": "A malicious user is blocking cellular devices from connecting to the Internet whenever they enter the coffee shop. If they get their coffee to go and walk at least a block away from the coffee shop, their smartphones will connect to the Internet again. What type of network attack is the malicious user performing?",
+    "c": [
+      "Blacklisting IP addresses in the ACL",
+      "Spoofing",
+      "On-path attack",
+      "Frequency jamming"
+    ],
+    "a": [
+      "Frequency jamming"
+    ],
+    "e": "OBJ 4.2: Frequency jamming is one of the many exploits used to compromise a wireless environment. Frequency jamming is the disruption of radio signals through use of an over-powered signal in the same frequency range. It works by denying service to authorized users as legitimate traffic is jammed by the overwhelming frequencies of illegitimate traffic. There is no indication that the malicious user has created a rogue AP (which is a form of spoofing) or performing an on-path attack by having users connect through their laptop or device within this scenario. Also, there is no mention of certain websites or devices being blocked logically using a block-list or ACL."
+  },
+  {
+    "q": "You have been asked to connect three 802.11a devices to an 802.11g access point configured with WEP. The devices are within 20 feet of the access point, but they still cannot associate with the access point. Which of the following is the MOST likely cause of the devices not associating with the WAP?",
+    "c": [
+      "Signal loss",
+      "Interference",
+      "Frequency mismatch",
+      "Mismatched encryption"
+    ],
+    "a": [
+      "Frequency mismatch"
+    ],
+    "e": "OBJ 2.3: 802.11a operates in the 5 GHz band, while 802.11g operates in the 2.4 GHz band. Therefore, 802.11a devices will be unable to communicate with 802.11b or 802.11g access points. Wireless networks utilize three different frequency bands: 2.4 GHz, 5 GHz, and 6 GHz. The 2.4 GHz frequency band is used by 802.11b, 802.11g, and 802.11n. The 5 GHz frequency band is used by 802.11a, 802.11n, 802.11ac, and 802.11ax. The 6 GHz frequency band is used by Wi-Fi 6E under the 802.11ax standard."
+  },
+  {
+    "q": "Which of the following terms represents the maximum amount of time that an organization is willing to be offline before it has undesirable consequences to the organization?",
+    "c": [
+      "MTTR",
+      "RTO",
+      "MTBF",
+      "RPO"
+    ],
+    "a": [
+      "RTO"
+    ],
+    "e": "OBJ 3.3 - The recovery time objective (RTO) is the duration of time and a service level within which a business process must be restored after a disaster in order to avoid unacceptable consequences associated with a break in continuity. The recovery point objective (RPO) is the interval of time that might pass during a disruption before the quantity of data lost during that period exceeds the Business Continuity Plan\u2019s maximum allowable threshold or tolerance. The mean time to repair (MTTR) measures the average time it takes to repair a network device when it breaks. The mean time between failures (MTBF) measures the average time between when failures occur on a device."
+  },
+  {
+    "q": "A network technician has received reports of an Internet-based application that has stopped functioning. Employees reported that after updating the Internet browsers, the application began to fail. Many users rolled back the update, but this did not correct the issue. What should the company do to reduce this type of action from causing network problems in the future?",
+    "c": [
+      "Verify the update hashes match those on the vendor\u2019s website",
+      "Segment the network and create a test lab for all updates before deployment",
+      "Coordinate the Internet server's update to coincide with the users\u2019 updates",
+      "Implement a disaster recovery plan with a hot site to allow users to continue working"
+    ],
+    "a": [
+      "Segment the network and create a test lab for all updates before deployment"
+    ],
+    "e": "OBJ 3.1: Segmented networks would ensure every system isn\u2019t updated simultaneously and would be updated in groups. This is a common configuration known as \"patch rings\", where smaller groups of end-users have their machines updated to minimize the number of people affected at one time. The test lab would ensure proper functionality before deployment or would allow you to work through the technical difficulties before deployment."
+  },
+  {
+    "q": "The administrator would like to use the strongest encryption level possible using PSK without utilizing an additional authentication server. What encryption type should be implemented?",
+    "c": [
+      "WEP",
+      "WPA personal",
+      "MAC filtering",
+      "WPA2 Enterprise"
+    ],
+    "a": [
+      "WPA personal"
+    ],
+    "e": "OBJ 2.3: Since he wishes to use a pre-shared key and not require an authentication server, WPA personal is the most secure choice. If WPA2 Personal were an option, it would be more secure, though. WPA2 Enterprise is incorrect since the requirement was for a PSK, whereas WPA2 Enterprise requires a RADIUS authentication server to be used with individual usernames and passwords for each client. MAC filtering does not use a password or preshared key. WEP uses a pre-shared key to secure a wireless network, but WPA uses a stronger encryption standard than WEP."
+  },
+  {
+    "q": "The network administrator is troubleshooting the switchports for a file server with dual NICs. The file server needs to be configured for redundancy, and the dual NICs need to be combined for maximum throughput. What feature on the switch should the network administrator ensure is enabled for best results?",
+    "c": [
+      "BPDU",
+      "LACP",
+      "Load balancing",
+      "Spanning tree"
+    ],
+    "a": [
+      "LACP"
+    ],
+    "e": "OBJ 2.2: The Link Aggregation Control Protocol (LACP) is the 802.3ad protocol is used to group numerous physical ports to make one high bandwidth path. This method can increase bandwidth and therefore, throughput. LACP can also provide network redundancy and load balancing. The Spanning Tree Protocol (STP) is a network protocol that builds a loop-free logical topology for Ethernet networks to prevent bridge loops and the broadcast storms that result from them. STP is defined in the IEEE 802.1d standard. A Bridge Protocol Data Unit (BPDU) is used by STP to prevent the bridge loops. Load balancing refers to the process of distributing a set of tasks over a set of resources, with the aim of making their overall processing more efficient. Load balancing can optimize the response time and avoid unevenly overloading some compute nodes while other compute nodes are left idle."
+  },
+  {
+    "q": "Tiny Services, a small office with multiple departments, wants to segment their network to improve performance and security. Which DHCP feature should they use to allocate different ranges of IP addresses to each department?",
+    "c": [
+      "Scope",
+      "Reservations",
+      "Options",
+      "Lease Time"
+    ],
+    "a": [
+      "Scope"
+    ],
+    "e": "OBJ 3.4 - DHCP (Dynamic Host Configuration Protocol) scopes allow for the segmentation of IP address ranges within a network. By creating separate scopes for each department, Tiny Services can allocate different ranges of IP addresses to each department, thereby segmenting the network and improving performance and security. Reservations are used to assign specific IP addresses to individual devices based on their MAC addresses and are not directly related to segmenting IP address ranges. Lease Time determines the duration for which a dynamically assigned IP address remains valid but does not involve segmenting IP address ranges. Options refer to additional parameters provided by DHCP to devices and do not pertain to segmenting IP address ranges."
+  },
+  {
+    "q": "Which layer of the OSI model interfaces with the end-user software, such as by using a web browser to communicate over HTTP to display a website?",
+    "c": [
+      "Layer 6",
+      "Layer 7",
+      "Layer 5",
+      "Layer 4"
+    ],
+    "a": [
+      "Layer 7"
+    ],
+    "e": "OBJ 1.1: The application layer (layer 7) is used by end-user software such as web browsers and email clients. It provides protocols that allow software to send and receive information and present meaningful data to users. A few examples of application layer protocols are the Hypertext Transfer Protocol (HTTP), File Transfer Protocol (FTP), Post Office Protocol (POP), Simple Mail Transfer Protocol (SMTP), and Domain Name System (DNS). The presentation layer prepares data for the application layer. It defines how two devices should encode, encrypt, and compress data so it is received correctly on the other end. The session layer creates communication channels, called sessions, between devices. It is responsible for opening sessions, ensuring they remain open and functional while data is being transferred, and closing them when communication ends. The transport layer takes data transferred in the session layer and breaks it into \u201csegments\u201d on the transmitting end. It is responsible for reassembling the segments on the receiving end, turning it back into data that can be used by the session layer."
+  },
+  {
+    "q": "Danielle is working as a network administrator and needs to restrict access to sensitive company resources on the network. The goal is to ensure that only devices from the finance department can access the accounting software server. Which of the following actions should she take to achieve this goal?",
+    "c": [
+      "Set up a virtual private network (VPN) for the finance department to use when accessing the accounting software.",
+      "Install a new firewall specifically for the finance department's network segment.",
+      "Implement rules that specify devices that are allowed network access to the accounting software server.",
+      "Increase the encryption level on the wireless network used by the finance department."
+    ],
+    "a": [
+      "Implement rules that specify devices that are allowed network access to the accounting software server."
+    ],
+    "e": "OBJ 5.3: Access Control Lists (ACLs) are used to implement security rules that allow or deny traffic to and from network devices, making them the correct tool to restrict access to the accounting software server based on the specific requirements of the finance department's devices. Setting up a VPN would secure communications and could restrict access based on users, but it does not inherently restrict device access to specific network resources like the accounting software server. Increasing the encryption level on the wireless network improves data security in transit but does not restrict access to specific network resources based on department or device criteria. Installing a new firewall for the finance department's network segment could improve overall network security but does not directly allow for the specific restriction of access to the accounting software server based on device identity or department."
+  },
+  {
+    "q": "Which of the following is used to efficiently distribute power to racks of computer and networking equipment?",
+    "c": [
+      "Generator",
+      "HVAC",
+      "PDU",
+      "UPS"
+    ],
+    "a": [
+      "PDU"
+    ],
+    "e": "OBJ 2.4: A power distribution unit (PDU) is a device fitted with multiple outputs designed to distribute electric power, especially to racks of computers and networking equipment located within a data center. PDUs use and distribute the available amperage more efficiently, allowing your equipment to receive the best available power to maintain operation. An uninterruptible power supply or uninterruptible power source (UPS) is an electrical apparatus that provides emergency power to a load when the input power source or mains power fails. A generator is a device that converts motive power into electrical power for use in an external circuit. Generators can be powered by diesel, gasoline, or propane. Heating Ventilation and Air Conditioning (HVAC) units are responsible for maintaining the proper temperature and humidity within a datacenter."
+  },
+  {
+    "q": "During a new fiber optic link setup between a router and a switch, you observe no connectivity despite all equipment being operational. What troubleshooting step should be considered to resolve this issue?",
+    "c": [
+      "Change the duplex settings on the switch port connected to the router.",
+      "Swap the fiber strands at one end to correct potential transmitter and receiver misalignment.",
+      "Reconfigure the router's routing table.",
+      "Replace the switch with a higher model that supports faster data rates."
+    ],
+    "a": [
+      "Swap the fiber strands at one end to correct potential transmitter and receiver misalignment."
+    ],
+    "e": "OBJ 5.2 - Swapping the fiber strands at one end is a common troubleshooting step to correct any misalignment between the transmitter (TX) and receiver (RX). This issue can prevent a link from establishing, and correcting it can resolve the connectivity problem. Replacing the switch with a model that supports faster data rates may improve performance but is not a relevant step for troubleshooting a connectivity issue that likely stems from a simple cabling error. Changing the duplex settings on a switch port is relevant for ensuring compatibility and optimal performance but would not address an issue of no physical connectivity, as suggested by a possible TX/RX misalignment. Reconfiguring the router's routing table might be necessary in configuration issues but would not be the immediate step if there's no physical layer connectivity, indicated by a lack of link lights or similar symptoms."
+  },
+  {
+    "q": "In data center fire safety, what system is designed to minimize damage to networking infrastructure with the least environmental concerns during a fire emergency?",
+    "c": [
+      "Water Sprinkler System",
+      "Halon Gas System",
+      "Foam-Based Extinguisher",
+      "Clean Agent Fire Suppression"
+    ],
+    "a": [
+      "Clean Agent Fire Suppression"
+    ],
+    "e": "OBJ 2.4: Clean agents like FM-200 extinguish fires with minimal harm to electronic equipment, making them ideal for data centers to minimize damage. They are most preferred today for their fire-suppressing capabilities without environmental concerns. Water sprinklers can cause significant damage to networking infrastructure. Halon is very effective but environmentally harmful. Foam-based extinguishers may damage networking equipment."
+  },
+  {
+    "q": "You are conducting a wireless penetration test against a WPS-enabled network. Which of the following types of password attacks should you conduct against the two 4-digit WPS pins?",
+    "c": [
+      "Dictionary",
+      "Brute-force",
+      "Spraying",
+      "Hybrid"
+    ],
+    "a": [
+      "Brute-force"
+    ],
+    "e": "OBJ 4.2: Wi-Fi Protected Setup (WPS) allows users to configure a wireless network without typing in the passphrase. Instead, users can configure devices by pressing buttons or by entering a short personal identification number (PIN). WPS supports numeric pins that are a maximum of eight digits in length, but it processes them as two 4-digit numbers. This means there are only 1000 possible combinations for each of the 4-digit numbers. Due to this small key space, it is rather quick to brute force the pin and crack the WPS security. A brute-force attack consists of an attacker submitting every possible combination for a password or pin until they crack it. Password spraying is an attack that attempts to access a large number of accounts (usernames) with a few commonly used passwords. A dictionary attack is a method of breaking into a password-protected computer, network, or other IT resource by systematically entering every word in a dictionary or list file. A hybrid attack merges a dictionary attack and a brute-force attack, but provides keywords from a list to use during the brute-force attack modifying the suffixes or prefixes."
+  },
+  {
+    "q": "A network technician at a warehouse must implement a solution that will allow a company to track shipments as they enter and leave the facility. The warehouse workers must scan each package as it enters the warehouse using a sensor that can reach a distance of up to 30cm (1ft). Which of the following technologies should they utilize to meet these requirements?",
+    "c": [
+      "RFID",
+      "Wi-Fi",
+      "Bluetooth",
+      "NFC"
+    ],
+    "a": [
+      "RFID"
+    ],
+    "e": "OBJ 2.3: Radio-frequency identification (RFID) uses electromagnetic fields to automatically identify and track tags attached to objects. The warehouse could utilize RFID to allow for the accurate scanning of items using radio frequency tracking tags and sending data of up to 2 KB to a sensor at rapid speeds. Bluetooth is a short-range wireless technology standard that is used for exchanging data between fixed and mobile devices over short distances using UHF radio waves in the ISM bands, from 2.402 GHz to 2.48 GHz and building personal area networks. Bluetooth would not allow the worker to have full coverage throughout the warehouse due to the short distance requirement between a transmitter and receiver. Near-Field Communication (NFC) is a set of communication protocols for communication between two electronic devices over a distance of 4 cm or less. NFC offers a low-speed connection with a simple setup that can be used to bootstrap more capable wireless connections. Wi-Fi is a family of wireless network protocols, based on the IEEE 802.11 family of standards, which are commonly used for local area networking of devices and Internet access, allowing nearby digital devices to exchange data by radio waves. Wi-Fi can provide high speeds and cover a maximum distance of up to 150 meters."
+  },
+  {
+    "q": "Your company\u2019s corporate headquarters provided your branch office a portion of their Class C subnet to use at a new office location. You must allocate the minimum number of addresses using CIDR notation in order to accommodate each department\u2019s needs. What is the correct CIDR notation for the Finance department's subnet, which requires 32 devices?",
+    "c": [
+      "/30",
+      "/28",
+      "/27",
+      "/29",
+      "/26",
+      "/25"
+    ],
+    "a": [
+      "/26"
+    ],
+    "e": "OBJ 1.7: Since the Finance department needs 32 devices plus a network ID and broadcast IP, it will require 34 IP addresses. The smallest subnet that can fit 34 IPs is a /26 (64 IPs). A /26 will borrow 2 host bits and assign those to the network portion of the subnet mask. This would create a subnet with 2^6 available host IP addresses, or 64 total IP addresses. Of the 64 IP addresses, there are 62 available for clients to use, one for the network ID, and one for the broadcast address."
+  },
+  {
+    "q": "Routing prefixes are assigned in blocks by IANA and distributed by the Regional Internet Registry (RIR). What are the unique identifiers used to manage these assignments known as?",
+    "c": [
+      "Network handle",
+      "Top-level domain",
+      "Autonomous system number",
+      "Route aggregation"
+    ],
+    "a": [
+      "Autonomous system number"
+    ],
+    "e": "OBJ 2.1: An ASN (or Autonomous System Number) is used to control routing with BGP routing protocols to route traffic across the network. An Autonomous System (AS) is a group of one or more IP prefixes (lists of IP addresses accessible on a network) run by one or more network operators that maintain a single, clearly defined routing policy. Network operators need Autonomous System Numbers (ASNs) to control routing within their networks and to exchange routing information with other Internet Service Providers (ISPs). There are 2-byte and 4-byte ASN variants in use on the internet."
+  },
+  {
+    "q": "Margery, a network administrator, observes that users in one department are experiencing slow network speeds, especially during peak work hours. After ruling out hardware failures and confirming that the network infrastructure is properly configured, she suspects the issue may be related to the traffic flow through the network. Margery needs to identify the most likely cause of the slow network speeds, select the most appropriate statement.",
+    "c": [
+      "The switch ports connecting to the department's access points are configured with incorrect VLAN settings, causing routing issues.",
+      "DNS resolution times for the department's network segment have dramatically increased, leading to delays in accessing websites.",
+      "The firewall settings have been misconfigured, inadvertently blocking traffic from the department's subnet.",
+      "There is significant congestion on the network due to an increase in video conferencing traffic during peak hours."
+    ],
+    "a": [
+      "There is significant congestion on the network due to an increase in video conferencing traffic during peak hours."
+    ],
+    "e": "OBJ 5.4 - Congestion/contention can significantly impact network performance, particularly during peak usage times. In this scenario, the increase in video conferencing traffic, which is bandwidth-intensive, likely contributes to the observed slow network speeds. Addressing congestion usually involves traffic management strategies such as Quality of Service (QoS) or network upgrades to handle higher traffic volumes. Misconfigured firewall settings could block or limit traffic; however, if the issue is specifically related to slow speeds rather than outright blocking of services. Increased DNS resolution times can cause delays in accessing websites, but this would not generally affect all network activities, especially non-web-based applications like video conferencing. Incorrect VLAN settings can cause routing issues but would not typically result in slow network speeds for all users in the department unless it led to traffic being improperly routed or blocked."
+  },
+  {
+    "q": "Which of the following syslog severity levels would a notice condition generate?",
+    "c": [
+      "3",
+      "7",
+      "5",
+      "1"
+    ],
+    "a": [
+      "5"
+    ],
+    "e": "OBJ 3.2: The syslog severity levels range from zero to seven, with zero being the most severe and seven being the least severe. Level 0 is used for an emergency and is considered the most severe condition because the system has become unstable. Level 1 is used for an alert condition and means that there is a condition that should be corrected immediately. Level 2 is used for a critical condition, and it means that there is a failure in the system\u2019s primary application and it requires immediate attention. Level 3 is used for an error condition, and it means that something is happening to the system that is preventing the proper function. Level 4 is used for warning conditions and it may indicate that an error will occur if action is not taken soon. Level 5 is used for notice conditions and it means that the events are unusual, but they are not error conditions. Level 6 is used for information conditions and it is a normal operational message that requires no action. Level 7 is used for debugging conditions and is just information that is useful to developers as they are debugging their networks and applications."
+  },
+  {
+    "q": "Robin, a network administrator, is performing a routine audit of the network infrastructure. Which of the following would be considered a part of the hardware inventory that she would need to document?",
+    "c": [
+      "The list of installed applications on each workstation",
+      "The make, model, and serial number of all network switches",
+      "The operating system versions installed on all servers",
+      "The access control list configurations on the firewall"
+    ],
+    "a": [
+      "The make, model, and serial number of all network switches"
+    ],
+    "e": "OBJ 3.1 - The make, model, and serial number of all network switches are essential parts of a hardware inventory, providing crucial information for asset management, maintenance, and replacement planning. The operating system versions fall under software inventory, not physical hardware. Installed applications are part of a software inventory, not hardware. Access control list configurations are part of configuration management, not hardware inventory."
+  },
+  {
+    "q": "A technician is troubleshooting a newly installed WAP that is sporadically dropping connections to devices on the network. Which of the following should the technician check FIRST during troubleshooting?",
+    "c": [
+      "WAP SSID",
+      "WAP placement",
+      "Bandwidth saturation",
+      "Encryption type"
+    ],
+    "a": [
+      "WAP placement"
+    ],
+    "e": "OBJ 5.4: For optimal network performance, the placement of the Wireless Access Point (WAP) guidelines should be taken into consideration to ensure that the building's construction doesn't cause interference with the wireless signals. To determine if adequate coverage and signal strength is being received in the building, you can conduct a wireless site survey. The service set identifier (SSID) is a group of wireless network devices which share a common natural language label, such as a network name. The SSID would not affect the devices and cause sporadic connection drops. Bandwidth saturation is a phenomenon that occurs when all of a circuit's available bandwidth in a given direction is being utilized by a large upload or download which can result in high latency and performance issues. Bandwidth saturation would not cause the wireless connection to drop, though. Encryption type refers to the type of security used on a wireless network, such as WEP, WPA, WPA2, or WPA3. The security type used on a network would not cause sporadic drops of the network connection, though."
+  },
+  {
+    "q": "Dion Training Solutions wants to migrate their email server from an on-premise solution to a vendor-hosted web-based solution like Google Workspaces or Gmail. Which of the following types of cloud models best describes this proposed solution?",
+    "c": [
+      "SaaS",
+      "DaaS",
+      "IaaS",
+      "PaaS"
+    ],
+    "a": [
+      "SaaS"
+    ],
+    "e": "OBJ 1.3: Software as a Service (SaaS) uses the web to deliver applications that are managed by a third-party vendor and whose interface is accessed on the client's side. Most SaaS applications can be run directly from a web browser without any downloads or installations required, although some require plugins. The Google Workspaces and Gmail solutions for business are good examples of SaaS solutions. Infrastructure as a Service (IaaS) is a type of cloud computing service that offers essential compute, storage, and networking resources on-demand, on a pay-as-you-go basis. Platform as a Service (PaaS) is a complete development and deployment environment in the cloud, with resources that enable you to deliver everything from simple cloud-based apps to sophisticated, cloud-enabled enterprise applications. Desktop as a Service (DaaS) is a cloud computing offering where a service provider delivers virtual desktops to end-users over the Internet, licensed with a per-user subscription. DaaS is often combined with Virtual Desktop Infrastructure."
+  },
+  {
+    "q": "Which type of client-to-site VPN setup allows users to remotely access corporate resources without requiring the installation of local dedicated VPN software?",
+    "c": [
+      "SSL VPN",
+      "PPTP VPN",
+      "Clientless VPN",
+      "IPsec VPN"
+    ],
+    "a": [
+      "Clientless VPN"
+    ],
+    "e": "OBJ 3.5 - A Clientless VPN setup enables remote users to access corporate resources securely through a web browser without the need for installing dedicated VPN client software. This type of VPN leverages technologies like Secure Sockets Layer (SSL) to establish encrypted connections between the user's device and the corporate network. SSL VPN refers to a broader category of VPN solutions that may include both client-based and clientless options but is not specifically focused on clientless access. IPsec VPN and PPTP VPN are traditional VPN solutions that typically require dedicated VPN client software for remote access and are not synonymous with clientless setups."
+  },
+  {
+    "q": "Timothy, a network technician, receives a phone call from an end-user who states their laptop cannot connect to the corporate wireless network. Which of the following should the technician do FIRST according to the troubleshooting methodology?",
+    "c": [
+      "Identify the problem",
+      "Implement the solution",
+      "Verify full system functionality",
+      "Establish a plan of action"
+    ],
+    "a": [
+      "Identify the problem"
+    ],
+    "e": "OBJ 5.1: The troubleshooting steps are to (1) Identify the problem, (2) Establish a theory of probable cause, (3) Test the theory to determine the cause, (4) Establish a plan of action to resolve the problem and identify potential effects, (5) Implement the solution or escalate as necessary, (6) Verify full system functionality and if applicable implement preventative measures, and (7) Document findings, actions, outcomes, and lessons learned. At this point, the technician does not have enough information to clearly identify the problem. The technician should continue to identify the problem by gathering information, questioning the user, identifying the symptoms, determining if anything has changed, and attempt to duplicate the problem to verify the issue. Once the problem is clearly identified, the technician will establish a theory of probable cause and continue their troubleshooting efforts."
+  },
+  {
+    "q": "The RAID controller on a server failed and was replaced with a different brand. What will be needed after the server has been rebuilt and joined to the domain?",
+    "c": [
+      "Recent backups",
+      "Vendor documentation",
+      "Physical network diagram",
+      "Static IP address"
+    ],
+    "a": [
+      "Recent backups"
+    ],
+    "e": "OBJ 3.3 - If the RAID controller fails and is replaced with a RAID controller with a different brand, the RAID will break. We would have to rebuild a new RAID disk and access and restore the RAID's most recent backup. While vendor documentation and physical documentation may be helpful, they should have been consulted before the RAID was rebuilt and added to the domain. A RAID is a type of redundant storage that is directly connected to the server using data cables, therefore you do not need an IP address for the RAID itself. If you are using a storage area network (SAN), then you may need an IP address but this is usually assigned using DHCP reservations and not a static IP address."
+  },
+  {
+    "q": "During the setup of a new office floor, Dorothy, a network administrator, configures ports on a switch to connect VoIP phones and workstations. She wants to ensure that voice traffic is prioritized over data traffic. Which of the following configurations should Dorothy use to BEST achieve this?",
+    "c": [
+      "Enable link aggregation on the ports connected to VoIP phones.",
+      "Configure QoS to prioritize VLAN 100 over VLAN 200.",
+      "Set the native VLAN to 200 for voice and VLAN 100 for data.",
+      "Configure the voice VLAN on the switch ports where VoIP phones are connected."
+    ],
+    "a": [
+      "Configure the voice VLAN on the switch ports where VoIP phones are connected."
+    ],
+    "e": "OBJ 2.2 - Configuring the voice VLAN on the switch ports where VoIP phones are connected is the best way to ensure that voice traffic is prioritized over data traffic. Voice VLANs are designed to prioritize VoIP traffic in the network, ensuring quality communication. QoS (Quality of Service) is used to prioritize traffic, the question specifically asks for the configuration related to VoIP phones and workstations, making the voice VLAN configuration the more direct and relevant choice. Link aggregation is used to increase bandwidth and provide redundancy but does not prioritize voice traffic over data traffic. Setting the native VLAN for voice is not the best practice for prioritizing traffic. Voice VLAN configuration is specifically designed for this purpose."
+  },
+  {
+    "q": "Shannon is a network administrator troubleshooting a connectivity issue from her workstation to a remote server. She needs to identify the path that traffic takes through the network to reach the server and identify where potential failures are occurring. Which tool should she be using to display the route and measure transit delays of packets across an IP network?",
+    "c": [
+      "nslookup",
+      "dig",
+      "tcpdump",
+      "traceroute/tracert"
+    ],
+    "a": [
+      "traceroute/tracert"
+    ],
+    "e": "OBJ 5.5 - traceroute/tracert is specifically designed to track the path that packets take from one network to another and measure transit delays. This tool helps identify at which hop along the route the packets are being delayed or lost, making it invaluable for troubleshooting connectivity issues. dig and nslookup are used for querying the DNS to find out IP addresses associated with domain names. tcpdump captures packets off a network interface and provides capabilities to see the contents of packets, which is more useful for analyzing traffic."
+  },
+  {
+    "q": "Which port and protocol combination(s) are commonly associated with Remote Desktop Protocol (RDP)?",
+    "c": [
+      "Port 5060/5061 - UDP",
+      "Port 3389 - TCP",
+      "Port 3389 - UDP",
+      "Port 5060/5061 - TCP"
+    ],
+    "a": [
+      "Port 3389 - TCP"
+    ],
+    "e": "OBJ 1.4 - RDP (Remote Desktop Protocol) primarily uses TCP, not UDP, on port 3389. Ports 5060/5061 are commonly associated with SIP (Session Initiation Protocol) used for VoIP, not RDP."
+  },
+  {
+    "q": "A user is unable to access webpages on the internet despite being connected to the company's network. You have verified that they are connected to the proper network/SSID. Of the following, which would be the most likely cause of this issue?",
+    "c": [
+      "Incorrect default gateway",
+      "Expired IP address",
+      "Outdated Ethernet cable",
+      "Slow DNS server"
+    ],
+    "a": [
+      "Incorrect default gateway"
+    ],
+    "e": "OBJ 5.3 - An incorrect default gateway would prevent the user from accessing external networks like webpages on the internet. An expired IP address might cause connectivity issues but not necessarily internet access. A slow DNS server can cause delays in resolving domain names but wouldn't prevent internet access entirely. An outdated Ethernet cable might cause physical connectivity issues but not affect gateway settings."
+  },
+  {
+    "q": "What is the primary purpose of implementing link aggregation on a network switch?",
+    "c": [
+      "To distribute network traffic evenly across all available paths in a network topology.",
+      "To enhance the security of the network by encrypting data across multiple physical links.",
+      "To create a single logical link with more bandwidth by combining multiple physical links.",
+      "To decrease the number of broadcast domains in a network by combining VLANs."
+    ],
+    "a": [
+      "To create a single logical link with more bandwidth by combining multiple physical links."
+    ],
+    "e": "OBJ 2.2 - Link aggregation allows multiple physical links to be bundled into a single logical link to increase bandwidth and provide redundancy. By aggregating links, the combined bandwidth of the physical links is available to the network, enhancing performance and fault tolerance. Traffic distribution across multiple paths is a function of network routing protocols, not link aggregation. Link aggregation primarily focuses on bandwidth and redundancy, not encryption. Reducing broadcast domains involves VLAN segmentation or other network design strategies."
+  },
+  {
+    "q": "Which of the following standards is commonly used for exchanging authentication and authorization data between parties, facilitating single sign-on (SSO) across different systems?",
+    "c": [
+      "IPsec",
+      "SOAP",
+      "SAML",
+      "TLS"
+    ],
+    "a": [
+      "SAML"
+    ],
+    "e": "OBJ 4.1 - Security Assertion Markup Language (SAML) is designed for exchanging authentication and authorization data between trusted parties, enabling SSO and secure access to multiple systems. Transport Layer Security (TLS) provides secure communication over a network, but it doesn't specifically address authentication and authorization exchange between parties. Internet Protocol Security (IPsec) secures IP communications but is not directly involved in authentication and authorization data exchange for SSO. Simple Object Access Protocol (SOAP) is a protocol for exchanging structured information but is not primarily focused on authentication and authorization data exchange."
+  },
+  {
+    "q": "Which port is commonly used for receiving emails from a mail server?",
+    "c": [
+      "Port 110",
+      "Port 80",
+      "Port 25",
+      "Port 443"
+    ],
+    "a": [
+      "Port 110"
+    ],
+    "e": "Port 110 is commonly associated with the POP3 (Post Office Protocol version 3) protocol and is used for receiving emails from a mail server. Port 80 is typically associated with HTTP, not email protocols. Port 443 is commonly associated with HTTPS (HTTP Secure). Port 25 is commonly associated with SMTP (Simple Mail Transfer Protocol), which is used for sending emails, not receiving them."
+  },
+  {
+    "q": "Dion Training is adding a small branch office in the Philippines and wants to assign them a portion of their public Class C IPv4 address space. Dion Training has been assigned a Class C scope of 187.15.3.0/24. The new office in the Philippines will have 8 users who need IP addresses assigned. What is the correct CIDR notation for the Philippines branch office in order to accommodate the 8 users while allocating the minimum number of addresses?",
+    "c": [
+      "/26",
+      "/28",
+      "/29",
+      "/27"
+    ],
+    "a": [
+      "/28"
+    ],
+    "e": "OBJ 1.7: To answer this question, you must be able to perform a basic subnetting calculation. First, you need to determine the number of IP addresses that will be needed. In this scenario, you have 8 clients that will each need an IP address, but you also need one IP address for the network and a second IP for the broadcast. This means you need 10 IP addresses total. IP addresses are assigned in multiples of 2 (1, 2, 4, 8, 16, 32, 64, 128, 256). Since we need 10 IP addresses, we need to round up to a block of 16. To symbolize a CIDR block with 16 IP addresses, we would use /28, which is 2^4 = 16."
+  },
+  {
+    "q": "Your company has just installed a new web server that will allow inbound connections over port 80 from the internet while not accepting any connections from the internal network. You have been asked where to place the web server in the network architecture and configure the ACL rule to support the requirements. The current network architecture is segmented using a triple-homed firewall to create the following three zones:\\n\\n<code>\\nZONE              INTERFACE              IP Address \\nPUBLIC              eth0                 66.13.24.16/30   \\nDMZ                 eth1                 172.16.1.1/ \\nPRIVATE             eth2                 192.168.1.1/24</code> Based on the requirements and current network architecture above, where should you install the webserver and how should you configure it?",
+    "c": [
+      "Put the server in the PUBLIC zone with an inbound rule from eth0 to eth1 that allows port 80 traffic to the server's IP",
+      "Put the server in the DMZ with an inbound rule from eth0 to eth1 that allows port 80 traffic to the server's IP",
+      "Put the server in the PRIVATE zone with an inbound rule from eth0 to eth1 that allows port 80 traffic to the server's IP",
+      "Put the server in the DMZ with an inbound rule from eth1 to eth0 that allows port 80 traffic to the server's IP"
+    ],
+    "a": [
+      "Put the server in the DMZ with an inbound rule from eth0 to eth1 that allows port 80 traffic to the server's IP"
+    ],
+    "e": "OBJ 4.3: The web server should be placed into the DMZ, assigned an IP address in the 172.16.1.1/24 network, and create an inbound permit rule for port 80 in the ACL. Since the web server needs to be accessed from the internet (PUBLIC), you must configure the permit rule from eth0 (PUBLIC) to eth1 (DMZ). The web server should not be placed into the intranet (PRIVATE), since this will contain all our internal network clients and they should be blocked from accessing this web server according to the question. Most firewalls utilize an implicit deny policy, so all other ports from the eth0 will be blocked and all ports from eth2. If an implicit deny policy is not enabled, you can explicitly block those other ports using a deny rule within the ACLs."
+  },
+  {
+    "q": "(This is a simulated Performance-Based Question.) A home user performs a speed test using SpeedTest.net and receives the following report: \\n\\n<code> \\nPING      DOWNLOAD     UPLOAD \\n13ms      99.79 Mbps   116.61 Mbps</code> \\n\\nWhich of the following is a correct interpretation of these results? <code>\\n\\n----- \\nPING     DOWNLOAD     UPLOAD \\n13 ms    99.70 Mbps   116.61 Mbps \\n-----</code>\\n\\nWhich of the following is a correct interpretation of these results?",
+    "c": [
+      "The user's PC is receiving data at 99.79 Mbps and sending data to the server at 116.61 Mbps.",
+      "The SpeedTest website downloads data to its server at 99.79 Mbps and uploads data from its server at 116.61 Mbps.",
+      "The user's PC is downloading information faster than it uploads because it has an asynchronous connection.",
+      "The user's PC downloaded 99.79 MB of data from the website and uploaded 116.61 MB of data to the website."
+    ],
+    "a": [
+      "The user's PC is receiving data at 99.79 Mbps and sending data to the server at 116.61 Mbps."
+    ],
+    "e": "OBJ 5.5: The user's PC is receiving data from the website at 99.79 Mbps and sending data to the webserver at 116.61 Mbps. When you run a speed test, your computer downloads a sample file from the test website's server, then uploads it back to the server to determine your connection speed."
+  },
+  {
+    "q": "What is the purpose of load balancing in regards to networking?",
+    "c": [
+      "Securing network data from unauthorized access",
+      "Distributing network traffic evenly across multiple servers",
+      "Reducing the number of network devices in use",
+      "Increasing the speed of individual network connections"
+    ],
+    "a": [
+      "Distributing network traffic evenly across multiple servers"
+    ],
+    "e": "Load balancing involves distributing network traffic evenly across multiple servers to optimize resource utilization and prevent any single server from becoming overwhelmed. This helps improve performance, availability, and reliability of network services. Load balancing does not directly increase the speed of individual network connections but rather optimizes traffic distribution. Load balancing focuses on traffic distribution, not security measures. Load balancing does not aim to reduce the number of network devices but rather to efficiently utilize existing resources."
+  },
+  {
+    "q": "Bethany, a network administrator, wants to ensure that IP addresses are not tied up indefinitely by devices that are no longer active on the network. Which DHCP feature would allow her as an administrator to control the period a device can use an assigned IP address?",
+    "c": [
+      "Lease Time",
+      "Options",
+      "Exclusions",
+      "Scope"
+    ],
+    "a": [
+      "Lease Time"
+    ],
+    "e": "OBJ 3.4 - Lease Time is a DHCP (Dynamic Host Configuration Protocol) feature that allows administrators to control the period for which a device can use an assigned IP address. By setting an appropriate lease time, Bethany can ensure that IP addresses are not tied up indefinitely by devices that may no longer be active on the network. When the lease time expires, the DHCP server can reclaim the IP address and make it available for assignment to other devices, thereby preventing IP address exhaustion and optimizing address utilization. Scope, Options, and Exclusions do not directly control the duration for which a device can use an assigned IP address. Scope defines a range of IP addresses available for assignment, Options provide additional configuration parameters to clients, and Exclusions exclude specific IP addresses from being assigned by DHCP."
+  },
+  {
+    "q": "What is true concerning jumbo frames?",
+    "c": [
+      "They are commonly used with a NAS",
+      "Their MTU size is less than 1500",
+      "They are commonly used on a SAN",
+      "They are commonly used with DHCP"
+    ],
+    "a": [
+      "They are commonly used on a SAN"
+    ],
+    "e": "OBJ 2.2: Jumbo frames are Ethernet frames whose MTU is greater than 1500. To increase performance, you should use jumbo frames only when you have a dedicated network or VLAN, and you can configure an MTU of 9000 on all equipment. Because of this, jumbo frames are most commonly used in a storage area network (SAN)."
+  },
+  {
+    "q": "Dion Training wants to create a DNS record to enter DKIM or SPF information into the domain name system and help prevent spam coming from their domain. Which type of DNS record should be created?",
+    "c": [
+      "SOA",
+      "SRV",
+      "TXT",
+      "PTR"
+    ],
+    "a": [
+      "TXT"
+    ],
+    "e": "OBJ 3.4: The DNS text (TXT) record lets a domain administrator enter text into the Domain Name Systems. The TXT record was originally intended as a place for human-readable notes. However, now it is also possible to put some machine-readable data into TXT records. TXT records are a key component of several different email authentication methods (SPF, DKIM, and DMARC) that help an email server determine if a message is from a trusted source. A DNS service (SRV) record specifies a host and port for specific services such as voice over IP (VoIP), instant messaging, and others. A Start of Authority (SOA) resource record indicates which Domain Name Server (DNS) is the best source of information for the specified domain. PTR records are used for the Reverse DNS (Domain Name System) lookup. Using the IP address, you can get the associated domain/hostname. An A record should exist for every PTR record."
+  },
+  {
+    "q": "In cloud environments, which option is specifically designed to permit internet access for resources within a VPC without exposing them directly to the internet?",
+    "c": [
+      "Internet Gateway.",
+      "Direct Connect Gateway.",
+      "NAT Gateway.",
+      "VPN Gateway."
+    ],
+    "a": [
+      "NAT Gateway."
+    ],
+    "e": "OBJ 1.3 - A NAT Gateway allows resources within a Virtual Private Cloud (VPC) to access the internet without being directly exposed to the internet, ensuring a higher level of security for private instances. An Internet Gateway is used to connect a VPC to the internet directly, not to protect resources from direct internet exposure. VPN Gateway establishes a secure VPN connection over the internet between your VPC and your network but does not control internet access for internal resources. Direct Connect Gateway facilitates a private connection to AWS Direct Connect."
+  },
+  {
+    "q": "Which component in a network infrastructure serves as the primary termination point for cabling coming from external access providers?",
+    "c": [
+      "MDF",
+      "Patch Panel",
+      "Router",
+      "IDF"
+    ],
+    "a": [
+      "MDF"
+    ],
+    "e": "OBJ 2.4 - The Main Distribution Frame (MDF) is the primary, central point where external access providers' cables are terminated. An Intermediate Distribution Frame (IDF) serves as a local distribution point within a building or campus. Patch panels organize and terminate cables in internal systems, but not external ones. Routers manage traffic between different networks, but neither serve as a primary termination point."
+  },
+  {
+    "q": "A network technician needs to monitor the network to find a user who is browsing websites that go against the company's acceptable use policy. What should the technician use to view the website and find the user browsing it?",
+    "c": [
+      "Top listener tool",
+      "Intrusion detection system",
+      "SNMP GET",
+      "Packet sniffer"
+    ],
+    "a": [
+      "Packet sniffer"
+    ],
+    "e": "OBJ 5.5: Packet Sniffers can capture and analyze network user traffic. This information can be queried to view website addresses, contents, and sometimes even password information. This differs from an intrusion detection system in that IDS\u2019s wait to receive implicitly malicious data in a network before logging the event."
+  },
+  {
+    "q": "Dion Training believes there may be a rogue device connected to their network. They have asked you to identify every host, server, and router currently connected to the network. Which of the following tools would allow you to identify which devices are currently connected to the network?",
+    "c": [
+      "NetFlow analyzer",
+      "Port scanner",
+      "IP scanner",
+      "Protocol analyzer"
+    ],
+    "a": [
+      "IP scanner"
+    ],
+    "e": "OBJ 5.5: An IP scanner is used to monitor a network's IP address space in real-time and identify any devices connected to the network. Essentially, the tool will send a ping to every IP on the network and then creates a report of which IP addresses sent a response. A NetFlow analyzer is used to perform monitoring, troubleshooting, inspection, interpretation, and synthesis of network traffic flow data. A port scanner is used to determine which ports and services are open and available for communication on a target system. A protocol analyzer is used to capture, monitor, and analyze data transmitted over a communication channel"
+  },
+  {
+    "q": "Which protocol is used for the synchronization of clocks between different computer systems over a packet-switched, variable-latency data network?",
+    "c": [
+      "TFTP",
+      "NTP",
+      "DNS",
+      "DHCP"
+    ],
+    "a": [
+      "NTP"
+    ],
+    "e": "OBJ 3.4: NTP is a networking protocol that is used for the synchronization of clocks between different computer systems that communicate over a packet-switched, variable-latency data network. TCP/IP networks are packet-switched networks, so NTP is used for the synchronization of time across IP-connected servers. Trivial File Transfer Protocol (TFTP) uses port 69 and is a simple lockstep File Transfer Protocol which allows a client to get a file from or put a file onto a remote host. The Dynamic Host Configuration Protocol (DHCP) uses port 67 and is a network management protocol used on Internet Protocol (IP) networks for automatically assigning IP addresses and other communication parameters to devices connected to the network using a client-server architecture. The Domain Name System (DNS) uses port 53 and is a hierarchical and decentralized naming system for computers, services, or other resources connected to the Internet or a private network."
+  },
+  {
+    "q": "In the context of Virtual Extensible Local Area Network (VXLAN), what is the purpose of the VXLAN Network Identifier (VNI)?",
+    "c": [
+      "It is used to designate the source and destination IP addresses for VXLAN traffic.",
+      "It is used to differentiate between different VXLAN overlay networks.",
+      "It is used to uniquely identify each VXLAN tunnel endpoint.",
+      "It is used to authenticate VXLAN packets to ensure security."
+    ],
+    "a": [
+      "It is used to differentiate between different VXLAN overlay networks."
+    ],
+    "e": "OBJ 1.8 - The VXLAN Network Identifier (VNI) is a 24-bit identifier that helps differentiate between different VXLAN overlay networks. Each VXLAN segment or overlay network typically has a unique VNI assigned to it, allowing VXLAN endpoints to correctly identify and route traffic within the appropriate overlay network. The other options do not accurately describe the purpose of the VNI in VXLAN."
+  },
+  {
+    "q": "A network administrator is setting up a network for her employer. While implementing baseline settings, she decides to use Variable Length Subnet Masking (VLSM), believing it will better support the network\u2019s growth and allow for efficient use of IP addresses. Which of the following is TRUE when considering the use of VLSM?",
+    "c": [
+      "It allows subnets of multiple sizes to be used within a larger network",
+      "It restricts all subnets to the same size, ensuring uniformity across the network",
+      "It consolidates multiple subnets under a single route for more efficient routing",
+      "It eliminates the need for subnet masks by dynamically assigning addresses"
+    ],
+    "a": [
+      "It allows subnets of multiple sizes to be used within a larger network"
+    ],
+    "e": "OBJ 1.7: Variable Length Subnet Masking (VLSM) allows subnets of multiple sizes to be created within a larger network, optimizing the use of IP address space by tailoring subnet sizes to specific needs. This is especially useful in networks with segments requiring varying numbers of addresses. It does not consolidate multiple subnets under a single route\u2014that function is achieved through route aggregation. Unlike fixed-length subnet masking (FLSM), which enforces uniform subnet sizes, VLSM provides flexibility to define subnets of different sizes. Additionally, VLSM relies on precise subnet masks and does not eliminate their need; dynamic IP address assignment is managed by the Dynamic Host Configuration Protocol (DHCP), not VLSM."
+  },
+  {
+    "q": "Which of the following provides accounting, authorization, and authentication via a centralized privileged database, as well as challenge/response and password encryption?",
+    "c": [
+      "TACACS+",
+      "Multi-factor authentication",
+      "Network access control",
+      "ISAKMP"
+    ],
+    "a": [
+      "TACACS+"
+    ],
+    "e": "OBJ 4.1: TACACS+ is a AAA (accounting, authorization, and authentication) protocol to provide AAA services for access to routers, network access points, and other networking devices. TACACS+ is a remote authentication protocol, which allows a remote access server to communicate with an authentication server to validate user access onto the network. TACACS+ allows a client to accept a username and password, and pass a query to a TACACS+ authentication server."
+  },
+  {
+    "q": "You are a network administrator and notice that several users are experiencing slow internet speeds and intermittent disconnections. After gathering information and identifying symptoms, you suspect that the issue might be related to DHCP server malfunctions. Which of the following steps should you take NEXT according to the troubleshooting methodology?",
+    "c": [
+      "Establish a theory of probable cause and test it.",
+      "Restart the DHCP server since that is the likely cause.",
+      "Document the issue and the actions taken so far.",
+      "Notify and Escalate the issue to the senior network administrator immediately."
+    ],
+    "a": [
+      "Establish a theory of probable cause and test it."
+    ],
+    "e": "OBJ 5.1 - After gathering information and identifying symptoms, the next logical step in the troubleshooting methodology is to establish a theory of probable cause. Once a theory is established, it should be tested to see if it resolves or explains the issue. Restarting the DHCP server without further analysis could disrupt network services unnecessarily. Documenting the issue and the actions taken so far, is important but should come after testing and confirming the theory. Escalating the issue might be necessary if the issue persists or is beyond the current technical capability, but only after attempting to resolve the issue based on the established troubleshooting process."
+  },
+  {
+    "q": "An analyst reviews a triple-homed firewall configuration that connects to the internet, a private network, and one other network. Which of the following would best describe the third network connected to this firewall?",
+    "c": [
+      "DMZ",
+      "GPO",
+      "Subnet",
+      "NIDS"
+    ],
+    "a": [
+      "DMZ"
+    ],
+    "e": "OBJ 4.1: A triple-homed firewall connects to three networks internal (private), external (internet/public), and the demilitarized zone (DMZ). The demilitarized zone (DMZ) network hosts systems that require access from external hosts. Group Policy Object (GPO) is a collection of Group Policy settings that defines what a system looks like and how it behaves for a defined group of users. A network intrusion detection system (NIDS) is a system that attempts to detect hacking activities, denial of service attacks, or port scans on a computer network or a computer itself. A subnet is a logical subdivision of an IP network."
+  },
+  {
+    "q": "Which of the following cloud infrastructures includes on-premise servers utilizing a centralized Syslog server hosted at a third-party organization to review the logs?",
+    "c": [
+      "Private",
+      "Community",
+      "Hybrid",
+      "Public"
+    ],
+    "a": [
+      "Hybrid"
+    ],
+    "e": "OBJ 1.3: On-premise servers are an aspect of the private cloud, whereas Syslog hosted on a third-party server is an aspect of the public cloud. Since a hybrid cloud consists of any type of cloud computing sharing multiple aspects of different cloud infrastructure designs, hybrid is the correct answer. A community cloud is a collaborative effort in which infrastructure is shared between several organizations from a specific community with common concerns (security, compliance, jurisdiction, etc.), whether managed internally or by a third-party and hosted internally or externally. A public cloud contains services offered by third party providers over the public Internet and is available to anyone who wants to use or purchase them. They may be free or sold on-demand, allowing customers to pay only per usage for the CPU cycles, storage, or bandwidth they consume. A private cloud contains services offered either over the Internet or a private internal network and only to select users instead of the general public."
+  },
+  {
+    "q": "Your physical security manager, Janice, wants to ensure she can detect any unauthorized access to the datacenter. Which technology should be used to meet her requirement?",
+    "c": [
+      "Access badge reader",
+      "Smart card",
+      "Biometric access",
+      "Video surveillance"
+    ],
+    "a": [
+      "Video surveillance"
+    ],
+    "e": "OBJ 4.3: Since she requires to detect unauthorized access, video surveillance should be utilized. If she were trying to prevent access from occurring, the other three options would provide that. Still, they cannot detect unauthorized access (for example, if the attacker stole a valid smart card or access badge)."
+  },
+  {
+    "q": "What one of the following systems is commonly used to manage digital certificates, ensuring secure communication and authentication over a network?",
+    "c": [
+      "Symmetric Key Encryption",
+      "2FA",
+      "TLS",
+      "PKI"
+    ],
+    "a": [
+      "PKI"
+    ],
+    "e": "OBJ 4.1 - Public Key Infrastructure (PKI) manages digital certificates, including their issuance, revocation, and verification, providing a framework for secure communication and authentication. Symmetric key encryption uses a single key for both encryption and decryption, which doesn't address the issues of authentication and certificate management. Transport Layer Security (TLS) provides a means for privacy for communications over the internet, but does not deal with managing digital certificates. While two-factor authentication (2FA) enhances security by requiring additional verification beyond passwords, it doesn't directly manage digital certificates."
+  },
+  {
+    "q": "A network technician needs to connect two switches. The technician needs a link between them that is capable of handling 10 Gbps of throughput. Which of the following media would BEST meet this requirement?",
+    "c": [
+      "Cat 5e cable",
+      "Coax cable",
+      "Fiber optic cable",
+      "Cat 3 cable"
+    ],
+    "a": [
+      "Fiber optic cable"
+    ],
+    "e": "OBJ 1.5: To achieve 10 Gbps, you should use Cat 6a, Cat 7, Cat 8, or a fiber optic cable. Since fiber optic was the only option listed here, it is the best answer. A Cat 5e can only operate up to 100 meters at 1 Gbps. A Cat 3 cable can only operate at 100 meters at 10 Mbps. A traditional ethernet coaxial cable network can only operate at 10 Mbps, but newer MoCA coaxial ethernet connections can reach speeds of up to 2.5 Gbps."
+  },
+  {
+    "q": "A technician is configuring a computer lab for the students at Dion Training. The computers need to be able to communicate with each other on the internal network, but students using computers should not be able to access the Internet. The current network architecture is segmented using a triple-homed firewall to create the following zones: \\n\\n<code>\\nZONE INTERFACE, IP address \\n------------------------------------------- \\nPUBLIC,      eth0, 66.13.24.16/30 \\nINSTRUCTORS, eth1, 172.16.1.1/24 \\nSTUDENTS,    eth2, 192.168.1.1/24</code>\\n\\n What rule on the firewall should the technician configure to prevent students from accessing the Internet?",
+    "c": [
+      "Deny all traffic from eth1 to eth0",
+      "Deny all traffic from eth2 to eth0",
+      "Deny all traffic from eth2 to eth1",
+      "Deny all traffic from eth0 to eth2"
+    ],
+    "a": [
+      "Deny all traffic from eth2 to eth0"
+    ],
+    "e": "OBJ 4.3: By denying all traffic from the eth2 to eth0, you will block network traffic from the internal (STUDENT) network to the external (PUBLIC) network over the WAN connection. This will prevent the students from accessing the Internet by blocking all requests to the Internet. For additional security, it would be a good idea to also block all traffic from eth0 to eth2 so that inbound traffic from the internet cannot communicate with the student's computers. But, since the outbound connections from the students to the internet are being blocked, the student will be unable to access any webpages since they cannot send a request over port 80 or 443. Additionally, by choosing this rule, we have not blocked any network traffic between the instructors and the students."
+  },
+  {
+    "q": "Your company's Security Operations Center (SOC) is currently detecting an ongoing DDoS attack against your network's file server. A cybersecurity analyst has identified forty internal workstations on the network conducting the attack against your network's file server. The cybersecurity analyst believes these internal workstations are infected with malware and places them into a quarantined network area. The analyst then submits a service desk ticket to have the workstations scanned and cleaned of the infection. What type of malware were the workstations most likely a victim of based on the scenario provided?",
+    "c": [
+      "Botnet",
+      "Spyware",
+      "Rootkit",
+      "Ransomware"
+    ],
+    "a": [
+      "Botnet"
+    ],
+    "e": "OBJ 4.2: A botnet is many internet-connected devices, each of which is running one or more bots. Botnets can be used to perform distributed denial-of-service (DDoS) attacks, steal data, send spam, and allow the attacker to access the device and its connection. A zombie (also known as a bot) is a computer or workstation that a remote attacker has accessed and set up to forward transmissions (including spam and viruses) to other computers on the internet. Spyware is software with malicious behavior that aims to gather information about a person or organization and send it to another entity in a way that harms the user. Ransomware is a type of malware that threatens to publish the victim's personal data or perpetually block access to it unless a ransom is paid. A rootkit is a clandestine computer program designed to provide continued privileged access to a computer while actively hiding its presence."
+  },
+  {
+    "q": "A technician is troubleshooting a workstation at Dion Training. The workstation is suffering from intermittent connectivity issues. The technician notices that the STP cable pairs are not completely twisted near the connector. Which of the following issues may be experienced because of this?",
+    "c": [
+      "568A/568B mismatch",
+      "Split pair",
+      "Crosstalk",
+      "Tx/Rx reverse"
+    ],
+    "a": [
+      "Crosstalk"
+    ],
+    "e": "OBJ 5.2: Crosstalk is defined as an effect caused by the unintentional and undesired transmission (leakage) of a signal from one cable to another. Crosstalk can occur if the twisted pairs are not twisted sufficiently, because the twisting of the cable pairs reduces crosstalk between neighboring cable pairs. The twisting is done to help cancel exterior electromagnetic interference. To solve this cable's crosstalk issue, the cable pairs should be trimmed down and the cable re-terminated again properly. The EIA/TIA-568A and EIA/TIA-568B wiring standards utilize different colored cable pairs on each end of a cable. If you use a mismatch of the two standards on the same cable, it would create a cable that cannot be used as a straight-through or patch cable. This would not lead to intermittent connectivity, though, it would lead to a scenario with no connectivity. The transmit (Tx) and receive (Rx) reversed is a common issue with fiber optic patch cables. A split pair error occurs when one wire from each of two different pairs gets swapped identically on both ends of the cable. The result is a cable that will pass a standard continuity test, but will have serious cross-talk problems, and will most likely not perform adequately at specified data rates. Split pairs were commonly used in older Cat 3 copper networks, but are no longer used in Cat 5 or above networks. The scenario in this question describes a crosstalk issue, not a split pair issue, though."
+  },
+  {
+    "q": "You are setting up uplink ports for multiple switches to communicate with one another. All of the VLANs should communicate from the designated server switch. Which of the following should be set on the trunk ports if VLAN 1 is not the management VLAN?",
+    "c": [
+      "802.1d",
+      "802.1x",
+      "802.1q",
+      "802.1af"
+    ],
+    "a": [
+      "802.1q"
+    ],
+    "e": "OBJ 2.2: The IEEE 801.q standard is used to define VLAN tagging for Ethernet frames and the accompanying procedures to be used by bridges and switches in handling such frames. Traffic should be properly tagged when combined over a single trunk port to ensure they are not sent to the wrong VLAN by mistake. If VLAN tagging is not enabled, all of the VLAN traffic will be sent to the native or default VLAN, VLAN 1. By default, VLAN 1 is enabled and all unused ports are assigned to it. The Spanning Tree Protocol (STP) is a network protocol that builds a loop-free logical topology for Ethernet networks to prevent bridge loops and the broadcast storms that result from them. STP is defined in the IEEE 802.1d standard. Power over Ethernet (POE) is a technology that lets network cables carry electrical power. POE is defined in the IEEE 802.1af. The IEEE 802.1x standard is a network authentication protocol that opens ports for network access when an organization authenticates a user's identity and authorizes them for access to the network. The user's identity is determined based on their credentials or certificate, which is confirmed by the RADIUS server."
+  },
+  {
+    "q": "You are connecting a new IPv6 device to your network, but your routers only support IPv4 protocols. Which of the following IP addressing solutions would solve this challenge?",
+    "c": [
+      "Private",
+      "APIPA",
+      "Teredo tunneling",
+      "Classless"
+    ],
+    "a": [
+      "Teredo tunneling"
+    ],
+    "e": "OBJ 1.8 - Teredo is a transition technology that gives full IPv6 connectivity for IPv6-capable hosts that are on the IPv4 Internet but have no native connection to an IPv6 network. A private IP address is an IP address reserved for internal use behind a router or other Network Address Translation (NAT) devices, apart from the public. Private IP addresses provide an entirely separate set of addresses that still allow access to a network without taking up a public IP address space. Automatic Private IP Addressing (APIPA) is a feature in operating systems (such as Windows) that enables computers to automatically self-configure an IP address and subnet mask when their DHCP server isn't reachable. Classless IP addressing solutions allow for the use of subnets that are smaller than the classful subnets associated with Class A, Class B, or Class C networks."
+  },
+  {
+    "q": "A new network administrator is hired to replace a consultant who ran the network for several months and whose contract was just canceled. After a month of working on the network, the new network administrator realized some network issues and configuration changes in the server settings. The log files on the servers do not contain any error messages related to the issues or changes. What could be the problem?",
+    "c": [
+      "The last ACL on the firewall is set to DENY ANY ANY",
+      "A TACACS+ or RADIUS misconfiguration is causing logs to be erased",
+      "The server was the victim of a brute force password attack",
+      "A backdoor has been installed to grant someone access to the network"
+    ],
+    "a": [
+      "A backdoor has been installed to grant someone access to the network"
+    ],
+    "e": "OBJ 4.2: A hacker or the previous administrator (consultant) left a piece of software or an SSH protocol to allow themselves access to the network and change the server settings. The consultant may be disgruntled that their contract was canceled and that the new network administrator was hired to replace them. The last ACL on the firewall should be set to DENY ANY ANY, as this is a form of implicit deny and considered a best practice in network security. A brute force password attack uses trial-and-error to guess login info, encryption keys, or find a hidden web page. If a brute force password attack was used, there would be numerous failed login attempts showing in the security log files on the servers. TACACS+ and RADIUS misconfigurations would lead to authentication issues, not to log erasures."
+  },
+  {
+    "q": "You are assisting a member of Dion Training's security team during an incident response. The team member asks you to determine if any strange TCP connections are occurring on a given workstation. You open the command prompt on the workstation. Which of the following tools would provide you with information on any TCP connections currently established on the workstation?",
+    "c": [
+      "tracert",
+      "arp",
+      "route",
+      "netstat"
+    ],
+    "a": [
+      "netstat"
+    ],
+    "e": "OBJ 5.5: Netstat (network statistics) is a command-line network utility tool that displays network connections for the Transmission Control Protocol (incoming and outgoing), routing tables, and several network interface and network protocol statistics. It is useful when determining if a workstation is attempting outbound connections due to malware (beaconing activity) or has ports open and listening for inbound connections. The tracert command is used on Windows devices to show details about the path that a packet takes from a host to a target and displays information about each hop in the path. The arp command is used to view and modify the local address resolution protocol (ARP) cache of a device, which contains recently resolved MAC addresses of IP hosts on the network. The route command is used to create, view, or modify manual entries in the network routing tables of a computer or server."
+  },
+  {
+    "q": "Steven is tasked with redesigning a small office network and must choose between different rack sizes to house a new server, a network switch, and a patch panel. What is it most critical for Steven to consider to ensure all equipment is adequately housed and future expansion is possible?",
+    "c": [
+      "The availability of built-in cable management solutions in the rack.",
+      "The proximity of the rack to the office's main power supply.",
+      "The aesthetic design of the rack to ensure it fits with the office decor.",
+      "The weight capacity of the rack to ensure it can support the equipment."
+    ],
+    "a": [
+      "The weight capacity of the rack to ensure it can support the equipment."
+    ],
+    "e": "OBJ 2.4 - The weight capacity of the rack is a critical consideration to ensure it can support the current equipment and any future additions. Overloading a rack can lead to stability and safety issues, making it vital to select a rack that can handle the weight of the server, network switch, patch panel, and potential future equipment. Built-in cable management is important for organization and accessibility but is secondary to ensuring the rack can physically support the equipment. The proximity of the rack to the office's main power supply affects convenience and cable management but does not influence the choice of rack size based on the equipment's dimensions and weight. The aesthetic design of the rack might be considered for office environment integration, but it does not impact the functionality or capacity requirements of housing the network equipment."
+  },
+  {
+    "q": "What is the primary advantage of using dynamic inventories in networking?",
+    "c": [
+      "Dynamic inventories improve network performance and reduces latency",
+      "Dynamic inventories provide enhanced security and prevents unauthorized access",
+      "Dynamic inventories enable seamless scalability and supports rapid network expansion",
+      "Dynamic inventories simplify network management and reduces manual effort"
+    ],
+    "a": [
+      "Dynamic inventories simplify network management and reduces manual effort"
+    ],
+    "e": "OBJ 1.8 - Dynamic inventories in networking offer the primary advantage of simplifying network management and reducing manual effort. By automatically discovering and updating network devices, dynamic inventories eliminate the need for manual inventory management, saving time and resources. Enhanced security and improved network performance can be achieved through other means, but they are not the primary advantages of dynamic inventories. While dynamic inventories can support network scalability, their primary purpose is to streamline management rather than rapid expansion."
+  },
+  {
+    "q": "As Darren is working on setting up new cables for his local network\u2019s data transmission that run alongside current cables in place. After installing them, he notices that there's a noticeable decrease in the quality of the signal, resulting in errors and packet loss. What could be the primary cause of this signal degradation?",
+    "c": [
+      "Jitter",
+      "Overload",
+      "Crosstalk",
+      "Congestion"
+    ],
+    "a": [
+      "Crosstalk"
+    ],
+    "e": "OBJ 5.2 - Crosstalk occurs when signals from adjacent cables interfere with each other, leading to signal degradation. Overload typically refers to excessive traffic on a network, congestion pertains to network congestion due to high traffic volume, and jitter refers to variations in the arrival time of data packets, none of which directly relate to signal degradation caused by interference from adjacent cables."
+  },
+  {
+    "q": "Which mechanism enables proactive notification of network events and facilitates efficient monitoring and troubleshooting in network management?",
+    "c": [
+      "HTTP",
+      "ICMP",
+      "SMTP",
+      "SNMP"
+    ],
+    "a": [
+      "SNMP"
+    ],
+    "e": "OBJ 3.1: SNMP (Simple Network Management Protocol) is the correct answer because it allows for proactive notification of network events through traps, facilitating real-time monitoring and troubleshooting. ICMP (Internet Control Message Protocol) deals with diagnostic messages and error reporting, HTTP (Hypertext Transfer Protocol) is for web communication, and SMTP (Simple Mail Transfer Protocol) is for email transfer, none of which directly provide network event notifications like SNMP does."
+  },
+  {
+    "q": "Your organization is deploying a new web application hosted on a scalable cloud infrastructure. To ensure users are directed to the correct IP address for accessing the application, which DNS record type should be used to map the domain name to the IPv4 address of the web server?",
+    "c": [
+      "CNAME",
+      "TXT",
+      "A",
+      "MX"
+    ],
+    "a": [
+      "A"
+    ],
+    "e": "OBJ 3.4 - An Address (A) record is used to map a domain name directly to the IPv4 address of a web server, which is necessary for directing users to the correct web application. Mail Exchange (MX) records are used to specify mail servers for the domain, not to direct web traffic. Canonical Name (CNAME) record is used to alias one domain name to another, not to an IP address Text (TXT) records hold descriptive text associated with the domain, such as SPF records, and do not direct traffic."
+  },
+  {
+    "q": "Quinn is configuring a wireless network for a client in an area known for dense wireless traffic and strict regulatory oversight on channel usage. To ensure compliance and optimal performance, they focus on incorporating a feature of the 802.11h standard. What aspect of 802.11h should Quinn prioritize to meet these requirements?",
+    "c": [
+      "Multiple Input Multiple Output (MIMO) technology",
+      "Transmit Power Control",
+      "Beamforming technology",
+      "Fast Roaming capabilities"
+    ],
+    "a": [
+      "Transmit Power Control"
+    ],
+    "e": "OBJ 2.3 - Transmit Power Control (TPC) is an important feature of the 802.11h standard that allows devices to adjust their transmitting power levels. This capability is crucial in areas with dense wireless traffic and strict regulatory oversight, as it helps minimize interference with other devices by reducing power to the necessary level for communication. Beamforming technology improves signal directionality and strength between the transmitter and receiver, enhancing network performance. Multiple Input Multiple Output (MIMO) technology increases network capacity and efficiency by using multiple antennas to transmit and receive data. Fast Roaming capabilities allow devices to switch between access points quickly, improving mobility within the network."
+  },
+  {
+    "q": "What is the network ID associated with the host located at 10.10.10.200/25?",
+    "c": [
+      "10.10.10.192",
+      "10.10.10.64",
+      "10.10.10.128",
+      "10.10.10.0"
+    ],
+    "a": [
+      "10.10.10.128"
+    ],
+    "e": "OBJ 1.7: In classless subnets using variable length subnet mask (VLSM), the network ID is the first IP address associated within an assigned range. In this example, the CIDR notation is /25, so each subnet will contain 128 IP addresses. Since the IP address provided is 10.10.10.200, it will be in the 10.10.10.128/25 network."
+  },
+  {
+    "q": "Which of the following cable types are used for very short-range high-speed applications, such as in SATA 3.0 cables and uplinks between two switches in the same rack-mounted enclosure?",
+    "c": [
+      "Twisted pair",
+      "Twinaxial",
+      "Coaxial",
+      "Fiber optic"
+    ],
+    "a": [
+      "Twinaxial"
+    ],
+    "e": "OBJ 1.5: Twinaxial cabling, or \"Twinax\", is a type of cable similar to coaxial cable, but with two inner conductors instead of one. Due to cost efficiency, it is commonly used in very short-range high-speed differential signaling applications, such as SATA 3.0 cables and uplinks between SFP+ modules in switches or routers. Fiber optic cables are commonly used for long-range high-speed applications. Coaxial cables and twisted-pair copper cables are commonly used for medium-range applications."
+  },
+  {
+    "q": "During a routine network assessment, Barbara, a technician, notices that in certain areas of the office, wireless devices frequently lose connection to the network. This occurs even though the wireless network has been confirmed to be operational. What is the MOST probable reason for this occurrence?",
+    "c": [
+      "Roaming misconfiguration",
+      "Insufficient wireless coverage",
+      "Signal degradation or loss",
+      "Client disassociation issues"
+    ],
+    "a": [
+      "Insufficient wireless coverage"
+    ],
+    "e": "OBJ 5.4: Insufficient wireless coverage is the most probable reason because it indicates areas where the wireless signal is not strong enough or entirely absent, causing devices to lose connection to the network. Signal degradation or loss refers more to the quality of the signal diminishing over distance or due to obstructions, rather than a complete lack of coverage in specific areas. Roaming misconfiguration deals with moving between APs, which is not the focus of this scenario that discusses static areas of poor connectivity. Client disassociation issues would imply a problem with the devices maintaining connection, not necessarily linked to the geographic coverage of the wireless network."
+  },
+  {
+    "q": "Which of the following best describes the significance of managing software licensing within an organization's network?",
+    "c": [
+      "To facilitate remote access for users working offsite and ensure they are given the same software as on-site employees",
+      "To ensure legal use of software and avoid penalties for non-compliance",
+      "To provide a steady, uninterrupted power supply to all recorded network devices",
+      "To maintain security of the network infrastructure and its devices"
+    ],
+    "a": [
+      "To ensure legal use of software and avoid penalties for non-compliance"
+    ],
+    "e": "OBJ 3.1 - Managing software licensing is significant for ensuring the legal use of software and avoiding penalties for non-compliance with licensing agreements, which is vital for legal and financial aspects of business operations. Security of network infrastructure relates to protecting hardware assets, not managing software licenses. Uninterrupted power supply concerns hardware support and infrastructure resilience, not software licensing. Facilitating remote access pertains to network access and management methods, not software licensing. All employees would be included in the count, not just remote employees."
+  }
+]

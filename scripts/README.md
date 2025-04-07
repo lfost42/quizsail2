@@ -4,7 +4,7 @@ These scripts to streamline the creation of online quizzes scrapted from books t
 
 The majority of the work is copy and pasting these into a file and adding the appropriate suffix indicator and adding them to the quiz_generators folder. However, files will often require tweaking to get the appropriate result. For example, I needed to manually append lines when they began with an IP address so they weren't read as a new question. If you have any thoughts on improving this, send me a note!
 
-### questions.py
+### sybex_q.py
 
 * input file: txt that ends with _rawq
 * The first word is "Chapter"; no need to add if the first line is a numbered question.
@@ -18,7 +18,7 @@ The majority of the work is copy and pasting these into a file and adding the ap
 * Questions and answers will moved to the same line. 
 * output file: will replace _rawq with _q
 
-### answers.py
+### sybex_a.py
 
 * Input file: txt that ends with _rawa  
 * Text should be numbered lines followed by the letter answer/s and explanation. 
@@ -29,9 +29,9 @@ The majority of the work is copy and pasting these into a file and adding the ap
 * Explanations will be moved to the same line.
 * Output file: will replace _rawa with _a
 
-### quiz2.py
+### sybex_quiz.py
 
-* Input file: txt that ands with _a and _q
+* Input file: txt that ands with _a and _q (auto generated from sybex_a.py and sybex_q.py)
 * Data will be Json formatted 
 * Questions from _q will be added as "q" items.
 * Choices from _q will be added as "c" items.
@@ -40,22 +40,24 @@ The majority of the work is copy and pasting these into a file and adding the ap
 * The explanation text will be added as a "q" item. 
 * Both choice and answer letters are stripped before being added to the json file. 
 * Both question and explanation indicators are stripped before being added to the json file. 
-* Output file: json that ends with _quiz
+* Intermediate files deleted. 
+* Output file: file.json
 
-### qaformat.py
+### dion_quiz.py
+* Input file: txt that ends with _rawm
+* Takes the result text from Jason Dion quizzes on Udemy and parses them into a quizsail json file. 
+* Parses the correct answer/s
+* Output file: file.json
 
-* Input file: txt that ends with _raw
+### manual_quiz.py
+
+* Input file: txt that ends with _rawm
 * Use this script if the answers and explanations follow the question/choices. 
 * Each question must begin with a number followed by a period and a space. 
 * Each choice must begin with a capital letter followed by a period and a space. 
 * All other lines will be assumed to be part of an explanation. 
 * Explanations are not required. While the array item can be added after the fact, the text will need to be pasted manually. 
-
-### quiz1.py
-
-* Input file: txt that ends with _format
-* This script will take the qaformat files and create a json file. 
-* Explanations are not required. 
+* Output file: file.json
 
 ### explanation_adder.py
 
