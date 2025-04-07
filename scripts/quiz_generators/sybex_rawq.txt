@@ -1,6 +1,7 @@
 Chapter Questions
 1. Which network type is locally owned and managed by an
 organization and used to connect the organization's LAN together?
+\n\n<code>Code text test</code>
 A. MAN
 B. CAN
 C. WAN

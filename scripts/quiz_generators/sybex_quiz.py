@@ -56,21 +56,23 @@ def main():
                 # If the numbers match, process the question and answer
                 if q_number == a_number:
                     # Parse the question and choices (keep the letter prefix for now)
-                    q_text = strip_question_prefix(q_lines[q_line_number].strip())  # Strip the number from the question
+                    q_text = strip_question_prefix(q_lines[q_line_number].strip()).replace('\\n', '\n')  # Strip the number from the question
                     choices = []
                     q_line_number += 1
                     while q_line_number < len(q_lines) and re.match(r'^[A-Z]\s', q_lines[q_line_number].strip()):
+                      # Process choices
+                        choice = q_lines[q_line_number].strip().replace('\\n', '\n')
                         choices.append(q_lines[q_line_number].strip())  # Keep the letter prefix
                         q_line_number += 1
 
                     # Parse the answer and explanation
                     a_line_number += 1
                     if a_line_number < len(a_lines) and a_lines[a_line_number].startswith('-'):
-                        answer_line = a_lines[a_line_number].strip().lstrip('-')
+                        answer_line = a_lines[a_line_number].strip().lstrip('-').replace('\\n', '\n')
                         answer_letters = list(answer_line)
                         a_line_number += 1
                         if a_line_number < len(a_lines) and a_lines[a_line_number].startswith('--'):
-                            explanation_line = a_lines[a_line_number].strip().lstrip('--')
+                            explanation_line = a_lines[a_line_number].strip().lstrip('--').replace('\\n', '\n')
                             a_line_number += 1
                         else:
                             explanation_line = ''

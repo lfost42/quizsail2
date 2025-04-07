@@ -11,7 +11,7 @@ A. Core
 B. Access
 C. Distribution
 B. 
---The distribution tier in the three-tier hierarchical model is responsible for providing connectivity between the access layer and the core layer. It acts as an intermediary layer, facilitating communication between different access layer devices and forwarding traffic to the appropriate destination. The access tier focuses on connecting end-user devices, while the core tier handles high-speed backbone connectivity. The term "aggregation" is not typically used to describe a specific tier in this model. Therefore, the distribution tier is the correct choice in this context. 
+--The distribution tier in the three-tier hierarchical model is responsible for providing connectivity between the access layer and the core layer. \n\nIt acts as an intermediary layer, facilitating communication between different access layer devices and forwarding traffic to the appropriate destination. The access tier focuses on connecting end-user devices, while the core tier handles high-speed backbone connectivity. The term "aggregation" is not typically used to describe a specific tier in this model. Therefore, the distribution tier is the correct choice in this context. 
 
 
 3. In the three-tier hierarchical model, which tier handles high-speed backbone connectivity?

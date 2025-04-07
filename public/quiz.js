@@ -280,42 +280,54 @@ function cur() {
 }
 
 function submitAnswer() {
-    console.log('submit!')
-    const currentItem = cur();
-    const questionState = currentItem.ref;
-    const item = currentItem.item;
-    const answers = item.a;
-    const numChoices = currentItem.item.c.length;
-    const numAnswers = answers.length;
-    let correct = true;
+  console.log('submit!')
+  const currentItem = cur();
+  const questionState = currentItem.ref;
+  const item = currentItem.item;
+  const answers = item.a;
+  const numChoices = currentItem.item.c.length;
+  const numAnswers = answers.length;
+  let correct = true;
 
-    Object.values(labels).forEach(label => {
-      label.e.style.color = ''; // Reset to default
+  Object.values(labels).forEach(label => {
+    label.e.style.color = ''; // Reset to default
+  });
+
+  if (numAnswers == 1 && numChoices == 1) {
+    // Text input handling
+    if (inputs.value.trim() === '' || inputs.value.toUpperCase() !== answers[0].toUpperCase()) {
+        correct = false;
+        inputs.e.style.backgroundColor = 'rgba(128, 128, 128, 0.7)';
+    } else {
+        inputs.e.style.backgroundColor = '#009f00';
+    }
+  } else {
+    // Highlight correct answers in green
+    answers.forEach(correctAnswer => {
+        if (labels[correctAnswer]) {
+            labels[correctAnswer].e.style.color = '#009f00';
+        }
     });
 
-    if (numAnswers == 1 && numChoices == 1) {
-      // Text input handling
-      if (inputs.value.toUpperCase() !== answers[0].toUpperCase()) {
-          correct = false;
-          inputs.e.style.backgroundColor = 'rgba(128, 128, 128, 0.7)';
-      } else {
-          inputs.e.style.backgroundColor = '#009f00';
-      }
-  } else {
-      // Highlight correct answers in green
-      answers.forEach(correctAnswer => {
-          if (labels[correctAnswer]) {
-              labels[correctAnswer].e.style.color = '#009f00';
-          }
-      });
-
-      // Mark incorrect selections
-      for (const [choice, input] of Object.entries(inputs)) {
-          if (input.checked && !answers.includes(choice)) {
-              labels[choice].e.style.color = 'rgba(128, 128, 128, 0.7)';
-              correct = false;
-          }
-      }
+    // Check if any answer is selected
+    let hasSelection = false;
+    for (const input of Object.values(inputs)) {
+        if (input.checked) {
+            hasSelection = true;
+            break;
+        }
+    }
+    if (!hasSelection) {
+        correct = false;
+    } else {
+        // Mark incorrect selections
+        for (const [choice, input] of Object.entries(inputs)) {
+            if (input.checked && !answers.includes(choice)) {
+                labels[choice].e.style.color = 'rgba(128, 128, 128, 0.7)';
+                correct = false;
+            }
+        }
+    }
   }
   
     if (correct) {

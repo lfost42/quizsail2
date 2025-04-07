@@ -79,7 +79,13 @@ with open(temp_file, 'w') as f:
 
 # --- STEP 3: Parse temporary file into JSON using delimiters ---
 with open(temp_file, 'r') as f:
-    lines = [line.strip() for line in f if line.strip()]
+    lines = []
+    for line in f:
+        stripped_line = line.strip()
+        if stripped_line:
+            # Replace literal \n with actual newline character
+            stripped_line = stripped_line.replace('\\n', '\n')
+            lines.append(stripped_line)
 
 quiz_data = []
 current_q = {}
@@ -116,7 +122,6 @@ output_file = os.path.join(output_dir, input_file.replace('_rawd.txt', '.json'))
 with open(output_file, 'w') as f:
     json.dump(quiz_data, f, indent=2)
 
-# print(f"Temporary file preserved at: {temp_file}")
 os.remove(temp_file)
 
 print(f"JSON quiz saved to: {output_file}")

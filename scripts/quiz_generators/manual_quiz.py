@@ -93,7 +93,7 @@ def parse_questions(content):
     state = None
 
     for line in content.split('\n'):
-        line = line.strip()
+        line = line.strip().replace('\\n', '\n')
         if not line:
             continue
 
