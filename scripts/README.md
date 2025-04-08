@@ -6,6 +6,9 @@ The majority of the work is copy and pasting these into a file and adding the ap
 
 None of my scripts delete raw files. This is becuase I've had to go back and adjust them after creating the json file. 
 
+### codify.py
+* Takes a text input, wraps it in < code > tags, adds \n line breaks, and provides the output in a single line to paste back into your raw data file. 
+
 ### sybex_q.py
 
 * input file: txt that ends with _rawq
