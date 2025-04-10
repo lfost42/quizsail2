@@ -7,3 +7,4 @@ scripts/quiz_generators/cram*
 scripts/quiz_generators/OutputFiles/*.json
 public/copy.json
 public/cram.json
+public/dion*.json
