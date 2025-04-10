@@ -34,24 +34,36 @@ app.get('/api/quizzes', (req, res) => {
 // State management routes
 app.get('/state/:id', (req, res) => {
   const hashid = hash(req.params.id);
-  const statePath = path.join(DATA_DIR, hashid);
+  const statePath = path.join(DATA_DIR, hashid); // Removed .json extension
   
   if (!fs.existsSync(statePath)) {
-      return res.status(404).send('Not found');
+    return res.status(404).send('Not found');
   }
   
   try {
-      const data = fs.readFileSync(statePath);
-      res.send(JSON.parse(data));
+    const data = fs.readFileSync(statePath);
+    res.send(JSON.parse(data));
   } catch (e) {
-      res.status(500).send('Invalid state format');
+    console.error('State read error:', e);
+    res.status(500).send('Invalid state format');
   }
 });
 
 app.post("/state/:id", (req, res) => {
   const hashid = hash(req.params.id);
-  fs.writeFileSync(path.join(DATA_DIR, hashid), JSON.stringify(req.body));
-  res.sendStatus(200);
+  const statePath = path.join(DATA_DIR, hashid); // Removed .json extension
+  
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+
+  try {
+    fs.writeFileSync(statePath, JSON.stringify(req.body), { flag: 'w' });
+    res.sendStatus(200);
+  } catch (e) {
+    console.error('Save failed:', e);
+    res.status(500).send('Save failed');
+  }
 });
 
 app.delete("/state/:id", (req, res) => {
@@ -66,8 +78,10 @@ app.delete("/state/:id", (req, res) => {
 
 // logs directory creation in case someone deletes it before knowing what it does
 const logsDir = path.join(PUBLIC_DIR, 'logs');
-if (!fs.existsSync(logsDir)) {
-    fs.mkdirSync(logsDir);
+// Ensure data directory exists
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  console.log(`Created data directory at ${DATA_DIR}`);
 }
 
 // Log saving route
@@ -128,10 +142,17 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-// Utility functions
 function hash(value) {
-  // Match client-side localhost hashing
-  if (value.match(/^-?\d+$/)) {
-    return value; // Use numeric hash directly
+  // Handle both positive and negative numeric hashes from client
+  if (typeof value === 'string' && value.match(/^-?\d+$/)) {
+    return value; // Return as-is if already a numeric string
   }
+
+  // Handle string hashing (should match client exactly)
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash.toString(); // Important: must return string to match client
 }

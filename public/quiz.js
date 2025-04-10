@@ -60,60 +60,63 @@ async function start() {
   
   if (!session) {
     const newSession = makeid(128);
-    // Use URLSearchParams to handle parameters correctly
     const params = new URLSearchParams(window.location.search);
-    console.log("new session!", newSession);
     params.set('session', newSession);
-    console.log("new session params!", params);
     window.location.search = params.toString();
-    console.log("new session!", window.location.search);
     return;
-}
+  }
 
-  // setTimeout(() => {
-  //     
-  // }, 10000);
+  console.log('Starting session:', session);
+  const h = await hash(session);
+  console.log('Hashed session:', h);
 
   updateSessions(document.location, source);
   
   try {
-    const h = await hash(session).catch(() => "fallback_hash");
-    const res = await fetch(`/state/${h}`);
-    const [quizContent, savedState] = await Promise.all([
-      fetch(`quizzes/${source}.json`).then(res => {
-          if (!res.ok) throw new Error('Quiz not found');
-          return res.json();
-      }),
-      (async () => {
-          const h = await hash(session);
-          const res = await fetch(`/state/${h}`);
-          return res.status === 200 ? res.json() : null;
-      })()
-  ]);
+    // 1. First load quiz content
+    const quizContent = await fetch(`quizzes/${source}.json`)
+      .then(res => {
+        if (!res.ok) throw new Error('Quiz not found');
+        return res.json();
+      });
 
-    // Ensure content is valid
-    if (!quizContent?.length) throw new Error('Invalid quiz format');
-    
+    // 2. Initialize state (don't try to fetch yet)
     content = quizContent;
-    state = savedState || {
+    state = {
       complete: [],
       working: [],
       unseen: Array.from({length: content.length}, (_, i) => ({
-          index: i,
-          count: 0,
-          tries: 0,
-          firstAttemptCorrect: null,
-          currentStreak: 0
+        index: i,
+        count: 0,
+        tries: 0,
+        firstAttemptCorrect: null,
+        currentStreak: 0
       })),
       lastIndex: -1
-  };
-  
+    };
+
+    // 3. Save initial state immediately
+    await saveState(() => {});
+    console.log('Initial state saved');
+
+    // 4. Now try to load existing state (will overwrite if exists)
+    try {
+      const res = await fetch(`/state/${h}`);
+      if (res.ok) {
+        const savedState = await res.json();
+        state = savedState;
+        console.log('Loaded existing state');
+      }
+    } catch (e) {
+      console.log('Using initial state');
+    }
+
     show();
-} catch (error) {
+  } catch (error) {
     console.error('Initialization error:', error);
     alert(`Failed to start quiz: ${error.message}`);
     window.location = window.location.origin;
-}
+  }
 }
 
 const choiceLetters = "ABCDEFGHIJ";
@@ -539,14 +542,22 @@ document.addEventListener("keyup", async (e) => {
 });
 
 function hash(value) {
-  if (window.location.hostname === 'localhost') {
-    let hash = 0;
-    for (let i = 0; i < value.length; i++) {
-      hash = (hash << 5) - hash + value.charCodeAt(i);
-      hash |= 0;
-    }
-    return Promise.resolve(hash.toString());
+  if (!value) {
+    console.error('Hash function called with null/undefined value');
+    return 'fallback_hash';
   }
+  
+  // Handle numeric strings (already hashed)
+  if (typeof value === 'string' && value.match(/^-?\d+$/)) {
+    return value;
+  }
+
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash.toString();
 }
 
 function getSelectedAnswers() {
