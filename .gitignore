@@ -3,4 +3,6 @@ node_modules/
 data/
 **net_*
 scripts/quiz_generators/*_raw*.txt
+scripts/quiz_generators/cram*
 scripts/quiz_generators/OutputFiles/*.json
+public/logs/

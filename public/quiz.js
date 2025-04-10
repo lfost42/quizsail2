@@ -46,28 +46,34 @@ async function deleteSession() {
       console.warn("Cleanup error:", e);
   }
   
-  // Delete client session using FULL URL as key
   delete storageSessions[fullUrl];
   localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
   
   // Navigate to start page
-  setTimeout(() => {
-      window.location.href = window.location.origin;
-  }, 3000);
+  // setTimeout(() => {
+  //     window.location.href = window.location.origin;
+  // }, 10000);
 }
 
 async function start() {
-  console.log("starting!", getParam('session'));
+  // console.log("starting!", getParam('session'));
   let session = getParam('session');
   
   if (!session) {
     const newSession = makeid(128);
     // Use URLSearchParams to handle parameters correctly
     const params = new URLSearchParams(window.location.search);
+    console.log("new session!", newSession);
     params.set('session', newSession);
+    console.log("new session params!", params);
     window.location.search = params.toString();
+    console.log("new session!", window.location.search);
     return;
 }
+
+  // setTimeout(() => {
+  //     
+  // }, 10000);
 
   updateSessions(document.location, source);
   
@@ -128,7 +134,7 @@ function show() {
   // Check for quiz completion
   if (state.unseen.length === 0 && state.working.length === 0) {
     E("question").html = `Quiz Complete! 🎉`;
-    E("choice_form").html = "Returning to start .......";
+    E("choice_form").html = "<p>Please click [Return to Start] at the bottom of the page to start a new quiz.</p>";
     E("result").html = "";
     E("submitbtn").attr = false;
     deleteSession();
@@ -280,7 +286,7 @@ function cur() {
 }
 
 function submitAnswer() {
-  console.log('submit!')
+  // console.log('submit!')
   const currentItem = cur();
   const questionState = currentItem.ref;
   const item = currentItem.item;
@@ -391,21 +397,24 @@ function submitAnswer() {
         currentItem.ref.tries = 0;
     }
     ++currentItem.ref.tries;
-    if (correct===true) {
-        if (allowQuickComplete===1) {
-            currentItem.ref.count=3;
-        } else
-        {
-            currentItem.ref.count+=1;
-        }
-        if (currentItem.ref.count>=3) {
-            state.complete.push(currentItem.ref);
-            state.working.pop();
-            state.lastIndex = currentItem.ref.index; // Track the last shown question
-        }
-    } else {
-        currentItem.ref.count = 0;
-    }
+    if (correct) {
+      // Handle correct answers based on mode
+      switch(mode) {
+          case 'fastmode':
+              currentItem.ref.count = 3; // Immediate completion in fastmode
+              break;
+          default:
+              currentItem.ref.count += 1; // Normal progression
+      }
+      
+      if (currentItem.ref.count >= 3) {
+          state.complete.push(currentItem.ref);
+          state.working.pop();
+          state.lastIndex = currentItem.ref.index;
+      }
+  } else {
+      currentItem.ref.count = 0; // Reset on incorrect answer
+  }
 }
 
 class Element {
@@ -471,7 +480,7 @@ Array.prototype.empty =  function() {
 }
 
 function shuffle(a) {
-    console.log(a);
+    // console.log(a);
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
@@ -541,4 +550,11 @@ function hash(value) {
     }
     return Promise.resolve(hash.toString());
   }
+}
+
+function getSelectedAnswers() {
+  const selected = [];
+  document.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked')
+      .forEach(input => selected.push(input.value));
+  return selected;
 }

@@ -63,6 +63,60 @@ app.delete("/state/:id", (req, res) => {
   }
 });
 
+// logs directory creation in case someone deletes it before knowing what it does
+const logsDir = path.join(PUBLIC_DIR, 'logs');
+if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir);
+}
+
+// Log saving route
+app.post('/save-log', (req, res) => {
+  const { quizName, questionIndex, sessionId } = req.body;
+  const logFile = path.join(logsDir, `${quizName}_logs.json`);
+  
+  try {
+      let allLogs = {};
+      
+      // Read existing logs if file exists
+      if (fs.existsSync(logFile)) {
+          allLogs = JSON.parse(fs.readFileSync(logFile));
+      }
+
+      // Initialize session array if it doesn't exist
+      if (!allLogs[sessionId]) {
+          allLogs[sessionId] = [];
+      }
+
+      // Add question index to session
+      if (!allLogs[sessionId].includes(questionIndex)) {
+          allLogs[sessionId].push(questionIndex);
+      }
+
+      // Limit to 100 most recent sessions
+      const sessions = Object.keys(allLogs);
+      if (sessions.length > 100) {
+          // Sort sessions by most recent (assuming newer sessions have later timestamps)
+          sessions.sort((a, b) => {
+              const aTime = allLogs[a].timestamp || 0;
+              const bTime = allLogs[b].timestamp || 0;
+              return bTime - aTime;
+          });
+          
+          // Keep only first 100 sessions
+          sessions.slice(100).forEach(session => {
+              delete allLogs[session];
+          });
+      }
+
+      // Save to file
+      fs.writeFileSync(logFile, JSON.stringify(allLogs, null, 2));
+      res.sendStatus(200);
+  } catch (err) {
+      console.error('Log save error:', err);
+      res.sendStatus(500);
+  }
+});
+
 // Static files LAST
 app.use(express.static(PUBLIC_DIR));
 
