@@ -20,8 +20,9 @@ app.use((req, res, next) => {
 });
 
 // API Routes
+const quizzesDir = path.join(PUBLIC_DIR, 'quizzes');
 app.get('/api/quizzes', (req, res) => {
-  fs.readdir(PUBLIC_DIR, (err, files) => {
+  fs.readdir(quizzesDir, (err, files) => {
     if (err) return res.status(500).send('Server error');
     const quizzes = files
       .filter(file => file.endsWith('.json'))
@@ -120,12 +121,12 @@ app.post('/save-log', (req, res) => {
 // Static files LAST
 app.use(express.static(PUBLIC_DIR));
 
+app.listen(port, () => console.log(`Listening on port ${port}`));
+
 // Data directory creation
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
-
-app.listen(port, () => console.log(`Listening on port ${port}`));
 
 // Utility functions
 function hash(value) {

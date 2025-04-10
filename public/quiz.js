@@ -56,7 +56,6 @@ async function deleteSession() {
 }
 
 async function start() {
-  // console.log("starting!", getParam('session'));
   let session = getParam('session');
   
   if (!session) {
@@ -81,16 +80,16 @@ async function start() {
     const h = await hash(session).catch(() => "fallback_hash");
     const res = await fetch(`/state/${h}`);
     const [quizContent, savedState] = await Promise.all([
-        fetch(`${source}.json`).then(res => {
-            if (!res.ok) throw new Error('Quiz not found');
-            return res.json();
-        }),
-        (async () => {
-            const h = await hash(session);
-            const res = await fetch(`/state/${h}`);
-            return res.status === 200 ? res.json() : null;
-        })()
-    ]);
+      fetch(`quizzes/${source}.json`).then(res => {
+          if (!res.ok) throw new Error('Quiz not found');
+          return res.json();
+      }),
+      (async () => {
+          const h = await hash(session);
+          const res = await fetch(`/state/${h}`);
+          return res.status === 200 ? res.json() : null;
+      })()
+  ]);
 
     // Ensure content is valid
     if (!quizContent?.length) throw new Error('Invalid quiz format');
@@ -103,8 +102,8 @@ async function start() {
           index: i,
           count: 0,
           tries: 0,
-          firstAttemptCorrect: null,  // New field
-          currentStreak: 0           // New field
+          firstAttemptCorrect: null,
+          currentStreak: 0
       })),
       lastIndex: -1
   };
@@ -161,7 +160,6 @@ function show() {
     }
     else {
     // if the working set is at max, grab a question from the working set
-
     if (state.working.length === MAX_WORKING) {
     // Get from working set (ensure not last shown)
       do {
@@ -541,12 +539,11 @@ document.addEventListener("keyup", async (e) => {
 });
 
 function hash(value) {
-  // Simple hash for localhost development
   if (window.location.hostname === 'localhost') {
     let hash = 0;
     for (let i = 0; i < value.length; i++) {
       hash = (hash << 5) - hash + value.charCodeAt(i);
-      hash |= 0; // Convert to 32bit integer
+      hash |= 0;
     }
     return Promise.resolve(hash.toString());
   }

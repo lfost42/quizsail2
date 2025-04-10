@@ -20,7 +20,7 @@ QuizSail's competency system works by holding a certain number of questions from
 📃 [Script](scripts/quiz_generators) to convert Sybex practice tests (1 file for questions/choices and 1 file for the answers/explanations) and parse the questions, answers, and explanations into a quizsail json file. 
 > See my scripts [README](scripts/README.md) file for more info.  
 
-💡 New quizzes are dynamically loaded to start menu (add them to the public folder).  
+💡 New quizzes are dynamically loaded to start menu (add them to the public/quizzes folder).  
 💡 Avoids giving the same question twice in a row (mostly) unless it's the last question.  
 
 📂 [Review Mode] added to Start: requires only one correct answer. I use this to validate a or quickly review a question set.  
