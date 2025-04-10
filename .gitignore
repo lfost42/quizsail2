@@ -5,4 +5,5 @@ data/
 scripts/quiz_generators/*_raw*.txt
 scripts/quiz_generators/cram*
 scripts/quiz_generators/OutputFiles/*.json
-public/logs/
+public/copy.json
+public/cram.json
