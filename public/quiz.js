@@ -66,9 +66,9 @@ async function start() {
     return;
   }
 
-  console.log('Starting session:', session);
-  const h = await hash(session);
-  console.log('Hashed session:', h);
+  // console.log('Starting session:', session);
+  // const h = await hash(session);
+  // console.log('Hashed session:', h);
 
   updateSessions(document.location, source);
   
@@ -97,7 +97,7 @@ async function start() {
 
     // 3. Save initial state immediately
     await saveState(() => {});
-    console.log('Initial state saved');
+    // console.log('Initial state saved');
 
     // 4. Now try to load existing state (will overwrite if exists)
     try {
@@ -105,10 +105,10 @@ async function start() {
       if (res.ok) {
         const savedState = await res.json();
         state = savedState;
-        console.log('Loaded existing state');
+        // console.log('Loaded existing state');
       }
     } catch (e) {
-      console.log('Using initial state');
+      // console.log('');
     }
 
     show();
