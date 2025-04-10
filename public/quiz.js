@@ -48,11 +48,6 @@ async function deleteSession() {
   
   delete storageSessions[fullUrl];
   localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
-  
-  // Navigate to start page
-  // setTimeout(() => {
-  //     window.location.href = window.location.origin;
-  // }, 10000);
 }
 
 async function start() {
@@ -66,21 +61,17 @@ async function start() {
     return;
   }
 
-  // console.log('Starting session:', session);
-  // const h = await hash(session);
-  // console.log('Hashed session:', h);
-
   updateSessions(document.location, source);
   
   try {
-    // 1. First load quiz content
+    // First load quiz content
     const quizContent = await fetch(`quizzes/${source}.json`)
       .then(res => {
         if (!res.ok) throw new Error('Quiz not found');
         return res.json();
       });
 
-    // 2. Initialize state (don't try to fetch yet)
+    // Initialize state (don't try to fetch yet)
     content = quizContent;
     state = {
       complete: [],
@@ -95,17 +86,15 @@ async function start() {
       lastIndex: -1
     };
 
-    // 3. Save initial state immediately
+    // Save initial state immediately
     await saveState(() => {});
-    // console.log('Initial state saved');
 
-    // 4. Now try to load existing state (will overwrite if exists)
+    // Load existing state (will overwrite if exists)
     try {
       const res = await fetch(`/state/${h}`);
       if (res.ok) {
         const savedState = await res.json();
         state = savedState;
-        // console.log('Loaded existing state');
       }
     } catch (e) {
       // console.log('');
@@ -142,53 +131,47 @@ function show() {
     deleteSession();
     return;
   }
-  
-  let currentItem;
-  const lastIndex = state.lastIndex || -1;
 
-  if (state.unseen.length === 0 && state.working.length > 0) {
-    // Rotate questions ensuring no consecutive repeats
-    let nextIndex;
-        let attempts = 0;
-        do {
-            nextIndex = Math.floor(Math.random() * state.working.length);
-            attempts++;
-        } while (attempts < 100 && // Add escape clause
-              state.working.length > 1 && 
-              state.working[nextIndex].index === state.lastIndex);
-        
-        const nextItem = state.working.splice(nextIndex, 1)[0];
-        state.working.push(nextItem);
-        currentItem = nextItem; // Add this line
-    }
-    else {
-    // if the working set is at max, grab a question from the working set
-    if (state.working.length === MAX_WORKING) {
-    // Get from working set (ensure not last shown)
-      do {
-          const nextid = Math.floor(Math.random() * state.working.length/2);
-          currentItem = state.working.splice(nextid, 1)[0];
-          state.working.push(currentItem);
-      } while (currentItem.index === lastIndex);
-          } else if (state.working.length === 0 || cur().ref.tries > 0) {
-              // Get from unseen set (ensure not last shown)
-              if (state.working.length < MAX_WORKING && state.unseen.length > 0) {
-                  let randomUnseen;
-                  do {
-                      randomUnseen = Math.floor(Math.random() * state.unseen.length);
-                      currentItem = state.unseen[randomUnseen];
-                  } while (currentItem.index === lastIndex && state.unseen.length > 1);
-                  state.unseen.splice(randomUnseen, 1);
-                  state.working.push(currentItem);
-              }
-          }
+  let currentItem;
+  const avoidIndex = state.lastIndex;
+
+  // Universal filtering for all question sources
+  const workingCandidates = state.working.filter(q => q.index !== avoidIndex);
+  const unseenCandidates = state.unseen.filter(q => q.index !== avoidIndex);
+
+  // 1. Working Set Selection (when unseen empty)
+  if (state.unseen.length === 0 && workingCandidates.length > 0) {
+    currentItem = workingCandidates[Math.floor(Math.random() * workingCandidates.length)];
   }
-  // Store current index as last shown
+  // 2. Normal Working Set Selection
+  else if (state.working.length >= MAX_WORKING) {
+    currentItem = workingCandidates.length > 0
+      ? workingCandidates[Math.floor(Math.random() * workingCandidates.length)]
+      : state.working[Math.floor(Math.random() * state.working.length)];
+  }
+  // 3. Unseen Set Selection
+  else if (unseenCandidates.length > 0) {
+    currentItem = unseenCandidates[Math.floor(Math.random() * unseenCandidates.length)];
+    state.unseen = state.unseen.filter(q => q.index !== currentItem.index);
+    state.working.push(currentItem);
+  }
+  // 4. Fallback to forced new question
+  else {
+    currentItem = state.working.concat(state.unseen)
+      .find(q => q.index !== avoidIndex) || state.working[0];
+  }
+
+  // Final protection against duplicates
+  if (currentItem?.index === avoidIndex) {
+    const allQuestions = [...state.working, ...state.unseen];
+    currentItem = allQuestions.find(q => q.index !== avoidIndex) || allQuestions[0];
+  }
+
   state.lastIndex = currentItem?.index || -1;
 
-    saveState(()=>{
-        const currentItem = cur();
-        if (!currentItem) return; // Add null check
+  saveState(() => {
+    const currentItem = cur();
+    if (!currentItem) return;
 
         E("stats").html = `mastered: ${state.complete.length} <BR>`
             + `in-flight:  ${state.working.length}<BR>`
@@ -277,7 +260,8 @@ function show() {
  */
 function cur() {
     if (!state.working || state.working.length === 0) {
-        return null;
+      console.warn('[Quiz] cur() called with empty working set');  
+      return null;
     }
     const questionRef = state.working[state.working.length-1];
     return {
@@ -287,7 +271,6 @@ function cur() {
 }
 
 function submitAnswer() {
-  // console.log('submit!')
   const currentItem = cur();
   const questionState = currentItem.ref;
   const item = currentItem.item;
@@ -337,7 +320,21 @@ function submitAnswer() {
     }
   }
   
-    if (correct) {
+  if (correct) {
+    // FIRST ATTEMPT LOGGING
+    if (questionState.firstAttemptCorrect === null) {
+      questionState.firstAttemptCorrect = true;
+      // console.log('[Quiz] Logging first correct attempt');
+      window.saveLogToServer(getParam('src'), currentItem.ref.index);
+    }
+    
+    if (questionState.count >= 3) {
+      state.complete.push(questionState);
+      state.working.pop();
+    }
+    // Increment tries FIRST
+    if (!('tries' in questionState)) questionState.tries = 0;
+questionState.tries++;
       switch(mode) {
           case 'review':
               questionState.count = 3;
@@ -359,25 +356,40 @@ function submitAnswer() {
           default: // Default mode
               questionState.count++;
       }
+      saveState(() => {
+        // console.log('[Quiz] State saved:', questionState);
+      });
       
       if (questionState.count >= 3) {
           state.complete.push(questionState);
           state.working.pop();
       }
-  } else {
+    } else {
       // Handle incorrect answers
-      switch(mode) {
-          case 'fastmode':
-              if (questionState.firstAttemptCorrect === null) {
-                  questionState.firstAttemptCorrect = false;
-              }
-              questionState.currentStreak = 0;
-              break;
-              
-          default:
-              questionState.count = 0;
+      const currentIndex = state.working.findIndex(q => q.index === currentItem.ref.index);
+      if (currentIndex > -1) {
+        // Move answered question to middle of working set
+        state.working.splice(currentIndex, 1);
+        const insertPos = Math.max(1, Math.floor(state.working.length/2));
+        state.working.splice(insertPos, 0, currentItem.ref);
       }
+  
+      // Update lastIndex immediately
+      state.lastIndex = currentItem.ref.index;
+  
+      // Existing incorrect answer handling
+      switch(mode) {
+        case 'fastmode':
+            if (questionState.firstAttemptCorrect === null) {
+                questionState.firstAttemptCorrect = false;
+            }
+            questionState.currentStreak = 0;
+            break;
+        default:
+            questionState.count = 0;
+    }
   }
+
     // console.log(`answer is ${correct}`)
     let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers}`;
     // Add explanation if available
@@ -397,7 +409,7 @@ function submitAnswer() {
     if (!('tries' in currentItem.ref)) {
         currentItem.ref.tries = 0;
     }
-    ++currentItem.ref.tries;
+
     if (correct) {
       // Handle correct answers based on mode
       switch(mode) {
