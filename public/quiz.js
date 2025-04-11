@@ -131,10 +131,14 @@ function showSessionModal(sessions) {
       new Date(b.timestamp) - new Date(a.timestamp)
     );
 
-    // Build modal content
+    // Prune Logs Modal
     content.innerHTML = `
       <h3>Found ${sessionList.length} saved sessions:</h3>
-      <p>Would you like to review?</p>
+      <div style="margin-top: 20px; display: flex; gap: 10px;">
+        <button id="continue-btn">Continue Quiz</button>
+        <button id="refresh-btn">Refresh Quiz</button>
+        <button id="back-btn">Back to Start</button>
+      </div>
       <div id="sessions-list">
         ${sessionList.map(([id, session]) => `
           <div class="session-item">
@@ -146,29 +150,26 @@ function showSessionModal(sessions) {
           </div>
         `).join('')}
       </div>
-      <div style="margin-top: 20px; display: flex; gap: 10px;">
-        <button id="continue-btn">Continue</button>
-        <button id="refresh-btn">Refresh Quiz</button>
-        <button onclick="window.location = window.location.origin">Return to Start</button>
-      </div>
     `;
 
-    // Add event listeners PROGRAMMATICALLY
-      content.querySelector('#continue-btn').addEventListener('click', () => {
-        modal.remove();
-        resolve(true);
+    // Add event listeners
+    content.querySelector('#continue-btn').addEventListener('click', () => {
+      modal.remove();
+      resolve(true);
     });
-    const returnBtn = content.querySelector('#return-btn');
-    returnBtn.addEventListener('click', async () => {
+
+    // Back to start button
+    content.querySelector('#back-btn').addEventListener('click', async () => {
       try {
         await deleteSession();
         window.location = window.location.origin;
       } catch (error) {
-        console.error('Return to start failed:', error);
+        console.error('Back to start failed:', error);
         alert('Failed to clear session');
       }
     });
-    // Add delete handlers
+
+    // Delete unwanted logs listener
     content.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         try {
@@ -187,15 +188,36 @@ function showSessionModal(sessions) {
       });
     });
 
+    // Update the refresh button handler in showSessionModal()
     const refreshBtn = content.querySelector('#refresh-btn');
     refreshBtn.addEventListener('click', async () => {
-      try {
-        await deleteSession();
-        window.location = window.location.origin;
-      } catch (error) {
-        console.error('Refresh failed:', error);
-        alert('Failed to refresh quiz session');
-      }
+        try {
+            const currentQuiz = getParam('src');
+            const response = await fetch('/refresh-quiz', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quizName: currentQuiz })
+            });
+            
+            const result = await response.json(); // Parse once here
+            if (!response.ok) throw new Error(result.error || 'Refresh failed');
+
+            await deleteSession();
+            // Use the already parsed result
+            alert(`${result.message}\nNew version: ${result.newFileName}`);
+            window.location.href = window.location.origin;
+
+        } catch (error) {
+            console.error('Refresh failed:', error);
+            
+            let message = error.message;
+            if (error.response?.data?.originalFilePreserved) {
+                message += '\nOriginal quiz file has been preserved.';
+            }
+            
+            alert(`Refresh failed: ${message}`);
+            window.location.reload();
+        }
     });
 
     modal.appendChild(content);
