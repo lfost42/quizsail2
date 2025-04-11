@@ -27,6 +27,11 @@ QuizSail's competency system works by holding a certain number of questions from
 📂 [Delete All Sessions] option added to Start.  
 📂 [Return to Start] option added to Quiz.  
 
+## TOTO
+☑️ Log functionality that keeps track of all successful first attempts for the last 10 sessions.
+☑️ Option to prune logs once there are 5 in case you sessions that were deleted prior to starting a new one. 
+🔲 Option to create a "refreshed" quiz that removes the questions that are consistently correct for 3 out of the 5 last sessions. Old quiz is moved to the "retired" directory. 
+
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine.
 

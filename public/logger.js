@@ -1,11 +1,26 @@
-// logger.js
-const LOG_STORAGE_KEY = 'quizFirstTryLogs';
+// Logs successful first attempts in each session. 
+const MAX_LOG_COUNT = 10;
 
 function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
-// Add this to logger.js
+async function pruneOldLogs(quizName) {
+  try {
+    await fetch('/prune-logs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        quizName,
+        maxCount: MAX_LOG_COUNT 
+      })
+    });
+  } catch (error) {
+    console.error('[Logger] Pruning failed:', error);
+  }
+}
+
+// Modified initializeLogFile
 function initializeLogFile() {
   const sessionId = getParam('session');
   const quizName = getParam('src');
@@ -15,23 +30,24 @@ function initializeLogFile() {
     return;
   }
 
-  // Create initial log entry
+  // Create initial log entry with timestamp
   fetch('/save-log', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       quizName,
       questionIndex: -1,
-      sessionId
+      sessionId,
+      timestamp: new Date().toISOString()
     })
   }).then(() => {
-    // console.log('[Logger] Log file initialized');
+    pruneOldLogs(quizName); // Trigger pruning after initialization
   }).catch(err => {
     console.error('[Logger] Log initialization failed:', err);
   });
 }
 
-// Expose saveLogToServer globally
+// Modified saveLogToServer
 window.saveLogToServer = async function(quizName, questionIndex) {
   const sessionId = getParam('session');
   if (!sessionId) {
@@ -40,14 +56,21 @@ window.saveLogToServer = async function(quizName, questionIndex) {
   }
 
   try {
-    // console.log('[Logger] Saving log:', { quizName, questionIndex, sessionId });
     const response = await fetch('/save-log', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ quizName, questionIndex, sessionId })
+      body: JSON.stringify({ 
+        quizName, 
+        questionIndex,
+        sessionId,
+        timestamp: new Date().toISOString() // Add timestamp to all entries
+      })
     });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    // console.log('[Logger] Log saved successfully');
+    
+    // Prune after final question submission
+    if(questionIndex === -1) {
+      await pruneOldLogs(quizName);
+    }
   } catch (err) {
     console.error('[Logger] Save failed:', err);
   }

@@ -71,6 +71,15 @@ async function start() {
         return res.json();
       });
 
+      const sessions = await fetch(`/get-logs/${source}`)
+      .then(res => res.json())
+      .catch(() => ({}));
+  
+    if (Object.keys(sessions).length >= 5) {
+      const proceed = await showSessionModal(sessions);
+      if (!proceed) window.location.reload(); // Refresh if sessions were deleted
+    }  
+
     // Initialize state (don't try to fetch yet)
     content = quizContent;
     state = {
@@ -109,6 +118,90 @@ async function start() {
 }
 
 const choiceLetters = "ABCDEFGHIJ";
+
+function showSessionModal(sessions) {
+  return new Promise((resolve) => {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    
+    const content = document.createElement('div');
+    content.className = 'modal-content';
+    
+    const sessionList = Object.entries(sessions).sort(([,a], [,b]) => 
+      new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    // Build modal content
+    content.innerHTML = `
+      <h3>Found ${sessionList.length} saved sessions:</h3>
+      <p>Would you like to review?</p>
+      <div id="sessions-list">
+        ${sessionList.map(([id, session]) => `
+          <div class="session-item">
+            <div>
+              <strong>${new Date(session.timestamp).toLocaleString()}</strong><br>
+              Questions: ${session.firstCorrect.length}
+            </div>
+            <button class="delete-btn" data-session="${id}">Delete</button>
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top: 20px; display: flex; gap: 10px;">
+        <button id="continue-btn">Continue</button>
+        <button id="refresh-btn">Refresh Quiz</button>
+        <button onclick="window.location = window.location.origin">Return to Start</button>
+      </div>
+    `;
+
+    // Add event listeners PROGRAMMATICALLY
+      content.querySelector('#continue-btn').addEventListener('click', () => {
+        modal.remove();
+        resolve(true);
+    });
+    const returnBtn = content.querySelector('#return-btn');
+    returnBtn.addEventListener('click', async () => {
+      try {
+        await deleteSession();
+        window.location = window.location.origin;
+      } catch (error) {
+        console.error('Return to start failed:', error);
+        alert('Failed to clear session');
+      }
+    });
+    // Add delete handlers
+    content.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          await fetch('/delete-log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              quizName: source,
+              sessionId: btn.dataset.session
+            })
+          });
+          btn.closest('.session-item').remove();
+        } catch (error) {
+          alert('Failed to delete session');
+        }
+      });
+    });
+
+    const refreshBtn = content.querySelector('#refresh-btn');
+    refreshBtn.addEventListener('click', async () => {
+      try {
+        await deleteSession();
+        window.location = window.location.origin;
+      } catch (error) {
+        console.error('Refresh failed:', error);
+        alert('Failed to refresh quiz session');
+      }
+    });
+
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+  });
+}
 
 function show() {
   if (!content || !Array.isArray(content)) {
