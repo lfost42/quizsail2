@@ -145,7 +145,7 @@ const showStartModal = (sessions, quizName) => {
     modalContent.innerHTML = `
       <p>Found ${sessionList.length} saved sessions. Please select an option below.</p>
       <button id="refresh-btn">Refresh Quiz</button>
-      <button id="continue-btn">Cancel</button>
+      <button id="continue-btn">Continue to Quiz</button>
       <div id="sessions-list">
         ${sessionList.map(([id, session]) => `
           <div class="session-item">
