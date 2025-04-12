@@ -114,7 +114,7 @@ const start = async () => {
     
     // Parse response ONCE and store it
     const logs = await logResponse.json();
-    console.log('Log response:', logs);
+    // console.log('Log response:', logs);
     
     const sessionCount = Object.keys(logs).length;
 
@@ -132,10 +132,11 @@ const start = async () => {
               document.getElementById('fastmode').checked ? 'fastmode' : 'default';
   const sessionId = crypto.randomUUID();
 
-  console.log('Redirecting to quiz in 3 seconds...');
-  setTimeout(() => {
-    window.location = `quiz-engine.html?src=${src}&mode=${mode}&session=${sessionId}`;
-  }, 30000);
+  // Delay for debugging start screen issues
+  // console.log('Redirecting to quiz in 3 seconds...');
+  // setTimeout(() => {
+  //   window.location = `quiz-engine.html?src=${src}&mode=${mode}&session=${sessionId}`;
+  // }, 30000);
 };
 
 // Add modal handler
