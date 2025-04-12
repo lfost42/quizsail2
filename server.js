@@ -27,7 +27,6 @@ app.use((req, res, next) => {
 });
 
 // Refresh Quiz API
-// Refresh Quiz API
 app.post('/refresh-quiz', async (req, res) => {
   const { quizName } = req.body;
   const quizDir = path.join(PUBLIC_DIR, 'quizzes');

@@ -12,108 +12,123 @@ if (!source) {
 }
 
 const mode = getParam('mode') || 'default';
-const storageSessions = getStorageSessions();
 const MAX_WORKING = 10;
+const sessions = window.localStorage.getItem(window.SAVED_SESSIONS);
 
 const updateSessions = (url, course) => {
-    const d = new Date();
-    const date = d.toLocaleString();
-    if (storageSessions[url]) {
-        storageSessions[url].lastAccess = date;
-    }
-    else {
-        storageSessions[url] = {
-            course,
-            lastAccess: date,
-            startedOn: date
-        }
-    }
-    localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
-}
+  const sessions = getStorageSessions();
+  const d = new Date();
+  
+  sessions[url] = {
+    course,
+    lastAccess: d.toISOString(),
+    startedOn: sessions[url]?.startedOn || d.toISOString()
+  };
+  
+  localStorage.setItem(SAVED_SESSIONS, JSON.stringify(sessions));
+};
 
-// To delete session when a quiz is completed. 
+// Fixed deleteSession function
 async function deleteSession() {
   const session = getParam('session');
-  const fullUrl = document.location.href; // Keep full URL with session ID
+  const fullUrl = document.location.href;
+  const sessions = getStorageSessions();
   
-  // Delete server session
   try {
-      const hashedSession = await hash(session);
-      await fetch(`/state/${hashedSession}`, { 
-          method: 'DELETE' 
-      });
+    const hashedSession = await hash(session);
+    await fetch(`/state/${hashedSession}`, { 
+      method: 'DELETE' 
+    });
   } catch (e) {
-      console.warn("Cleanup error:", e);
+    console.warn("Cleanup error:", e);
   }
   
-  delete storageSessions[fullUrl];
-  localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
+  delete sessions[fullUrl];
+  localStorage.setItem(SAVED_SESSIONS, JSON.stringify(sessions));
 }
 
-// In quiz.js - Modified start() function
 async function start() {
   let session = getParam('session');
   
+  // Detect fresh sessions using sessionStorage flag
+  const isNewSession = sessionStorage.getItem('newSession') === 'true';
+
   if (!session) {
+    // Create new session and set flag
     const newSession = makeid(128);
+    sessionStorage.setItem('newSession', 'true'); // Flag new session
     const params = new URLSearchParams(window.location.search);
     params.set('session', newSession);
     window.location.search = params.toString();
     return;
   }
 
-  console.log('Starting session:', session);
-  const h = await hash(session);
-  console.log('Hashed session:', h);
-
-  updateSessions(document.location, source);
-  
   try {
-    // 1. First load quiz content
-    const quizContent = await fetch(`quizzes/${source}.json`)
-      .then(res => {
-        if (!res.ok) throw new Error('Quiz not found');
-        return res.json();
-      });
-
-    // 2. Initialize state (don't try to fetch yet)
-    content = quizContent;
-    state = {
-      complete: [],
-      working: [],
-      unseen: Array.from({length: content.length}, (_, i) => ({
-        index: i,
-        count: 0,
-        tries: 0,
-        firstAttemptCorrect: null,
-        currentStreak: 0
-      })),
-      lastIndex: -1
-    };
-
-    // 3. Save initial state immediately
-    await saveState(() => {});
-    console.log('Initial state saved');
-
-    // 4. Now try to load existing state (will overwrite if exists)
-    try {
-      const res = await fetch(`/state/${h}`);
-      if (res.ok) {
-        const savedState = await res.json();
-        state = savedState;
-        console.log('Loaded existing state');
-      }
-    } catch (e) {
-      console.log('Using initial state');
+    // Load quiz content
+    if (!content) {
+      content = await fetch(`quizzes/${source}.json`)
+        .then(res => {
+          if (!res.ok) throw new Error('Quiz not found');
+          return res.json();
+        });
     }
 
+    const hashedSession = hash(session).toLowerCase();
+    if (isNewSession) {
+      // Initialize state directly
+      state = {
+        complete: [],
+        working: [],
+        unseen: Array.from({ length: content.length }, (_, i) => ({
+          index: i,
+          count: 0,
+          tries: 0,
+          firstAttemptCorrect: null,
+          currentStreak: 0
+        })),
+        lastIndex: -1
+      };
+
+      // Save state to server
+      await fetch(`/state/${hashedSession}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(state)
+      });
+
+      sessionStorage.removeItem('newSession'); // Clear flag
+      updateSessions(window.location.href, source);
+      show(); // Start quiz immediately
+      return;
+    }
+
+    // Existing session flow: check server state
+    let stateResponse;
+    try {
+      stateResponse = await fetch(`/state/${hashedSession}`);
+    } catch (error) {
+      stateResponse = { status: 0 };
+    }
+
+    if (stateResponse.status === 200) {
+      state = await stateResponse.json();
+    } else if (stateResponse.status === 404 || stateResponse.status === 0) {
+      // Handle edge case (session flag lost but state missing)
+      sessionStorage.setItem('newSession', 'true');
+      window.location.reload(); // Retry with flag
+      return;
+    } else {
+      throw new Error(`Unexpected server response: ${stateResponse.status}`);
+    }
+
+    updateSessions(window.location.href, source);
     show();
   } catch (error) {
-    console.error('Initialization error:', error);
-    alert(`Failed to start quiz: ${error.message}`);
+    alert(`Quiz failed to start: ${error.message}`);
     window.location = window.location.origin;
   }
 }
+
 
 const choiceLetters = "ABCDEFGHIJ";
 
@@ -434,7 +449,6 @@ function submitAnswer() {
     // FIRST ATTEMPT LOGGING
     if (questionState.firstAttemptCorrect === null) {
       questionState.firstAttemptCorrect = true;
-      // console.log('[Quiz] Logging first correct attempt');
       window.saveLogToServer(getParam('src'), currentItem.ref.index);
     }
     
@@ -618,16 +632,22 @@ function getParam(name) {
 
 async function saveState(callback) {
   try {
-      const session = getParam('session');
-      const hashedSession = await hash(session);
-      await fetch(`/state/${hashedSession}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json'},
-          body: JSON.stringify(state)
-      });
-      callback();
+    const session = getParam('session');
+    if (!session) return;
+    
+    const hashedSession = hash(session).toLowerCase();
+    await fetch(`/state/${hashedSession}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json'},
+      body: JSON.stringify(state)
+    });
+    
+    // Update localStorage timestamp
+    updateSessions(window.location.href, source);
+    
+    callback();
   } catch (e) {
-      console.error("Failed to save state:", e);
+    console.error("Failed to save state:", e);
   }
 }
 
