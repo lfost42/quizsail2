@@ -79,7 +79,7 @@ app.post('/refresh-quiz', async (req, res) => {
         !frequentQuestions.has(index)
       );
       newPath = path.join(quizDir, `${quizName}_new.json`);
-      fs.writeFileSync(newPath, JSON.stringify(filteredContent, null, 2));
+      fs.writeFileSync(newPath, JSON.stringify(filteredContent));
 
       // 6. Delete original only after successful creation
       fs.unlinkSync(originalPath);
@@ -202,7 +202,7 @@ app.post('/delete-log', (req, res) => {
     if (fs.existsSync(logPath)) {
       const logs = JSON.parse(fs.readFileSync(logPath, 'utf8'));
       delete logs[sessionId];
-      fs.writeFileSync(logPath, JSON.stringify(logs, null, 2));
+      fs.writeFileSync(logPath, JSON.stringify(logs));
     }
     res.sendStatus(200);
   } catch (error) {
@@ -235,7 +235,7 @@ app.post('/save-log', (req, res) => {
     if (!allLogs[sessionId].firstCorrect.includes(questionIndex)) {
       allLogs[sessionId].firstCorrect.push(questionIndex);
       const logPath = path.join(logsDir, `${quizName}_logs.json`);
-      fs.writeFileSync(logPath, JSON.stringify(allLogs, null, 2));
+      fs.writeFileSync(logPath, JSON.stringify(allLogs));
     }
 
     res.sendStatus(200);
@@ -266,7 +266,7 @@ app.post('/prune-logs', async (req, res) => {
       }, {});
 
     // Save pruned logs
-    fs.writeFileSync(logPath, JSON.stringify(pruned, null, 2));
+    fs.writeFileSync(logPath, JSON.stringify(pruned));
     res.sendStatus(200);
   } catch (error) {
     console.error('[Server] Pruning error:', error);
