@@ -50,6 +50,7 @@ async function deleteSession() {
   localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
 }
 
+// In quiz.js - Modified start() function
 async function start() {
   let session = getParam('session');
   
@@ -61,28 +62,23 @@ async function start() {
     return;
   }
 
+  console.log('Starting session:', session);
+  const h = await hash(session);
+  console.log('Hashed session:', h);
+
   updateSessions(document.location, source);
   
   try {
-    // First load quiz content
+    // 1. First load quiz content
     const quizContent = await fetch(`quizzes/${source}.json`)
       .then(res => {
         if (!res.ok) throw new Error('Quiz not found');
         return res.json();
       });
 
-    const sessions = await fetch(`/get-logs/${source}`)
-      .then(res => res.json())
-      .catch(() => ({}));
-  
-    if (Object.keys(sessions).length >= 5) {
-      const proceed = await showSessionModal(sessions);
-      if (!proceed) window.location.reload();
-    }  
-
-    // Initialize DEFAULT state first
+    // 2. Initialize state (don't try to fetch yet)
     content = quizContent;
-    let initialState = {
+    state = {
       complete: [],
       working: [],
       unseen: Array.from({length: content.length}, (_, i) => ({
@@ -95,33 +91,20 @@ async function start() {
       lastIndex: -1
     };
 
-    // Now try to load existing state
-    const hashedSession = hash(session);
+    // 3. Save initial state immediately
+    await saveState(() => {});
+    console.log('Initial state saved');
+
+    // 4. Now try to load existing state (will overwrite if exists)
     try {
-      const res = await fetch(`/state/${hashedSession}`);
+      const res = await fetch(`/state/${h}`);
       if (res.ok) {
         const savedState = await res.json();
-        // Merge loaded state with initial state
-        state = {
-          ...initialState,
-          ...savedState,
-          // Preserve array properties from saved state
-          complete: savedState.complete || initialState.complete,
-          working: savedState.working || initialState.working,
-          unseen: savedState.unseen || initialState.unseen
-        };
-      } else {
-        state = initialState;
+        state = savedState;
+        console.log('Loaded existing state');
       }
     } catch (e) {
       console.log('Using initial state');
-      state = initialState;
-    }
-
-    // Save state only if it's new
-    if (!state.version) {
-      state.version = 1;
-      await saveState(() => {});
     }
 
     show();
@@ -680,28 +663,21 @@ document.addEventListener("keyup", async (e) => {
 
 });
 
+// In quiz.js - Enhanced hash function
 function hash(value) {
-  if (!value) {
-    console.error('Hash function called with null/undefined value');
-    return 'fallback_hash';
-  }
+  if (!value) return 'invalid';
   
-  // Handle numeric strings (already hashed)
+  // Handle numeric strings and existing hashes
   if (typeof value === 'string' && value.match(/^-?\d+$/)) {
     return value;
   }
 
+  // Stable hashing algorithm
   let hash = 0;
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash << 5) - hash + value.charCodeAt(i);
+  const str = value.toString();
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
     hash |= 0; // Convert to 32bit integer
   }
   return hash.toString();
-}
-
-function getSelectedAnswers() {
-  const selected = [];
-  document.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked')
-      .forEach(input => selected.push(input.value));
-  return selected;
 }

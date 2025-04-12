@@ -165,7 +165,7 @@ app.delete("/state/:id", (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     if (e.code === 'ENOENT') {
-      res.sendStatus(200); // File doesn't exist, no need to delete
+      res.sendStatus(200);
     } else {
       console.error('Deletion error:', e);
       res.status(500).send('Server error during deletion');
