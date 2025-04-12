@@ -86,12 +86,10 @@ function installAnswerMonitor() {
 
   const originalSubmit = window.submitAnswer;
   window.submitAnswer = function() {
-    // console.log('[Logger] Answer submission intercepted');
     const currentBefore = window.cur?.();
     const result = originalSubmit.apply(this, arguments);
     
     if (currentBefore?.ref?.firstAttemptCorrect === null) {
-      // console.log('[Logger] First attempt detected');
     }
     return result;
   };

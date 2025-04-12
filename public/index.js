@@ -39,15 +39,15 @@ window.deleteQuizSession = function(url) {
 }
 
 const deleteSession = (target) => {
-    const confirm = window.confirm("Are you sure you want to delete this session?");
-    if (confirm) {
-        delete storageSessions[target.dataset.session];
-        localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
-        fadeOut(target.parentElement);
-        if (Object.keys(storageSessions).length === 0) {
-            document.getElementById("resumeTitle").remove();
-        }
-    }
+  const confirm = window.confirm("Are you sure you want to delete this session?");
+  if (confirm) {
+      delete storageSessions[target.dataset.session];
+      localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
+      fadeOut(target.parentElement);
+      if (Object.keys(storageSessions).length === 0) {
+          document.getElementById("resumeTitle").remove();
+      }
+  }
 }
 
 const deleteAllSessions = async () => {
@@ -80,10 +80,11 @@ const deleteAllSessions = async () => {
 
 const renderSessions = () => {
   let links = "";
+  
   const sortedSessions = Object.entries(storageSessions).sort((a, b) => {
       return Date.parse(b[1].lastAccess) - Date.parse(a[1].lastAccess);
   });
-  for (let [url, { course, lastAccess, startedOn }] of sortedSessions) {
+  for (let [url, { course, lastAccess }] of sortedSessions) {
       links += `
           <div class="savedSession block">
               <a href="${url}">
@@ -100,12 +101,117 @@ const renderSessions = () => {
   }
 }
 
-const start = () => {
+const start = async () => {
   const src = document.getElementById('quiz').value;
-  const mode = document.getElementById('reviewmode').checked ? 'review' : document.getElementById('fastmode').checked ? 'fastmode' : 'default';
+  
+  // Fetch logs for the selected quiz
+  try {
+    // First get the response
+    const logResponse = await fetch(`/get-logs/${src}`);
+    
+    // Check response status before parsing
+    if (!logResponse.ok) throw new Error('Failed to fetch logs');
+    
+    // Parse response ONCE and store it
+    const logs = await logResponse.json();
+    console.log('Log response:', logs);
+    
+    const sessionCount = Object.keys(logs).length;
+
+    if (sessionCount >= 5) {
+      const proceed = await showStartModal(logs);
+      if (!proceed) return;
+    }
+  } catch (error) {
+    console.error('Log check failed:', error);
+    return; // Prevent redirect on error
+  }
+
+  // Get mode parameters after handling errors
+  const mode = document.getElementById('reviewmode').checked ? 'review' : 
+              document.getElementById('fastmode').checked ? 'fastmode' : 'default';
   const sessionId = crypto.randomUUID();
-  const url = `quiz-engine.html?src=${src}&mode=${mode}&session=${sessionId}`;
-  window.location = url;
+
+  console.log('Redirecting to quiz in 3 seconds...');
+  setTimeout(() => {
+    window.location = `quiz-engine.html?src=${src}&mode=${mode}&session=${sessionId}`;
+  }, 30000);
+};
+
+// Add modal handler
+const showStartModal = (sessions) => {
+  return new Promise((resolve) => {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+
+    const sessionList = Object.entries(sessions).sort(([,a], [,b]) => 
+      new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    modalContent.innerHTML = `
+      <p>Found ${sessionList.length} saved sessions. Please select an option below.</p>
+      <button id="refresh-btn">Refresh Quiz</button>
+      <button id="continue-btn">Cancel</button>
+      <div id="sessions-list">
+        ${sessionList.map(([id, session]) => `
+          <div class="session-item">
+            <div>
+              ${new Date(session.timestamp).toLocaleString()}<br>
+              Questions: ${session.firstCorrect.length}
+            </div>
+            <button class="delete-btn" data-session="${id}">Delete</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    // Fixed: Changed all 'content' references to 'modalContent'
+    modalContent.querySelector('#continue-btn').addEventListener('click', () => {
+      modal.remove();
+      resolve(true);
+    });
+
+    modalContent.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          await fetch('/delete-log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              quizName: src, // Changed from 'source' to 'src'
+              sessionId: btn.dataset.session
+            })
+          });
+          btn.closest('.session-item').remove();
+        } catch (error) {
+          alert('Failed to delete session');
+        }
+      });
+    });
+
+    modalContent.querySelector('#refresh-btn').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/refresh-quiz', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quizName: src })
+        });
+        if (!response.ok) throw new Error('Refresh failed');
+        modal.remove();
+        window.location.reload();
+      } catch (error) {
+        console.error('Refresh failed:', error);
+        alert('Refresh failed - using original version');
+      }
+    });
+
+    // Removed non-existent cancel-btn handler
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+  });
 };
 
 document.addEventListener("DOMContentLoaded", () => {
