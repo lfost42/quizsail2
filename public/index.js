@@ -30,9 +30,9 @@ async function loadQuizzes() {
 }
 
 // Update deleteSession to be global
-window.deleteQuizSession = async function(url) {
+window.deleteQuizSession = function(url) {
   const sessionId = url.split('session=')[1];
-  const hashedSession = await hash(sessionId); // Hash the session ID
+  const hashedSession = hash(sessionId); // Sync call
   delete storageSessions[url];
   localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
   fetch(`/state/${hashedSession}`, { method: 'DELETE' });
@@ -103,9 +103,10 @@ const renderSessions = () => {
 const start = () => {
   const src = document.getElementById('quiz').value;
   const mode = document.getElementById('reviewmode').checked ? 'review' : document.getElementById('fastmode').checked ? 'fastmode' : 'default';
-  const url = `quiz-engine.html?src=${src}&mode=${mode}`;
+  const sessionId = crypto.randomUUID();
+  const url = `quiz-engine.html?src=${src}&mode=${mode}&session=${sessionId}`;
   window.location = url;
-}
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     renderSessions();
@@ -127,13 +128,16 @@ document.addEventListener("click", ({ target }) => {
 });
 
 function hash(value) {
-  // Simple hash for localhost development
-  if (window.location.hostname === 'localhost') {
-    let hash = 0;
-    for (let i = 0; i < value.length; i++) {
-      hash = (hash << 5) - hash + value.charCodeAt(i);
-      hash |= 0; // Convert to 32bit integer
-    }
-    return Promise.resolve(hash.toString());
+  // Handle numeric strings (server compatibility)
+  if (typeof value === 'string' && value.match(/^-?\d+$/)) {
+    return value;
   }
+
+  // Sync hash calculation (matches server exactly)
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash.toString(); // Return string to match server
 }

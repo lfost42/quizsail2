@@ -71,18 +71,18 @@ async function start() {
         return res.json();
       });
 
-      const sessions = await fetch(`/get-logs/${source}`)
+    const sessions = await fetch(`/get-logs/${source}`)
       .then(res => res.json())
       .catch(() => ({}));
   
     if (Object.keys(sessions).length >= 5) {
       const proceed = await showSessionModal(sessions);
-      if (!proceed) window.location.reload(); // Refresh if sessions were deleted
+      if (!proceed) window.location.reload();
     }  
 
-    // Initialize state (don't try to fetch yet)
+    // Initialize DEFAULT state first
     content = quizContent;
-    state = {
+    let initialState = {
       complete: [],
       working: [],
       unseen: Array.from({length: content.length}, (_, i) => ({
@@ -95,18 +95,33 @@ async function start() {
       lastIndex: -1
     };
 
-    // Save initial state immediately
-    await saveState(() => {});
-
-    // Load existing state (will overwrite if exists)
+    // Now try to load existing state
+    const hashedSession = hash(session);
     try {
-      const res = await fetch(`/state/${h}`);
+      const res = await fetch(`/state/${hashedSession}`);
       if (res.ok) {
         const savedState = await res.json();
-        state = savedState;
+        // Merge loaded state with initial state
+        state = {
+          ...initialState,
+          ...savedState,
+          // Preserve array properties from saved state
+          complete: savedState.complete || initialState.complete,
+          working: savedState.working || initialState.working,
+          unseen: savedState.unseen || initialState.unseen
+        };
+      } else {
+        state = initialState;
       }
     } catch (e) {
-      // console.log('');
+      console.log('Using initial state');
+      state = initialState;
+    }
+
+    // Save state only if it's new
+    if (!state.version) {
+      state.version = 1;
+      await saveState(() => {});
     }
 
     show();
