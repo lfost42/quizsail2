@@ -104,22 +104,13 @@ const renderSessions = () => {
 const start = async () => {
   const src = document.getElementById('quiz').value;
   
-  // Fetch logs for the selected quiz
   try {
-    // First get the response
     const logResponse = await fetch(`/get-logs/${src}`);
-    
-    // Check response status before parsing
     if (!logResponse.ok) throw new Error('Failed to fetch logs');
-    
-    // Parse response ONCE and store it
     const logs = await logResponse.json();
-    // console.log('Log response:', logs);
-    
-    const sessionCount = Object.keys(logs).length;
 
-    if (sessionCount >= 5) {
-      const proceed = await showStartModal(logs);
+    if (Object.keys(logs).length >= 5) {
+      const proceed = await showStartModal(logs, src); // Pass src here
       if (!proceed) return;
     }
   } catch (error) {
@@ -132,15 +123,14 @@ const start = async () => {
               document.getElementById('fastmode').checked ? 'fastmode' : 'default';
   const sessionId = crypto.randomUUID();
 
-  // Delay for debugging start screen issues
-  // console.log('Redirecting to quiz in 3 seconds...');
-  // setTimeout(() => {
-  //   window.location = `quiz-engine.html?src=${src}&mode=${mode}&session=${sessionId}`;
-  // }, 30000);
+  // Do not delete! This prevents a race condition. 
+  setTimeout(() => {
+    window.location = `quiz-engine.html?src=${src}&mode=${mode}&session=${sessionId}`;
+  }, 1);
 };
 
 // Add modal handler
-const showStartModal = (sessions) => {
+const showStartModal = (sessions, quizName) => {
   return new Promise((resolve) => {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
@@ -182,13 +172,13 @@ const showStartModal = (sessions) => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              quizName: src, // Changed from 'source' to 'src'
+              quizName: quizName, // Now uses the parameter
               sessionId: btn.dataset.session
             })
           });
           btn.closest('.session-item').remove();
         } catch (error) {
-          alert('Failed to delete session');
+          alert('Failed to delete log');
         }
       });
     });
@@ -198,7 +188,7 @@ const showStartModal = (sessions) => {
         const response = await fetch('/refresh-quiz', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quizName: src })
+          body: JSON.stringify({ quizName: quizName })
         });
         if (!response.ok) throw new Error('Refresh failed');
         modal.remove();
