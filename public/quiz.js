@@ -133,23 +133,20 @@ function showSessionModal(sessions) {
 
     // Prune Logs Modal
     content.innerHTML = `
-      <h3>Found ${sessionList.length} saved sessions:</h3>
-      <div style="margin-top: 20px; display: flex; gap: 10px;">
-        <button id="continue-btn">Continue Quiz</button>
-        <button id="refresh-btn">Refresh Quiz</button>
+    <p>Found ${sessionList.length} saved sessions. Please select an option below.</p>
+        <button id="refresh-btn">Refresh Quiz</button>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp        
+        <button id="continue-btn">Cancel</button>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
         <button id="back-btn">Back to Start</button>
-      </div>
       <div id="sessions-list">
         ${sessionList.map(([id, session]) => `
           <div class="session-item">
             <div>
-              <strong>${new Date(session.timestamp).toLocaleString()}</strong><br>
+              ${new Date(session.timestamp).toLocaleString()}<br>
               Questions: ${session.firstCorrect.length}
             </div>
             <button class="delete-btn" data-session="${id}">Delete</button>
           </div>
         `).join('')}
-      </div>
     `;
 
     // Add event listeners
