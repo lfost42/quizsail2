@@ -10,26 +10,29 @@ QuizSail's competency system works by holding a certain number of questions from
 
 ## List of updates for QuizSail 2.0
 
-## Refresh Quiz
+#### Refresh Quiz
 🔥 Log functionality that keeps track of all successful first attempts for the last 10 sessions.
 🔥 Option to prune logs once there are 5 in case there are sessions that were deleted prior to starting a new one. 
 🔥 Option to refresh a quiz after 5 sessions: removes the questions that were answered correctly on the first try at least 3 out of the last 5 sessions. Original quiz is moved to the "retired" directory. 
+🔥 [Review Mode] added: requires only one correct answer, to find the questions you don't need to spend too much time studying.  
 
-☑️ New quizzes are dynamically added to start menu (add json files to the public/quizzes folder).  
+#### Navigation and Features
+☑️ [Delete All Sessions] option added to Start.  
+☑️ [Return to Start] link added to quiz page.  
+☑️ Sessions deleted upon completion.  
+☑️ New quizzes are dynamically added to start menu (add json files to the public/quizzes folder).   
 ☑️ Avoids giving the same question twice in a row (mostly) unless it's the last question.  
+☑️ Explanations added to the result if available (need to populate the "e" item in the json file). 
 
-📂 [Review Mode] added: requires only one correct answer. 
-📂 [Delete All Sessions] option added to Start.  
-📂 [Return to Start] link added to quiz page.  
-
-⚙️ Functionality to adds line breaks (\n).  
+#### Formatting quiz text flexibility
+⚙️ Able to parse line breaks using \n.  
 ⚙️ Text font switches to monotype when wrapped in < code > tags.  
-⚙️ Upon completion of a quiz, the session is deleted and you are returned to start.  
-⚙️ Explanations added to the result if available (need to populate the "e" item in the json file).  
 
-📃 [Script](scripts/explanation_adder/) to add an json explanation items to any working json file (this is a placeholder, you'll need to fill in the explanations).  
-📃 [Script](scripts/quiz_generators) to convert the results of a Jason Dion practice test (on udemy) and parse the questions, answers, and explanations into a quizsail json file. 
-📃 [Script](scripts/quiz_generators) to convert Sybex practice tests (1 file for questions/choices and 1 file for the answers/explanations) and parse the questions, answers, and explanations into a quizsail json file. 
+#### Other Helper Scripts
+📃 [codify.py](scripts/quiz_generators/) takes input text, wraps it in < code > tags, adds line breaks, and outputs it into a single line to past back into a quiz json file. 
+📃 [dion_quiz.py](scripts/quiz_generators/) to convert the results of a Jason Dion practice test (from Udemy) into a quizsail json file. 
+📃 [Sybex Scripts](scripts/quiz_generators) to convert Sybex practice tests (1 file for questions/choices and 1 file for the answers/explanations) into a quizsail json file. 
+📃 [Script](scripts/explanation_adder/) to add an json explanation item to any working json file (this is a placeholder, you'll need to fill in the explanations).  
 > See my scripts [README](scripts/README.md) file for more info.  
 
 ## Getting Started
@@ -45,7 +48,8 @@ These instructions will get you a copy of the project up and running on your loc
 * Run `npm install`
 * Run `npm start`
 * Open your browser and enter `http://localhost:3000`
-* For future runs, you can run `npm start` at the quizsail2 folder and navigate your browser to `localhost:3000`. 
+* For future runs, you can run `npm start` at the quizsail2 folder and navigate your browser to `localhost:3000`.  
+* Add additional quiz files to public/quizzes and refresh start page (if already open) to run other quizzes.
 
 ## Deployment Notes
 `docker build -t quizsail .`
