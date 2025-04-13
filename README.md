@@ -11,9 +11,9 @@ QuizSail's competency system works by holding a certain number of questions from
 ## List of updates for QuizSail 2.0
 
 #### Refresh Quiz
-🔥 Log functionality that keeps track of all successful first attempts for the last 10 sessions.
-🔥 Option to prune logs once there are 5 in case there are sessions that were deleted prior to starting a new one. 
-🔥 Option to refresh a quiz after 5 sessions: removes the questions that were answered correctly on the first try at least 3 out of the last 5 sessions. Original quiz is moved to the "retired" directory. 
+🔥 Log functionality that keeps track of all successful first attempts for the last 10 sessions.  
+🔥 Option to prune logs once there are 5 in case there are sessions that were deleted prior to starting a new one.  
+🔥 Option to refresh a quiz after 5 sessions: removes the questions that were answered correctly on the first try at least 3 out of the last 5 sessions. Original quiz is moved to the "retired" directory.  
 🔥 [Review Mode] added: requires only one correct answer, to find the questions you don't need to spend too much time studying.  
 
 #### Navigation and Features
