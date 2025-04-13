@@ -29,9 +29,9 @@ QuizSail's competency system works by holding a certain number of questions from
 ⚙️ Text font switches to monotype when wrapped in < code > tags.  
 
 #### Other Helper Scripts
-📃 [codify.py](scripts/quiz_generators/) takes input text, wraps it in < code > tags, adds line breaks, and outputs it into a single line to past back into a quiz json file. 
-📃 [dion_quiz.py](scripts/quiz_generators/) to convert the results of a Jason Dion practice test (from Udemy) into a quizsail json file. 
-📃 [Sybex Scripts](scripts/quiz_generators) to convert Sybex practice tests (1 file for questions/choices and 1 file for the answers/explanations) into a quizsail json file. 
+📃 [codify.py](scripts/quiz_generators/) takes input text, wraps it in < code > tags, adds line breaks, and outputs it into a single line to past back into a quiz json file.  
+📃 [dion_quiz.py](scripts/quiz_generators/) to convert the results of a Jason Dion practice test (from Udemy) into a quizsail json file.  
+📃 [Sybex Scripts](scripts/quiz_generators) to convert Sybex practice tests (1 file for questions/choices and 1 file for the answers/explanations) into a quizsail json file.  
 📃 [Script](scripts/explanation_adder/) to add an json explanation item to any working json file (this is a placeholder, you'll need to fill in the explanations).  
 > See my scripts [README](scripts/README.md) file for more info.  
 
