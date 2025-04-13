@@ -1,9 +1,24 @@
 // declare variables
+(() => { // IIFE to encapsulate scope
 let inputs = [];
 let labels = {};
 
 var state = null;
 var content = null;
+
+(function init() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('mode') === 'review') {
+    document.removeEventListener('DOMContentLoaded', start);
+    return;
+  }
+  document.addEventListener("DOMContentLoaded", start);
+})();
+
+function getParam(name) {
+  const searchParams = new URLSearchParams(location.search);
+  return searchParams.get(name);
+}
 
 const source = getParam('src');
 if (!source) {
@@ -28,8 +43,8 @@ const updateSessions = (url, course) => {
   localStorage.setItem(SAVED_SESSIONS, JSON.stringify(sessions));
 };
 
-// Fixed deleteSession function
-async function deleteSession() {
+// DeleteSession function
+async function deleteEndSession() {
   const session = getParam('session');
   const fullUrl = document.location.href;
   const sessions = getStorageSessions();
@@ -45,6 +60,11 @@ async function deleteSession() {
   
   delete sessions[fullUrl];
   localStorage.setItem(SAVED_SESSIONS, JSON.stringify(sessions));
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('mode') === 'review') {
+  document.removeEventListener('DOMContentLoaded', start);
 }
 
 async function start() {
@@ -149,7 +169,7 @@ function show() {
     E("choice_form").html = "<p>Please click [Return to Start] at the bottom of the page to start a new quiz.</p>";
     E("result").html = "";
     E("submitbtn").attr = false;
-    deleteSession();
+    deleteEndSession();
     return;
   }
 
@@ -356,10 +376,6 @@ function submitAnswer() {
     if (!('tries' in questionState)) questionState.tries = 0;
 questionState.tries++;
       switch(mode) {
-          case 'review':
-              questionState.count = 3;
-              break;
-              
           case 'fastmode':
               if (questionState.firstAttemptCorrect === null) {
                   // First attempt
@@ -521,11 +537,6 @@ function shuffle(a) {
     return a;
 }
 
-function getParam(name) {
-    const searchParams = new URLSearchParams(location.search);
-    return searchParams.get(name);
-}
-
 async function saveState(callback) {
   try {
     const session = getParam('session');
@@ -597,3 +608,4 @@ function hash(value) {
   }
   return hash.toString();
 }
+})(); // End IIFE

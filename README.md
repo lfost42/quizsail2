@@ -14,7 +14,13 @@ QuizSail's competency system works by holding a certain number of questions from
 🔥 Log functionality that keeps track of all successful first attempts for the last 10 sessions.  
 🔥 Option to prune logs once there are 5 in case there are sessions that were deleted prior to starting a new one.  
 🔥 Option to refresh a quiz after 5 sessions: removes the questions that were answered correctly on the first try at least 3 out of the last 5 sessions. Original quiz is moved to the "retired" directory.  
-🔥 [Review Mode] added: requires only one correct answer, to find the questions you don't need to spend too much time studying.  
+
+#### Refresh Quiz (in progress)
+✅ Scroll through all questions, answers and explanations.   
+🔲 Add or modify explanations.  
+🔲 Modify Answers.  
+🔲 Modify question.  
+🔲 Modify Choice.  
 
 #### Navigation and Features
 ☑️ [Delete All Sessions] option added to Start.  
@@ -52,7 +58,7 @@ These instructions will get you a copy of the project up and running on your loc
 * Add additional quiz files to public/quizzes and refresh start page (if already open) to run other quizzes.
 
 ## Deployment Notes
-`docker build -t quizsail .`
+`docker build -t quizsail .`  
 `docker run --mount 'type=volume,src=quizsail,dst=/usr/src/app/data' --restart=always -i -p 49000:3000 -d quizsail`
 
 ## Contributing

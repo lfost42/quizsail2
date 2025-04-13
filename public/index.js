@@ -5,7 +5,7 @@ const fadeOut = (element) => {
     element.hidden = true;
     setTimeout(() => {
         element.remove();
-    }, 1000);    
+    }, 500);    
 }
 
 // Dynamically load quiz menu by parsing the public folder for json files
@@ -29,26 +29,34 @@ async function loadQuizzes() {
   }
 }
 
-// Update deleteSession to be global
-window.deleteQuizSession = function(url) {
-  const sessionId = url.split('session=')[1];
-  const hashedSession = hash(sessionId); // Sync call
-  delete storageSessions[url];
-  localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
-  fetch(`/state/${hashedSession}`, { method: 'DELETE' });
-}
-
-const deleteSession = (target) => {
+// Update the deleteSession function
+const deleteSession = async (target) => {
   const confirm = window.confirm("Are you sure you want to delete this session?");
   if (confirm) {
-      delete storageSessions[target.dataset.session];
-      localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
-      fadeOut(target.parentElement);
-      if (Object.keys(storageSessions).length === 0) {
-          document.getElementById("resumeTitle").remove();
+      try {
+          const url = target.dataset.url;
+          // Extract sessionId correctly using URLSearchParams
+          const sessionId = new URL(url).searchParams.get("session");
+          const hashedSession = hash(sessionId);
+          
+          // Wait for server confirmation
+          const response = await fetch(`/state/${hashedSession}`, { method: 'DELETE' });
+          if (!response.ok) throw new Error('Server deletion failed');
+
+          // Update client state only after successful server deletion
+          delete storageSessions[url];
+          localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
+          fadeOut(target.parentElement);
+          
+          if (Object.keys(storageSessions).length === 0) {
+              document.getElementById("resumeTitle")?.remove();
+          }
+      } catch (error) {
+          console.error('Deletion error:', error);
+          alert('Failed to delete session from server');
       }
   }
-}
+};
 
 const deleteAllSessions = async () => {
   const confirm = window.confirm("Are you sure you want to delete all sessions?");
@@ -103,7 +111,10 @@ const renderSessions = () => {
 
 const start = async () => {
   const src = document.getElementById('quiz').value;
-  
+  if (!src) {
+    alert("⚠️ Please select a quiz! ⚠️ ");
+    return;
+  }
   try {
     const logResponse = await fetch(`/get-logs/${src}`);
     if (!logResponse.ok) throw new Error('Failed to fetch logs');
@@ -123,7 +134,7 @@ const start = async () => {
               document.getElementById('fastmode').checked ? 'fastmode' : 'default';
   const sessionId = crypto.randomUUID();
 
-  // Do not delete! This prevents a race condition. 
+  // Do not delete! Prevents a race condition. 
   setTimeout(() => {
     window.location = `quiz-engine.html?src=${src}&mode=${mode}&session=${sessionId}`;
   }, 1);
@@ -210,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadQuizzes();
 });
 
-document.addEventListener("click", ({ target }) => {
+document.addEventListener("click", async ({ target }) => {
     if (!target) return;
     if (target.classList.contains("deleteAllLink")) {
       deleteAllSessions();
@@ -219,10 +230,10 @@ document.addEventListener("click", ({ target }) => {
     if (target.id === "startButton") {
         return start();
     }
-    if (target.className === "deleteSession") {
-        return deleteSession(target);
-    }
-});
+    if (target.classList.contains("deleteSession")) {
+      await deleteSession(target);
+      return;
+}});
 
 function hash(value) {
   // Handle numeric strings (server compatibility)

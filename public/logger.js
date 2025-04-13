@@ -1,6 +1,10 @@
 // Logs successful first attempts in each session. 
 const MAX_LOG_COUNT = 10;
 
+function isReviewMode() {
+  return new URLSearchParams(window.location.search).get('mode') === 'review';
+}
+
 function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
@@ -49,6 +53,7 @@ function initializeLogFile() {
 
 // Modified saveLogToServer
 window.saveLogToServer = async function(quizName, questionIndex) {
+  if (isReviewMode()) return;
   const sessionId = getParam('session');
   if (!sessionId) {
     console.error('[Logger] No session ID');
@@ -78,6 +83,7 @@ window.saveLogToServer = async function(quizName, questionIndex) {
 
 // Update installAnswerMonitor to ensure proper initialization
 function installAnswerMonitor() {
+  if (isReviewMode()) return;
   if (!window.submitAnswer) {
     console.warn('[Logger] submitAnswer not found, retrying...');
     setTimeout(installAnswerMonitor, 500);
@@ -96,14 +102,18 @@ function installAnswerMonitor() {
 }
 
 // Initialize after quiz.js loads
-if (document.readyState === 'complete') {
-  initializeLogFile();
-  installAnswerMonitor();
-} else {
-  document.addEventListener('DOMContentLoaded', () => {
+if (!isReviewMode()) {
+  if (document.readyState === 'complete') {
     initializeLogFile();
     installAnswerMonitor();
-  });
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!isReviewMode()) {
+        initializeLogFile();
+        installAnswerMonitor();
+      }
+    });
+  }
 }
 
 
