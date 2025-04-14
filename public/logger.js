@@ -86,7 +86,7 @@ function installAnswerMonitor() {
   if (isReviewMode()) return;
   if (!window.submitAnswer) {
     console.warn('[Logger] submitAnswer not found, retrying...');
-    setTimeout(installAnswerMonitor, 500);
+    setTimeout(installAnswerMonitor, 5000);
     return;
   }
 

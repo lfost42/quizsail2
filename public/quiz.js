@@ -1,4 +1,4 @@
-// declare variables
+// quiz.js
 (() => { // IIFE to encapsulate scope
 let inputs = [];
 let labels = {};
@@ -12,7 +12,8 @@ var content = null;
     document.removeEventListener('DOMContentLoaded', start);
     return;
   }
-  document.addEventListener("DOMContentLoaded", start);
+    document.addEventListener("DOMContentLoaded", start);
+
 })();
 
 function getParam(name) {
@@ -42,6 +43,11 @@ const updateSessions = (url, course) => {
   
   localStorage.setItem(SAVED_SESSIONS, JSON.stringify(sessions));
 };
+
+if (new URLSearchParams(window.location.search).get('mode') !== 'review') {
+  initializeLogFile();
+  installAnswerMonitor();
+}
 
 // DeleteSession function
 async function deleteEndSession() {
@@ -311,7 +317,7 @@ function cur() {
     }
 }
 
-function submitAnswer() {
+async function submitAnswer() {
   const currentItem = cur();
   const questionState = currentItem.ref;
   const item = currentItem.item;
@@ -359,13 +365,23 @@ function submitAnswer() {
             }
         }
     }
+
   }
   
   if (correct) {
     // FIRST ATTEMPT LOGGING
     if (questionState.firstAttemptCorrect === null) {
       questionState.firstAttemptCorrect = true;
-      window.saveLogToServer(getParam('src'), currentItem.ref.index);
+      await fetch('/save-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            quizName: getParam('src'),
+            questionIndex: currentItem.ref.index,
+            sessionId: getParam('session'),
+            timestamp: new Date().toISOString()
+        })
+    });
     }
     
     if (questionState.count >= 3) {
@@ -427,7 +443,7 @@ questionState.tries++;
   }
 
     // console.log(`answer is ${correct}`)
-    let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers}`;
+    let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers.join(', ')}`;
     // Add explanation if available
     if (item.e) {
         resultMessage += `<br><br>${item.e.replace(/\n/g, '<br>')}`;
@@ -608,4 +624,73 @@ function hash(value) {
   }
   return hash.toString();
 }
+
+const MAX_LOG_COUNT = 10;
+
+async function pruneOldLogs(quizName) {
+  try {
+    await fetch('/prune-logs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quizName, maxCount: MAX_LOG_COUNT })
+    });
+  } catch (error) {
+    console.error('[Logger] Pruning failed:', error);
+  }
+}
+
+function initializeLogFile() {
+  const sessionId = getParam('session');
+  const quizName = getParam('src');
+
+  if (!sessionId || !quizName) {
+    console.warn('[Logger] Missing session ID or quiz name');
+    return;
+  }
+
+  fetch('/save-log', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      quizName,
+      questionIndex: -1,
+      sessionId,
+      timestamp: new Date().toISOString()
+    })
+  }).then(() => pruneOldLogs(quizName))
+    .catch(err => console.error('[Logger] Log initialization failed:', err));
+}
+
+function installAnswerMonitor() {
+  const monitorButton = () => {
+    const submitBtn = document.getElementById('submitbtn');
+    if (!submitBtn) {
+      setTimeout(monitorButton, 500); // Retry until button exists
+      return;
+    }
+
+    const originalHandler = submitBtn.onclick;
+    submitBtn.onclick = function(...args) {
+      const current = cur(); // Access quiz.js's internal state
+      if (current?.ref?.firstAttemptCorrect === null) {
+        // Log first attempt
+        fetch('/save-log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            quizName: getParam('src'),
+            questionIndex: current.ref.index,
+            sessionId: getParam('session'),
+            timestamp: new Date().toISOString()
+          })
+        });
+      }
+      return originalHandler?.apply(this, args);
+    };
+  };
+  monitorButton();
+}
+
+window.submitAnswer = submitAnswer;
+window.show = show;
 })(); // End IIFE

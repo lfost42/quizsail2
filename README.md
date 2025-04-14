@@ -16,11 +16,14 @@ QuizSail's competency system works by holding a certain number of questions from
 🔥 Option to refresh a quiz after 5 sessions: removes the questions that were answered correctly on the first try at least 3 out of the last 5 sessions. Original quiz is moved to the "retired" directory.  
 
 #### Refresh Quiz (in progress)
-✅ Scroll through all questions, answers and explanations.   
-🔲 Add or modify explanations.  
-🔲 Modify Answers.  
-🔲 Modify question.  
-🔲 Modify Choice.  
+✅ Scroll through all questions, answers and explanations. 
+*️ Current functionality is server-side only *️  
+🔲 Add or modify current explanation.  
+🔲 Modify current answer.  
+🔲 Modify current question.  
+🔲 Modify current choice.  
+🔲 Add a new choice.  
+🔲 Add a new question.  
 
 #### Navigation and Features
 ☑️ [Delete All Sessions] option added to Start.  

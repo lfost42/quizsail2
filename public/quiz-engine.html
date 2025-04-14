@@ -7,7 +7,6 @@
     <script src="./common.js"></script>
     <script type="module" src="quiz.js"></script>
     <script type="module" src="review.js"></script>
-    <script src="./logger.js"></script>
     <script type="text/javascript">
       window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter'||e.keyCode==13){if(e.target.nodeName=='INPUT'&&e.target.type=='text'){e.preventDefault();return false;}}},true);
       </script>
@@ -42,9 +41,9 @@
         background-color: lightgreen;
         cursor: pointer;
         display: inherit;
-        margin: 0 auto;
-        padding: 2vh 10vw;
-        margin-top: 5vh;
+        padding: 2vh 6vw;
+        margin-top: 3vh;
+        margin-left: 6vh;
       }
       input[type="button"]:hover {
         background-color: green;
@@ -52,14 +51,6 @@
       }
       #choice_form{
         text-align: left;
-      }
-      #question {
-        font-size: larger;
-        padding: 40px;
-        padding-left: 10vw;
-      }
-      #choices {
-        padding-left: 15vw;
       }
       #submit,
       #content {
@@ -106,7 +97,7 @@
           padding: 1vw;
         }
         #choices{
-          padding: 1vw;
+          padding: 1vw 1vh;
           max-width: 100vw;
           min-width: 80vw;
           min-height: 80vh;
@@ -122,6 +113,82 @@
       }
       .incorrect{
         color: red;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+      }
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+      }
+      .close {
+        color: #505050;
+        float: right;
+        font-size: 30px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      #modalTextarea {
+        width: 100%;
+        height: 100px;
+        margin: 15px 0;
+        padding: 8px;
+        box-sizing: border-box;
+        font-family: 'Roboto Mono', monospace;
+      }
+      #modalSubmit {
+        background-color: #4f9a52;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+      }
+      #modalSubmit:hover {
+        background-color: #39653b;
+      }
+      #modalBack {
+        background-color: #a82b0e;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+      }
+      #modalBack:hover {
+        background-color: #6a2610;
+      }
+      #editSelectionContent ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      #editSelectionContent li {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #ddd;
+      }
+      #editSelectionContent li:hover {
+        background-color: #f5f5f5;
+      }
+      /* child modal */
+      .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        justify-content: flex-end;
       }
     </style>
   </head>
