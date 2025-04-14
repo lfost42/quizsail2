@@ -7,7 +7,7 @@ public/quizzes/
 
 scripts/quiz_generators/*_raw*.txt
 scripts/quiz_generators/cram*
-scripts/quiz_generators/*_2.py
-scripts/quiz_generators/*_2.txt
+scripts/quiz_generators/*_2*
+scripts/quiz_generators/*_c*
 scripts/quiz_generators/OutputFiles/
 
