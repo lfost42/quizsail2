@@ -180,41 +180,43 @@ function show() {
   }
 
   let currentItem;
-  const avoidIndex = state.lastIndex;
+  const avoidIndex = mode === 'fastmode' ? -1 : state.lastIndex;
 
-  // Universal filtering for all question sources
-  const workingCandidates = state.working.filter(q => q.index !== avoidIndex);
-  const unseenCandidates = state.unseen.filter(q => q.index !== avoidIndex);
-
-  // 1. Working Set Selection (when unseen empty)
-  if (state.unseen.length === 0 && workingCandidates.length > 0) {
-    currentItem = workingCandidates[Math.floor(Math.random() * workingCandidates.length)];
-  }
-  // 2. Normal Working Set Selection
-  else if (state.working.length >= MAX_WORKING) {
-    currentItem = workingCandidates.length > 0
-      ? workingCandidates[Math.floor(Math.random() * workingCandidates.length)]
-      : state.working[Math.floor(Math.random() * state.working.length)];
-  }
-  // 3. Unseen Set Selection
-  else if (unseenCandidates.length > 0) {
-    currentItem = unseenCandidates[Math.floor(Math.random() * unseenCandidates.length)];
-    state.unseen = state.unseen.filter(q => q.index !== currentItem.index);
-    state.working.push(currentItem);
-  }
-  // 4. Fallback to forced new question
-  else {
-    currentItem = state.working.concat(state.unseen)
-      .find(q => q.index !== avoidIndex) || state.working[0];
+  // Always prioritize adding new questions when possible
+  if (state.working.length < MAX_WORKING && state.unseen.length > 0) {
+      // Filter unseen questions excluding avoidIndex
+      const availableNew = state.unseen.filter(q => 
+          q.index !== avoidIndex &&
+          !state.complete.some(c => c.index === q.index)
+      );
+      
+      if (availableNew.length > 0) {
+          currentItem = availableNew[Math.floor(Math.random() * availableNew.length)];
+          state.unseen = state.unseen.filter(q => q.index !== currentItem.index);
+          state.working.push(currentItem);
+      }
   }
 
-  // Final protection against duplicates
-  if (currentItem?.index === avoidIndex) {
-    const allQuestions = [...state.working, ...state.unseen];
-    currentItem = allQuestions.find(q => q.index !== avoidIndex) || allQuestions[0];
+  // If no new questions added, select from working set
+  if (!currentItem) {
+      const availableWorking = state.working.filter(q => 
+          q.index !== avoidIndex &&
+          !state.complete.some(c => c.index === q.index)
+      );
+      
+      if (availableWorking.length > 0) {
+          currentItem = availableWorking[Math.floor(Math.random() * availableWorking.length)];
+      }
   }
 
-  state.lastIndex = currentItem?.index || -1;
+  // Final fallback
+  if (!currentItem) {
+      currentItem = [...state.working, ...state.unseen]
+          .filter(q => q.index !== avoidIndex)[0];
+  }
+
+  shuffle(state.working);
+  state.lastIndex = currentItem.index;
 
   saveState(() => {
     const currentItem = cur();
@@ -306,16 +308,19 @@ function show() {
  * return reference to current question
  */
 function cur() {
-    if (!state.working || state.working.length === 0) {
-      console.warn('[Quiz] cur() called with empty working set');  
-      return null;
-    }
-    const questionRef = state.working[state.working.length-1];
+    // Get from working set excluding completed questions
+    const validWorking = state.working.filter(q => 
+      !state.complete.some(c => c.index === q.index)
+    );
+    
+    if (validWorking.length === 0) return null;
+    
+    const questionRef = validWorking[validWorking.length - 1];
     return {
         item: content[questionRef.index],
         ref: questionRef
     }
-}
+  }
 
 async function submitAnswer() {
   const currentItem = cur();
@@ -371,76 +376,83 @@ async function submitAnswer() {
   if (correct) {
     // FIRST ATTEMPT LOGGING
     if (questionState.firstAttemptCorrect === null) {
-      questionState.firstAttemptCorrect = true;
-      await fetch('/save-log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            quizName: getParam('src'),
-            questionIndex: currentItem.ref.index,
-            sessionId: getParam('session'),
-            timestamp: new Date().toISOString()
-        })
-    });
+        questionState.firstAttemptCorrect = true;
+        await fetch('/save-log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                quizName: getParam('src'),
+                questionIndex: currentItem.ref.index,
+                sessionId: getParam('session'),
+                timestamp: new Date().toISOString()
+            })
+        });
     }
-    
-    if (questionState.count >= 3) {
-      state.complete.push(questionState);
-      state.working.pop();
-    }
-    // Increment tries FIRST
+
+    // Increment tries
     if (!('tries' in questionState)) questionState.tries = 0;
-questionState.tries++;
-      switch(mode) {
-          case 'fastmode':
-              if (questionState.firstAttemptCorrect === null) {
-                  // First attempt
-                  questionState.firstAttemptCorrect = true;
-                  questionState.count = 3;
-              } else {
-                  questionState.currentStreak++;
-                  if (questionState.currentStreak >= 3) {
-                      questionState.count = 3;
-                  }
-              }
-              break;
-              
-          default: // Default mode
-              questionState.count++;
-      }
-      saveState(() => {
-        // console.log('[Quiz] State saved:', questionState);
-      });
-      
-      if (questionState.count >= 3) {
+    questionState.tries++;
+
+    // Handle mode-based progression
+    switch(mode) {
+      case 'fastmode':
+          questionState.count = Math.max(0, questionState.count + 1); // Increment count
+          questionState.currentStreak = 0; // Reset streak
+          // Keep firstAttemptCorrect tracking
+          if (questionState.firstAttemptCorrect === null) {
+              questionState.firstAttemptCorrect = false;
+          }
+          break;
+      default:
+          questionState.count = Math.max(0, questionState.count + 1);
+    }
+
+    // Correct answer handling / mastery check:
+    // Check if either fastmode with first correct attempt or count >=3
+    if ((mode === 'fastmode' && questionState.firstAttemptCorrect) || questionState.count >= 3) {
+      state.working = state.working.filter(q => q.index !== questionState.index);
+      // Add to complete if not present
+      if (!state.complete.some(c => c.index === questionState.index)) {
           state.complete.push(questionState);
-          state.working.pop();
       }
-    } else {
-      // Handle incorrect answers
-      const currentIndex = state.working.findIndex(q => q.index === currentItem.ref.index);
-      if (currentIndex > -1) {
-        // Move answered question to middle of working set
-        state.working.splice(currentIndex, 1);
-        const insertPos = Math.max(1, Math.floor(state.working.length/2));
-        state.working.splice(insertPos, 0, currentItem.ref);
-      }
-  
-      // Update lastIndex immediately
-      state.lastIndex = currentItem.ref.index;
-  
-      // Existing incorrect answer handling
-      switch(mode) {
-        case 'fastmode':
-            if (questionState.firstAttemptCorrect === null) {
-                questionState.firstAttemptCorrect = false;
-            }
-            questionState.currentStreak = 0;
-            break;
-        default:
-            questionState.count = 0;
+      state.lastIndex = -1;
+  }
+
+    await saveState();
+  }
+
+  // Handle incorrect answers
+  const currentIndex = state.working.findIndex(q => q.index === currentItem.ref.index);
+  if (currentIndex > -1) {
+    // Move answered question to middle of working set
+    state.working.splice(currentIndex, 1);
+    const insertPos = state.working.length;
+    state.working.splice(insertPos, 0, currentItem.ref);
+  } else { // INCORRECT ANSWER HANDLING
+    // Handle incorrect answers
+    const currentIndex = state.working.findIndex(q => q.index === currentItem.ref.index);
+    if (currentIndex > -1) {
+      // Move answered question to middle of working set
+      state.working.splice(currentIndex, 1);
+      const insertPos = state.working.length;
+      state.working.splice(insertPos, 0, currentItem.ref);
     }
   }
+    // Update lastIndex immediately
+    state.lastIndex = currentItem.ref.index;
+
+    switch(mode) {
+      case 'fastmode':
+        questionState.currentStreak = 0; // Reset streak
+        // Keep firstAttemptCorrect tracking
+        if (questionState.firstAttemptCorrect === null) {
+            questionState.firstAttemptCorrect = false;
+        }
+        break;
+    default:
+      // Increment count for each correct answer in default mode
+      questionState.count = (questionState.count || 0) + 1;
+  } 
 
     // console.log(`answer is ${correct}`)
     let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers.join(', ')}`;
@@ -461,25 +473,6 @@ questionState.tries++;
     if (!('tries' in currentItem.ref)) {
         currentItem.ref.tries = 0;
     }
-
-    if (correct) {
-      // Handle correct answers based on mode
-      switch(mode) {
-          case 'fastmode':
-              currentItem.ref.count = 3; // Immediate completion in fastmode
-              break;
-          default:
-              currentItem.ref.count += 1; // Normal progression
-      }
-      
-      if (currentItem.ref.count >= 3) {
-          state.complete.push(currentItem.ref);
-          state.working.pop();
-          state.lastIndex = currentItem.ref.index;
-      }
-  } else {
-      currentItem.ref.count = 0; // Reset on incorrect answer
-  }
 }
 
 class Element {
