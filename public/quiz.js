@@ -188,7 +188,7 @@ function show() {
       const availableNew = state.unseen.filter(q => 
           q.index !== avoidIndex &&
           !state.complete.some(c => c.index === q.index)
-      );
+      )
       
       if (availableNew.length > 0) {
           currentItem = availableNew[Math.floor(Math.random() * availableNew.length)];
