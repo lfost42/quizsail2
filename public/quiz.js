@@ -326,12 +326,29 @@ function cur() {
 
 async function submitAnswer() {
   const currentItem = cur();
+
+  console.groupCollapsed(`[Submit] Question ${currentItem.ref.index}`); // DEBUG
+
   const questionState = currentItem.ref;
   const item = currentItem.item;
   const answers = item.a;
   const numChoices = currentItem.item.c.length;
   const numAnswers = answers.length;
   let correct = true;
+
+  // // DEBUG
+  // await fetch('/save-debuglogs', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({
+  //     quizName: getParam('src'),
+  //     questionIndex: currentItem.ref.index,
+  //     sessionId: getParam('session'),
+  //     timestamp: new Date().toISOString(),
+  //     isCorrect: correct, // Track correctness
+  //     attemptNumber: questionState.tries + 1
+  //   })
+  // });
 
   Object.values(labels).forEach(label => {
     label.e.style.color = ''; // Reset to default

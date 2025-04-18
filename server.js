@@ -250,6 +250,51 @@ app.post('/save-log', (req, res) => {
   }
 });
 
+// debug logger
+app.post('/save-debuglogs', (req, res) => {
+  const { quizName, questionIndex, sessionId, correct, attemptNumber } = req.body;
+  const logPath = path.join(logsDir, `${quizName}_debuglogs.json`);
+
+  // Skip invalid indices or initialization calls
+  if (questionIndex === -1) return res.sendStatus(200);
+
+  try {
+    let allLogs = {};
+    if (fs.existsSync(logPath)) {
+      allLogs = JSON.parse(fs.readFileSync(logPath));
+    }
+
+    // Initialize session if missing
+    if (!allLogs[sessionId]) {
+      allLogs[sessionId] = {
+        attempts: [], // Array to store all attempts
+        firstCorrect: [], // Optional: retain if needed
+        timestamp: new Date().toISOString()
+      };
+    }
+
+    // Log every attempt
+    allLogs[sessionId].attempts.push({
+      questionIndex,
+      correct,
+      attemptNumber,
+      timestamp: new Date().toISOString()
+    });
+
+    // Update firstCorrect only on first correct attempt
+    if (correct && !allLogs[sessionId].firstCorrect.includes(questionIndex)) {
+      allLogs[sessionId].firstCorrect.push(questionIndex);
+    }
+
+    // Save to file
+    fs.writeFileSync(logPath, JSON.stringify(allLogs));
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('[Server] Log save failed:', err);
+    res.status(500).send('Server error');
+  }
+});
+
 app.post('/prune-logs', async (req, res) => {
   try {
     const { quizName, maxCount } = req.body;
