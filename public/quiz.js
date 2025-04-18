@@ -13,7 +13,6 @@ var content = null;
     return;
   }
     document.addEventListener("DOMContentLoaded", start);
-
 })();
 
 function getParam(name) {
@@ -192,7 +191,6 @@ function show() {
       
       if (availableNew.length > 0) {
           currentItem = availableNew[Math.floor(Math.random() * availableNew.length)];
-          // console.log('[show] Selected new question:', currentItem.index); // DEBUG
           state.unseen = state.unseen.filter(q => q.index !== currentItem.index);
           state.working.push(currentItem);
       }
@@ -219,6 +217,8 @@ function show() {
   shuffle(state.working);
   state.lastIndex = currentItem.index;
 
+  // console.log('[show]: ', currentItem.index); // DEBUG INDEX
+
   saveState(() => {
     const currentItem = cur();
     if (!currentItem) return;
@@ -235,7 +235,6 @@ function show() {
 
         // shuffle choices
         shuffle(currentItem.item.c);
-
         const numChoices = currentItem.item.c.length;
         const numAnswers = currentItem.item.a.length;
         
@@ -310,24 +309,18 @@ function show() {
  */
 function cur() {
     // Get from working set excluding completed questions
-    const validWorking = state.working.filter(q => 
-      !state.complete.some(c => c.index === q.index)
-    );
-    // console.log('[cur] Valid working questions:', validWorking.map(w => w.index)); // DEBUG
-    
-    if (validWorking.length === 0) return null;
-    
-    const questionRef = validWorking[validWorking.length - 1];
+    const questionRef = state.working.find(q => q.index === state.lastIndex);
+    if (!questionRef) return null;
     return {
         item: content[questionRef.index],
         ref: questionRef
-    }
-  }
+    };
+}
 
 async function submitAnswer() {
   const currentItem = cur();
 
-  console.groupCollapsed(`[Submit] Question ${currentItem.ref.index}`); // DEBUG
+  // console.log(`[Submit]: ${currentItem.ref.index}`); // DEBUG INDEX
 
   const questionState = currentItem.ref;
   const item = currentItem.item;
@@ -336,7 +329,7 @@ async function submitAnswer() {
   const numAnswers = answers.length;
   let correct = true;
 
-  // // DEBUG
+  // // DEBUG INDEX
   // await fetch('/save-debuglogs', {
   //   method: 'POST',
   //   headers: { 'Content-Type': 'application/json' },
@@ -350,9 +343,9 @@ async function submitAnswer() {
   //   })
   // });
 
-  Object.values(labels).forEach(label => {
-    label.e.style.color = ''; // Reset to default
-  });
+  // Object.values(labels).forEach(label => {
+  //   label.e.style.color = ''; // Reset to default
+  // });
 
   if (numAnswers == 1 && numChoices == 1) {
     // Text input handling
@@ -415,27 +408,23 @@ async function submitAnswer() {
     // Handle mode-based progression
     switch(mode) {
       case 'fastmode':
-          questionState.count = Math.max(0, questionState.count + 1); // Increment count
           questionState.currentStreak = 0; // Reset streak
-          // Keep firstAttemptCorrect tracking
-          if (questionState.firstAttemptCorrect === null) {
-              questionState.firstAttemptCorrect = false;
-          }
           break;
       default:
-          questionState.count = Math.max(0, questionState.count + 1);
+        // Increment count only here
+        questionState.count = (questionState.count || 0) + 1;
     }
 
-    // Correct answer handling / mastery check:
-    // Check if either fastmode with first correct attempt or count >=3
     if ((mode === 'fastmode' && questionState.firstAttemptCorrect) || questionState.count >= 3) {
+      // Remove from working array
       state.working = state.working.filter(q => q.index !== questionState.index);
-      // Add to complete if not present
+      
+      // Add to complete if not already there
       if (!state.complete.some(c => c.index === questionState.index)) {
-          state.complete.push(questionState);
+        state.complete.push(questionState);
       }
-      state.lastIndex = -1;
-  }
+      state.lastIndex = -1; // Reset lastIndex
+    }
 
     await saveState();
   }
@@ -467,6 +456,7 @@ async function submitAnswer() {
         if (questionState.firstAttemptCorrect === null) {
             questionState.firstAttemptCorrect = false;
         }
+        questionState.count = (questionState.count || 0) + 1;
         break;
     default:
       // Increment count for each correct answer in default mode
@@ -621,7 +611,7 @@ document.addEventListener("keyup", async (e) => {
 
 });
 
-// In quiz.js - Enhanced hash function
+// Enhanced hash function
 function hash(value) {
   if (!value) return 'invalid';
   
@@ -688,7 +678,6 @@ function installAnswerMonitor() {
     submitBtn.onclick = function(...args) {
       const current = cur(); // Access quiz.js's internal state
       if (current?.ref?.firstAttemptCorrect === null) {
-        // Log first attempt
         fetch('/save-log', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
