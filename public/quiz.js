@@ -192,6 +192,7 @@ function show() {
       
       if (availableNew.length > 0) {
           currentItem = availableNew[Math.floor(Math.random() * availableNew.length)];
+          // console.log('[show] Selected new question:', currentItem.index); // DEBUG
           state.unseen = state.unseen.filter(q => q.index !== currentItem.index);
           state.working.push(currentItem);
       }
@@ -312,6 +313,7 @@ function cur() {
     const validWorking = state.working.filter(q => 
       !state.complete.some(c => c.index === q.index)
     );
+    // console.log('[cur] Valid working questions:', validWorking.map(w => w.index)); // DEBUG
     
     if (validWorking.length === 0) return null;
     
@@ -561,7 +563,10 @@ async function saveState(callback) {
     // Update localStorage timestamp
     updateSessions(window.location.href, source);
     
-    callback();
+    // Check if callback is provided and is a function
+    if (typeof callback === 'function') {
+      callback();
+    }
   } catch (e) {
     console.error("Failed to save state:", e);
   }
