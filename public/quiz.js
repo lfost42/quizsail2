@@ -179,7 +179,7 @@ function show() {
   }
 
   let currentItem;
-  const avoidIndex = mode === 'fastmode' ? -1 : state.lastIndex;
+  const avoidIndex = state.lastIndex;
 
   // Always prioritize adding new questions when possible
   if (state.working.length < MAX_WORKING && state.unseen.length > 0) {
@@ -216,7 +216,6 @@ function show() {
 
   shuffle(state.working);
   state.lastIndex = currentItem.index;
-
   // console.log('[show]: ', currentItem.index); // DEBUG INDEX
 
   saveState(() => {
@@ -249,7 +248,7 @@ function show() {
                     .attr("value", val)
                     .attr("name", `answer_${index}`);
 
-                // Add change listener to handle choice limits
+        // Add change listener to handle choice limits
         input.e.addEventListener('change', () => {
           const checkboxes = document.querySelectorAll(`input[type="checkbox"][name^="answer_"]`);
           const checked = Array.from(checkboxes).filter(cb => cb.checked);
@@ -261,7 +260,7 @@ function show() {
                 inputs[val] = input;
                 const label = New("LABEL")
                     .attr("for", `radio_${index}`);
-                label.text = `${choiceLetter}: ${val}`;
+                    label.html = `${choiceLetter}: ${val.replace(/\n/g, '<br>')}`;
                 labels[val] = label;
                 div.append(input);
                 div.append(label);
@@ -330,7 +329,7 @@ async function submitAnswer() {
   let correct = true;
 
   // // DEBUG INDEX
-  // await fetch('/save-debuglogs', {
+  // const newLocal = await fetch('/save-debuglogs', {
   //   method: 'POST',
   //   headers: { 'Content-Type': 'application/json' },
   //   body: JSON.stringify({
@@ -343,9 +342,9 @@ async function submitAnswer() {
   //   })
   // });
 
-  // Object.values(labels).forEach(label => {
-  //   label.e.style.color = ''; // Reset to default
-  // });
+  Object.values(labels).forEach(label => {
+    label.e.style.color = ''; // Reset to default
+  });
 
   if (numAnswers == 1 && numChoices == 1) {
     // Text input handling
