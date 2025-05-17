@@ -109,7 +109,8 @@ async function start() {
           count: 0,
           tries: 0,
           firstAttemptCorrect: null,
-          currentStreak: 0
+          currentStreak: 0,
+          incorrectTries: 0
         })),
         lastIndex: -1
       };
@@ -120,6 +121,8 @@ async function start() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(state)
       });
+
+      await logFlaggedQuestions([]);
 
       sessionStorage.removeItem('newSession'); // Clear flag
       updateSessions(window.location.href, source);
@@ -156,7 +159,7 @@ async function start() {
 
 const choiceLetters = "ABCDEFGHIJ";
 
-function show() {
+async function show() {
   if (!content || !Array.isArray(content)) {
     console.error('No quiz content loaded');
     window.location = window.location.origin;
@@ -170,12 +173,31 @@ function show() {
 
   // Check for quiz completion
   if (state.unseen.length === 0 && state.working.length === 0) {
-    E("question").html = `Quiz Complete! 🎉`;
-    E("choice_form").html = "<p>Please click [Return to Start] at the bottom of the page to start a new quiz.</p>";
+  const allQuestions = state.complete;
+  let incorrectCounts = { 1: 0, 2: 0, 3: 0, '4+': 0 };
+
+  allQuestions.forEach(q => {
+    const count = q.incorrectTries;
+    if (count >= 4) incorrectCounts['4+']++;
+    else if (count === 3) incorrectCounts[3]++;
+    else if (count === 2) incorrectCounts[2]++;
+    else if (count === 1) incorrectCounts[1]++;
+  });
+
+  E("question").html = `Quiz Complete! 🎉`;
+  E("choice_form").html = `
+    <p>Questions answered incorrectly:</p>
+    <ul>
+      <li>On the first attempkt: ${incorrectCounts[1]}</li>
+      <li>2x: ${incorrectCounts[2]}</li>
+      <li>3x: ${incorrectCounts[3]}</li>
+      <li>4x or more: ${incorrectCounts['4+']}</li>
+    </ul>
+  `;
     E("result").html = "";
     E("submitbtn").attr = false;
-    deleteEndSession();
-    return;
+  deleteEndSession();
+  return;
   }
 
   let currentItem;
@@ -316,6 +338,26 @@ function cur() {
     };
 }
 
+async function logFlaggedQuestions(questions) {
+  const data = questions.map(q => ({
+    index: q.index,
+    incorrectTries: q.incorrectTries
+  }));
+  try {
+    await fetch('/log-flagged', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        quizName: getParam('src'),
+        sessionId: getParam('session'),
+        data: data
+      })
+    });
+  } catch (error) {
+    console.error('Failed to log flagged questions:', error);
+  }
+}
+
 async function submitAnswer() {
   const currentItem = cur();
 
@@ -398,6 +440,10 @@ async function submitAnswer() {
                 timestamp: new Date().toISOString()
             })
         });
+    } else {
+      const allQuestions = [...state.complete, ...state.working];
+      const flagged = allQuestions.filter(q => q.incorrectTries > 0);
+      await logFlaggedQuestions(flagged);
     }
 
     // Increment tries
@@ -523,7 +569,6 @@ class Element {
         return this.e.checked;
     }
 }
-
 
 function New(type) {
     return new Element(document.createElement(type));

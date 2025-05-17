@@ -295,6 +295,19 @@ app.post('/save-debuglogs', (req, res) => {
   }
 });
 
+app.post('/log-flagged', (req, res) => {
+  const { quizName, sessionId, data } = req.body;
+  const logPath = path.join(logsDir, `${quizName}_${sessionId}_flagged.json`);
+
+  try {
+    fs.writeFileSync(logPath, JSON.stringify(data, null, 2));
+    res.sendStatus(200);
+  } catch (error) {
+    console.error('Flagged log error:', error);
+    res.status(500).json({ error: 'Failed to save flagged log' });
+  }
+});
+
 app.post('/prune-logs', async (req, res) => {
   try {
     const { quizName, maxCount } = req.body;
