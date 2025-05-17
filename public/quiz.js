@@ -62,9 +62,9 @@ async function deleteEndSession() {
   } catch (e) {
     console.warn("Cleanup error:", e);
   }
-  
   delete sessions[fullUrl];
   localStorage.setItem(SAVED_SESSIONS, JSON.stringify(sessions));
+  window.location = window.location.origin;
 }
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -185,20 +185,28 @@ async function show() {
   });
 
   E("question").html = `Quiz Complete! 🎉`;
+  
+  // Generate list items only for counts > 0
+  const itemsHtml = Object.entries(incorrectCounts)
+    .filter(([_, count]) => count > 0)
+    .map(([label, count]) => 
+      `<li>${label === '1' ? 'First attempt' : `${label}x`}: ${count}</li>`
+    ).join('');
+
   E("choice_form").html = `
-    <p>Questions answered incorrectly:</p>
+    <p>Incorrect Answers:</p>
     <ul>
-      <li>On the first attempkt: ${incorrectCounts[1]}</li>
-      <li>2x: ${incorrectCounts[2]}</li>
-      <li>3x: ${incorrectCounts[3]}</li>
-      <li>4x or more: ${incorrectCounts['4+']}</li>
+      ${itemsHtml || '<li>All answers correct! 🎉</li>'}
     </ul>
+    <div class="completion-buttons">
+      <button onclick="handleEndSession()">End Session</button>
+    </div>
   `;
-    E("result").html = "";
-    E("submitbtn").attr = false;
-  deleteEndSession();
+
+  E("result").html = "";
+  E("submitbtn").attr = false;
   return;
-  }
+}
 
   let currentItem;
   const avoidIndex = state.lastIndex;
@@ -339,10 +347,14 @@ function cur() {
 }
 
 async function logFlaggedQuestions(questions) {
-  const data = questions.map(q => ({
-    index: q.index,
-    incorrectTries: q.incorrectTries
-  }));
+  const data = questions
+    .filter(q => q.incorrectTries > 0 && q.index !== undefined) // Updated filter
+    .map(q => ({
+      index: q.index,
+      incorrectTries: q.incorrectTries
+    }));
+  // console.log('[DEBUG]: Flagged questions:', data);
+
   try {
     await fetch('/log-flagged', {
       method: 'POST',
@@ -355,13 +367,12 @@ async function logFlaggedQuestions(questions) {
     });
   } catch (error) {
     console.error('Failed to log flagged questions:', error);
+    alert(`Failed to log flagged questions: ${error.message}`);
   }
 }
 
 async function submitAnswer() {
   const currentItem = cur();
-
-  // console.log(`[Submit]: ${currentItem.ref.index}`); // DEBUG INDEX
 
   const questionState = currentItem.ref;
   const item = currentItem.item;
@@ -370,7 +381,7 @@ async function submitAnswer() {
   const numAnswers = answers.length;
   let correct = true;
 
-  // // DEBUG INDEX
+  // // DEBUG INDEX -- logs all attempts for debugging purposes when needed
   // const newLocal = await fetch('/save-debuglogs', {
   //   method: 'POST',
   //   headers: { 'Content-Type': 'application/json' },
@@ -440,10 +451,39 @@ async function submitAnswer() {
                 timestamp: new Date().toISOString()
             })
         });
-    } else {
-      const allQuestions = [...state.complete, ...state.working];
-      const flagged = allQuestions.filter(q => q.incorrectTries > 0);
-      await logFlaggedQuestions(flagged);
+    }
+  }
+
+  if (!correct) {
+        answers.forEach(answer => {
+            if (labels[answer]) {
+                labels[answer].e.style.color = '#009f00';
+            }
+        });
+    // Handle incorrect answer
+    // console.log('[DEBUG] Incorrect answer detected');
+    questionState.incorrectTries = (questionState.incorrectTries || 0) + 1;
+
+    const allQuestions = [...state.complete, ...state.working];
+    const flagged = allQuestions.filter(q => q.incorrectTries > 0);
+
+    await logFlaggedQuestions(flagged).catch(e => console.error('Logging failed:', e));
+    await saveState();
+
+    // Move the question to the end of the working set if present
+    const currentIndex = state.working.findIndex(q => q.index === currentItem.ref.index);
+    if (currentIndex > -1) {
+      const removed = state.working.splice(currentIndex, 1);
+      if (removed.length > 0) {
+        const movedQuestion = removed[0];
+        if (movedQuestion?.index !== undefined) { // Validate before pushing
+          state.working.push(movedQuestion);
+        }
+      }
+    }
+
+    // Preserve lastIndex to prevent immediate repetition
+    state.lastIndex = currentItem.ref.index; // Keep index for avoid check
     }
 
     // Increment tries
@@ -453,44 +493,43 @@ async function submitAnswer() {
     // Handle mode-based progression
     switch(mode) {
       case 'fastmode':
-          questionState.currentStreak = 0; // Reset streak
-          break;
-      default:
-        // Increment count only here
+        questionState.currentStreak = 0; // Reset streak
+        // Keep firstAttemptCorrect tracking
+        if (questionState.firstAttemptCorrect === null) {
+            questionState.firstAttemptCorrect = false;
+        }
         questionState.count = (questionState.count || 0) + 1;
-    }
-
-    if ((mode === 'fastmode' && questionState.firstAttemptCorrect) || questionState.count >= 3) {
-      // Remove from working array
-      state.working = state.working.filter(q => q.index !== questionState.index);
-      
-      // Add to complete if not already there
-      if (!state.complete.some(c => c.index === questionState.index)) {
-        state.complete.push(questionState);
-      }
-      state.lastIndex = -1; // Reset lastIndex
-    }
-
-    await saveState();
+        break;
+    default:
+      // Increment count for each correct answer in default mode
+      questionState.count = (questionState.count || 0) + 1;
   }
 
-  // Handle incorrect answers
-  const currentIndex = state.working.findIndex(q => q.index === currentItem.ref.index);
-  if (currentIndex > -1) {
-    // Move answered question to middle of working set
-    state.working.splice(currentIndex, 1);
-    const insertPos = state.working.length;
-    state.working.splice(insertPos, 0, currentItem.ref);
-  } else { // INCORRECT ANSWER HANDLING
-    // Handle incorrect answers
+  if ((mode === 'fastmode' && questionState.firstAttemptCorrect) || questionState.count >= 3) {
+    // Remove from working array
+    state.working = state.working.filter(q => q.index !== questionState.index);
+    
+    // Add to complete if not already there
+    if (!state.complete.some(c => c.index === questionState.index)) {
+      state.complete.push(questionState);
+    }
+    state.lastIndex = -1; // Reset lastIndex
+  }
+
+  await saveState();
+
+      // Move questions in working array
     const currentIndex = state.working.findIndex(q => q.index === currentItem.ref.index);
     if (currentIndex > -1) {
-      // Move answered question to middle of working set
-      state.working.splice(currentIndex, 1);
-      const insertPos = state.working.length;
-      state.working.splice(insertPos, 0, currentItem.ref);
+      const removed = state.working.splice(currentIndex, 1);
+      if (removed.length > 0) {
+        const movedQuestion = removed[0];
+        if (movedQuestion?.index !== undefined) { // Validate before pushing
+          state.working.push(movedQuestion);
+        }
+      }
     }
-  }
+
     // Update lastIndex immediately
     state.lastIndex = currentItem.ref.index;
 
@@ -739,6 +778,28 @@ function installAnswerMonitor() {
   monitorButton();
 }
 
+async function handleEndSession() {
+  try {
+    const sessionId = getParam('session');
+    const quizName = getParam('src');
+    
+    // Delete flagged log
+    await fetch('/delete-log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quizName, sessionId })
+    });
+    
+    // Delete session state
+    await deleteEndSession();
+    
+  } catch (error) {
+    console.error('Session termination failed:', error);
+    alert('Error ending session');
+  }
+}
+
 window.submitAnswer = submitAnswer;
 window.show = show;
+window.handleEndSession = handleEndSession;
 })(); // End IIFE
