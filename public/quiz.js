@@ -20,10 +20,17 @@ function getParam(name) {
   return searchParams.get(name);
 }
 
+if (!window.location.pathname.includes('quiz-engine.html')) return;
+
 const source = getParam('src');
-if (!source) {
-    alert("Please select a quiz from the menu.");
-    window.location = window.location.origin; // Redirect to start
+let isUnloading = false;
+
+window.addEventListener('beforeunload', () => {
+    isUnloading = true;
+});
+
+if (!isUnloading && !source) {
+    window.location = window.location.origin;
 }
 
 const mode = getParam('mode') || 'default';
@@ -74,29 +81,52 @@ if (urlParams.get('mode') === 'review') {
 
 async function start() {
   let session = getParam('session');
+  const source = getParam('src');
+  
+  if (!session || !source) {
+    console.error('Missing session or source parameters');
+    window.location = window.location.origin;
+    return;
+  }
+
+  console.log('[DEBUG] start() - initial session param:', session);
   
   // Detect fresh sessions using sessionStorage flag
   const isNewSession = sessionStorage.getItem('newSession') === 'true';
 
-  if (!session) {
-    // Create new session and set flag
-    const newSession = makeid(128);
-    sessionStorage.setItem('newSession', 'true'); // Flag new session
-    const params = new URLSearchParams(window.location.search);
-    params.set('session', newSession);
-    window.location.search = params.toString();
-    return;
-  }
+  // if (!session) {
+  //   // Create new session and set flag
+  //   const newSession = makeid(128);
+  //   sessionStorage.setItem('newSession', 'true'); // Flag new session
+  //   const params = new URLSearchParams(window.location.search);
+  //   params.set('session', newSession);
+  //   window.location.search = params.toString();
+  //   return;
+  // }
 
   try {
-    // Load quiz content
+    console.log('[DEBUG] Loading quiz content for source:', source);
     if (!content) {
       content = await fetch(`quizzes/${source}.json`)
         .then(res => {
-          if (!res.ok) throw new Error('Quiz not found');
+          console.log('[DEBUG] Quiz fetch response status:', res.status);
           return res.json();
         });
     }
+
+    content = await fetch(`quizzes/${source}.json`)
+      .then(res => {
+        if (!res.ok) {
+          console.error('[DEBUG] Quiz fetch failed:', res.status);
+          window.location = window.location.origin;
+          return;
+        }
+        return res.json();
+      })
+      .catch(error => {
+        console.error('[DEBUG] Quiz load error:', error);
+        window.location = window.location.origin;
+      });
 
     const hashedSession = hash(session).toLowerCase();
     if (isNewSession) {
@@ -153,20 +183,24 @@ async function start() {
     show();
   } catch (error) {
     alert(`Quiz failed to start: ${error.message}`);
-    window.location = window.location.origin;
+    // window.location = window.location.origin;
   }
 }
 
 const choiceLetters = "ABCDEFGHIJ";
 
 async function show() {
+  if (state.unseen.length === 0 && state.working.length === 0) {
+    showCompletionScreen();
+    return;
+  }
   if (!content || !Array.isArray(content)) {
-    console.error('No quiz content loaded');
+    // console.error('No quiz content loaded');
     window.location = window.location.origin;
     return;
   }
   if (!state || !state.unseen || !state.working) {
-    console.error('Invalid state:', state);
+    // console.error('Invalid state:', state);
     window.location = window.location.origin;
     return;
   }
@@ -184,28 +218,7 @@ async function show() {
     else if (count === 1) incorrectCounts[1]++;
   });
 
-  E("question").html = `Quiz Complete! 🎉`;
-  
-  // Generate list items only for counts > 0
-  const itemsHtml = Object.entries(incorrectCounts)
-    .filter(([_, count]) => count > 0)
-    .map(([label, count]) => 
-      `<li>${label === '1' ? 'First attempt' : `${label}x`}: ${count}</li>`
-    ).join('');
 
-  E("choice_form").html = `
-    <p>Incorrect Answers:</p>
-    <ul>
-      ${itemsHtml || '<li>All answers correct! 🎉</li>'}
-    </ul>
-    <div class="completion-buttons">
-      <button onclick="handleEndSession()">End Session</button>
-    </div>
-  `;
-
-  E("result").html = "";
-  E("submitbtn").attr = false;
-  return;
 }
 
   let currentItem;
@@ -246,7 +259,6 @@ async function show() {
 
   shuffle(state.working);
   state.lastIndex = currentItem.index;
-  // console.log('[show]: ', currentItem.index); // DEBUG INDEX
 
   saveState(() => {
     const currentItem = cur();
@@ -281,6 +293,15 @@ async function show() {
         // Add change listener to handle choice limits
         input.e.addEventListener('change', () => {
           const checkboxes = document.querySelectorAll(`input[type="checkbox"][name^="answer_"]`);
+          if (checkboxes.length === 0) {
+            alert('Please select at least one category');
+            return;
+          }
+
+          // Add loading state feedback
+        E("generateButton").disabled = true;
+        E("generateButton").textContent = "Generating...";
+
           const checked = Array.from(checkboxes).filter(cb => cb.checked);
           
           checkboxes.forEach(cb => {
@@ -337,13 +358,13 @@ async function show() {
  * return reference to current question
  */
 function cur() {
-    // Get from working set excluding completed questions
-    const questionRef = state.working.find(q => q.index === state.lastIndex);
-    if (!questionRef) return null;
-    return {
-        item: content[questionRef.index],
-        ref: questionRef
-    };
+  if (!state.working || state.working.length === 0) return null;
+  
+  const questionRef = state.working.find(q => q.index === state.lastIndex);
+  return questionRef ? {
+    item: content[questionRef.index],
+    ref: questionRef
+  } : null;
 }
 
 async function logFlaggedQuestions(questions) {
@@ -353,7 +374,6 @@ async function logFlaggedQuestions(questions) {
       index: q.index,
       incorrectTries: q.incorrectTries
     }));
-  // console.log('[DEBUG]: Flagged questions:', data);
 
   try {
     await fetch('/log-flagged', {
@@ -366,13 +386,20 @@ async function logFlaggedQuestions(questions) {
       })
     });
   } catch (error) {
-    console.error('Failed to log flagged questions:', error);
-    alert(`Failed to log flagged questions: ${error.message}`);
+    // console.error('Failed to log flagged questions:', error);
   }
 }
 
 async function submitAnswer() {
   const currentItem = cur();
+
+  // Add validation check
+  if (!currentItem || !currentItem.ref || typeof currentItem.ref.index === 'undefined') {
+    console.error('Invalid currentItem in submitAnswer:', currentItem);
+    await saveState();
+    show();
+    return;
+  }
 
   const questionState = currentItem.ref;
   const item = currentItem.item;
@@ -547,7 +574,6 @@ async function submitAnswer() {
       questionState.count = (questionState.count || 0) + 1;
   } 
 
-    // console.log(`answer is ${correct}`)
     let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers.join(', ')}`;
     // Add explanation if available
     if (item.e) {
@@ -658,7 +684,7 @@ async function saveState(callback) {
       callback();
     }
   } catch (e) {
-    console.error("Failed to save state:", e);
+    // console.error("Failed to save state:", e);
   }
 }
 
@@ -792,14 +818,220 @@ async function handleEndSession() {
     
     // Delete session state
     await deleteEndSession();
-    
+
   } catch (error) {
     console.error('Session termination failed:', error);
-    alert('Error ending session');
+    return;
   }
+}
+
+async function generateNewQuizzes() {
+  // 1. Get selected category from radio buttons
+  const selectedRadio = document.querySelector('.category-radio:checked');
+  if (!selectedRadio) {
+    alert('Please select a category first');
+    return;
+  }
+  const category = [selectedRadio.value];
+  
+  // 2. Get session information
+  const sessionId = getParam('session');
+  const quizName = getParam('src');
+
+  // 3. Validate required parameters
+  if (!quizName || !sessionId) {
+    console.error('Missing quiz name or session ID');
+    alert('Session expired - please start a new session');
+    window.location.reload();
+    return;
+  }
+
+  // 4. Get flagged questions from state
+  const flaggedQuestions = state.complete
+    .filter(q => q.incorrectTries > 0)
+    .map(q => ({
+      index: q.index,
+      incorrectTries: q.incorrectTries
+    }));
+
+  // 5. Generate unique suffix using category
+  const suffix = category[0].replace('+', '');
+
+  // 6. Prepare payload
+  const payload = {
+    sourceQuiz: quizName,
+    category,
+    flaggedQuestions,
+    suffix
+  };
+
+  // 7. Add loading state
+  const generateBtn = document.getElementById('generateButton');
+  const originalText = generateBtn.textContent;
+  generateBtn.disabled = true;
+  generateBtn.textContent = "Generating...";
+
+  try {
+    // 8. Make the request
+    const response = await fetch('/generate-quiz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.error || 'Server error');
+    }
+
+    // 9. Handle successful response
+    console.log('[DEBUG] Generation successful:', responseData);
+    
+    // Reset button state
+    generateBtn.disabled = false;
+    generateBtn.textContent = originalText;
+
+    // Create or get the links container
+    let linksContainer = document.getElementById('generated-quizzes-container');
+    if (!linksContainer) {
+      linksContainer = document.createElement('div');
+      linksContainer.id = 'generated-quizzes-container';
+      linksContainer.style.textAlign = 'center';
+      linksContainer.style.marginTop = '20px';
+      linksContainer.style.display = 'flex';
+      linksContainer.style.flexDirection = 'column';
+      linksContainer.style.gap = '10px';
+      E("choice_form").append(new Element(linksContainer));
+    }
+
+    if (responseData.newQuiz) {
+      // Create individual quiz link container
+      const quizLinkContainer = document.createElement('div');
+      quizLinkContainer.style.display = 'flex';
+      quizLinkContainer.style.alignItems = 'center';
+      quizLinkContainer.style.justifyContent = 'center';
+      quizLinkContainer.style.gap = '10px';
+
+      // Create the quiz link
+      const quizLink = document.createElement('a');
+      quizLink.href = '#';
+      quizLink.textContent = `Start: ${responseData.newQuiz}`;
+      quizLink.style.color = '#0066cc';
+      quizLink.style.textDecoration = 'underline';
+      quizLink.style.cursor = 'pointer';
+      
+      // Add creation timestamp
+      const timestamp = document.createElement('span');
+      timestamp.textContent = new Date().toLocaleTimeString();
+      timestamp.style.color = '#666';
+      timestamp.style.fontSize = '0.9em';
+
+      // Click handler
+      quizLink.onclick = async (e) => {
+        e.preventDefault();
+        try {
+          const originalText = quizLink.textContent;
+          quizLink.textContent = 'Ending session...';
+          quizLink.style.pointerEvents = 'none';
+          
+          await handleEndSession();
+          window.location.href = `?src=${responseData.newQuiz}&session=${makeid(128)}`;
+        } catch (error) {
+          console.error('Redirect failed:', error);
+          quizLink.textContent = `Start ${responseData.newQuiz}`;
+          quizLink.style.pointerEvents = 'auto';
+          E("result").html = `❌ Error: ${error.message}`;
+          E("result").e.className = "incorrect";
+        }
+      };
+
+      // Add delete button
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = '×';
+      deleteBtn.style.background = '#ff4444';
+      deleteBtn.style.color = 'white';
+      deleteBtn.style.border = 'none';
+      deleteBtn.style.borderRadius = '50%';
+      deleteBtn.style.width = '20px';
+      deleteBtn.style.height = '20px';
+      deleteBtn.style.cursor = 'pointer';
+      deleteBtn.onclick = (e) => {
+        e.stopPropagation();
+        quizLinkContainer.remove();
+      };
+
+      // Append all elements
+      quizLinkContainer.appendChild(deleteBtn);
+      quizLinkContainer.appendChild(quizLink);
+      quizLinkContainer.appendChild(timestamp);
+      linksContainer.appendChild(quizLinkContainer);
+    }
+  } catch (error) {  
+    // 10. Error handling
+    console.error('[DEBUG] Generation error:', error);
+    
+    // Reset button state
+    generateBtn.disabled = false;
+    generateBtn.textContent = originalText;
+    
+    // Show error without redirect
+    E("result").html = `❌ Error: ${error.message}`;
+    E("result").e.className = "incorrect";
+  }
+}
+
+
+function showCompletionScreen() {
+  const allQuestions = state.complete;
+  let incorrectCounts = { 1: 0, 2: 0, 3: 0, '4+': 0 };
+
+  allQuestions.forEach(q => {
+    const count = q.incorrectTries;
+    if (count >= 4) incorrectCounts['4+']++;
+    else if (count === 3) incorrectCounts[3]++;
+    else if (count === 2) incorrectCounts[2]++;
+    else if (count === 1) incorrectCounts[1]++;
+  });
+
+  E("question").html = `Quiz Complete! 🎉`;
+  
+  // Generate radio buttons instead of checkboxes
+  E("choice_form").html = `
+    <p>Generate new quizzes or end session.</p>
+    <div class="category-list">
+      ${Object.entries(incorrectCounts)
+        .filter(([_, count]) => count > 0)
+        .map(([label, count]) => `
+          <label>
+            <input type="radio" name="category" value="${label}" class="category-radio">
+            ${label === '1' ? 'First attempt' : `${label}x`} (${count} questions)
+          </label>
+        `).join('')}
+    </div>
+    <div class="completion-buttons">
+      <button id="generateButton" onclick="generateNewQuizzes()">Generate New Quiz</button>
+      <button id="exitButton" onclick="await handleEndSession()">Exit to Start</button>
+    </div>
+  `;
+
+  E("result").html = "";
+  E("submitbtn").attr = false;
+}
+
+function number_to_suffix(num) {
+  if (num < 1) return '';
+  let letters = [];
+  while (num > 0) {
+    num--;
+    letters.push(String.fromCharCode(97 + (num % 26)));
+    num = Math.floor(num / 26);
+  }
+  return letters.reverse().join('');
 }
 
 window.submitAnswer = submitAnswer;
 window.show = show;
 window.handleEndSession = handleEndSession;
+window.generateNewQuizzes = generateNewQuizzes;
 })(); // End IIFE

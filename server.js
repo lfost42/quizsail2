@@ -22,13 +22,23 @@ if (!fs.existsSync(retiredDir)) {
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     next();
 });
+app.options('*', (req, res) => res.sendStatus(200));
 
-app.options('*', (req, res) => {
-  res.sendStatus(200);
+
+app.use((err, req, res, next) => {
+  // console.error('[SERVER ERROR]', err.stack);
+  res.status(500).json({ error: 'Internal server error' });
+});
+app.use((req, res, next) => {
+  // console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  if (req.body) {
+    // console.log('Request Body:', JSON.stringify(req.body, null, 2));
+  }
+  next();
 });
 
 // Refresh Quiz API
@@ -96,13 +106,13 @@ app.post('/refresh-quiz', async (req, res) => {
       });
 
   } catch (error) { // Added catch block
-      console.error('Refresh error:', error);
+      // console.error('Refresh error:', error);
       // Cleanup failed files
       try {
           if (newPath && fs.existsSync(newPath)) fs.unlinkSync(newPath);
           if (backupPath && fs.existsSync(backupPath)) fs.unlinkSync(backupPath);
       } catch (cleanupError) {
-          console.error('Cleanup failed:', cleanupError);
+          // console.error('Cleanup failed:', cleanupError);
       }
 
       res.status(500).json({ 
@@ -136,7 +146,7 @@ app.get('/state/:id', (req, res) => {
     const data = fs.readFileSync(statePath);
     res.send(JSON.parse(data));
   } catch (e) {
-    console.error('State read error:', e);
+    // console.error('State read error:', e);
     res.status(500).send('Invalid state format');
   }
 });
@@ -153,7 +163,7 @@ app.post("/state/:id", (req, res) => {
     fs.writeFileSync(statePath, JSON.stringify(req.body), { flag: 'w' });
     res.sendStatus(200);
   } catch (e) {
-    console.error('Save failed:', e);
+    // console.error('Save failed:', e);
     res.status(500).send('Save failed');
   }
 });
@@ -171,7 +181,7 @@ app.delete("/state/:id", (req, res) => {
     if (e.code === 'ENOENT') {
       res.sendStatus(200); // File doesn't exist, no need to delete
     } else {
-      console.error('Deletion error:', e);
+      // console.error('Deletion error:', e);
       res.status(500).send('Server error during deletion');
     }
   }
@@ -180,7 +190,6 @@ app.delete("/state/:id", (req, res) => {
 // Directory creation in case someone deletes it before knowing what it does
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
-  // console.log(`Created data directory at ${DATA_DIR}`);
 }
 
 app.get('/get-logs/:quizName', (req, res) => {
@@ -194,7 +203,7 @@ app.get('/get-logs/:quizName', (req, res) => {
       res.json({});
     }
   } catch (error) {
-    console.error('[Server] Log retrieval failed:', error);
+    // console.error('[Server] Log retrieval failed:', error);
     res.status(500).json({ error: 'Failed to retrieve logs' });
   }
 });
@@ -211,7 +220,7 @@ app.post('/delete-log', (req, res) => {
     }
     res.sendStatus(200);
   } catch (error) {
-    console.error('[Server] Log deletion failed:', error);
+    // console.error('[Server] Log deletion failed:', error);
     res.status(500).json({ error: 'Log deletion failed' });
   }
 });
@@ -245,7 +254,7 @@ app.post('/save-log', (req, res) => {
 
     res.sendStatus(200);
   } catch (err) {
-    console.error('[Server] Log save failed:', err);
+    // console.error('[Server] Log save failed:', err);
     res.status(500).send('Server error');
   }
 });
@@ -290,7 +299,7 @@ app.post('/save-debuglogs', (req, res) => {
     fs.writeFileSync(logPath, JSON.stringify(allLogs));
     res.sendStatus(200);
   } catch (err) {
-    console.error('[Server] Log save failed:', err);
+    // console.error('[Server] Log save failed:', err);
     res.status(500).send('Server error');
   }
 });
@@ -303,11 +312,221 @@ app.post('/log-flagged', (req, res) => {
     fs.writeFileSync(logPath, JSON.stringify(data, null, 2));
     res.sendStatus(200);
   } catch (error) {
-    console.error('Flagged log error:', error);
+    // console.error('Flagged log error:', error);
     res.status(500).json({ error: 'Failed to save flagged log' });
   }
 });
 
+app.post('/delete-flagged-log', (req, res) => {
+  const { quizName, sessionId } = req.body;
+  if (!quizName || !sessionId) return res.status(400).send('Missing parameters');
+  
+  const logPath = path.join(logsDir, `${quizName}_${sessionId}_flagged.json`);
+  
+  try {
+    if (fs.existsSync(logPath)) {
+      fs.unlinkSync(logPath);
+    }
+    res.sendStatus(200);
+  } catch (error) {
+    // console.error('Flagged log deletion failed:', error);
+    res.status(500).json({ error: 'Failed to delete flagged log' });
+  }
+});
+
+/*------------------------*/ 
+/*  Get Flagged Questions  */
+/*-------------------------*/ 
+app.get('/get-flagged/:quizName/:sessionId', (req, res) => {
+  const { quizName, sessionId } = req.params;
+  if (!req.params.quizName || !req.params.sessionId) {
+    console.error('[SERVER] Missing parameters in get-flagged');
+    return res.status(400).json({ error: 'Missing parameters' });
+  }
+  // console.log('[SERVER] Received get-flagged request with:', { quizName, sessionId });
+
+  const logPath = path.join(logsDir, `${quizName}_${sessionId}_flagged.json`);
+  // console.log('[SERVER] Constructed path:', logPath);
+  
+  try {
+    const data = JSON.parse(fs.readFileSync(logPath, 'utf8'));
+
+    // Add this RIGHT AFTER parsing the data
+    console.log('[SERVER] Sample flagged data (first 3 entries):', 
+      data.slice(0, 3).map(d => ({
+        index: d.index,
+        incorrectTries: d.incorrectTries,
+        valid: typeof d.index === 'number' && typeof d.incorrectTries === 'number'
+      }))
+    );
+    
+    // Add validation
+    if (!Array.isArray(data)) {
+      console.error('[SERVER] Invalid data format - not an array');
+      return res.status(500).json({ 
+        error: 'Invalid data format',
+        receivedType: typeof data
+      });
+    }
+
+    // Add content validation
+    const invalidEntries = data.filter(item => 
+      !('index' in item) || 
+      !('incorrectTries' in item) ||
+      typeof item.index !== 'number' ||
+      typeof item.incorrectTries !== 'number'
+    );
+
+    if (invalidEntries.length > 0) {
+      console.error('[SERVER] Invalid flagged entries:', invalidEntries);
+      return res.status(500).json({
+        error: 'Corrupted flagged data',
+        invalidCount: invalidEntries.length
+      });
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Flagged error:', error);
+    res.header('Access-Control-Allow-Origin', '*'); // Ensure CORS headers
+    res.status(500).json([]);
+    console.log('[SERVER] Error details:', {
+      code: error.code,
+      path: error.path,
+      stack: error.stack
+    });
+    res.status(500).json([]);
+  }
+});
+
+
+/*-----------------*/ 
+/*  Generate Quiz  */
+/*-----------------*/ 
+app.post('/generate-quiz', async (req, res) => {
+  res.header('Cache-Control', 'no-store, no-cache, must-revalidate');
+  let newPath; 
+  const { sourceQuiz, category, flaggedQuestions, suffix } = req.body;
+  console.log('[Server] Received generate-quiz request. Body:', req.body);
+  // console.log('[SERVER] Payload:', req.body);
+
+  // Validate all parameters
+    if (!req.body.sourceQuiz || !req.body.category || !req.body.flaggedQuestions || !req.body.suffix) {
+    console.error('[Server] Missing parameters. Received:', Object.keys(req.body));
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  if (!sourceQuiz || !category?.length || !flaggedQuestions?.length || !suffix) {
+    return res.status(400).json({ error: 'Missing/invalid parameters' });
+  }
+
+  const sourcePath = path.join(quizDir, `${sourceQuiz}.json`);
+  if (!fs.existsSync(sourcePath)) {
+    return res.status(404).json({ error: 'Source quiz not found' });
+  }
+
+  let sourceContent;
+  try {
+    sourceContent = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
+  } catch (readError) {
+    return res.status(500).json({ error: 'Failed to read source quiz' });
+  }
+
+  // console.log('[SERVER] Source quiz path:', sourcePath);
+  
+  const filteredQuestions = sourceContent.filter((_, index) => {
+    return flaggedQuestions.some(fq => {
+      // Validate index and incorrectTries
+      if (
+        fq.index >= sourceContent.length || 
+        fq.index < 0 ||
+        typeof fq.incorrectTries !== 'number' ||
+        fq.incorrectTries < 0
+      ) {
+        console.warn(`[SERVER] Invalid flagged question:`, fq);
+        return false;
+      }
+      return fq.index === index && 
+        category.includes(getAttemptCategory(fq.incorrectTries));
+    });
+  });
+  // console.log('[SERVER] Filtered questions count:', filteredQuestions.length);
+
+  if (filteredQuestions.length === 0) {
+    console.log('[SERVER] Generation blocked - empty filtered questions');
+    return res.status(400).json({ 
+      error: 'No questions matched filters',
+      debugInfo: {
+        sourceLength: sourceContent.length,
+        receivedFlags: flaggedQuestions.length,
+        categories: category
+      }
+    });
+  }
+
+  try {
+    const baseName = `${sourceQuiz}_${suffix}`;
+    const newQuizName = `${getUniqueName(baseName, quizDir)}`;
+    const newPath = path.join(quizDir, `${newQuizName}.json`);
+
+    // Ensure directory exists
+    if (!fs.existsSync(quizDir)) {
+      fs.mkdirSync(quizDir, { recursive: true });
+    }
+
+    // Write new quiz file
+    fs.writeFileSync(newPath, JSON.stringify(filteredQuestions, null, 2));
+    console.log('[SERVER] Quiz file created!');
+
+    // Verify file exists
+    const verifyFileCreation = (filePath) => {
+      return fs.existsSync(filePath)
+    };
+
+    // Then update the verification call to:
+    fs.writeFileSync(newPath, JSON.stringify(filteredQuestions, null, 2));
+    console.log('[SERVER] Quiz file verified!');
+
+    const fileExists = verifyFileCreation(newPath);
+
+    if (!fileExists) {
+      console.error('[SERVER] File not found:', newPath);
+      return res.status(500).json({ 
+        error: 'Quiz file creation failed',
+        debugInfo: { path: newPath }
+      });
+    }
+
+    // Single response with success data
+    res.json({ 
+      success: true,
+      newQuiz: newQuizName,  // Ensure this matches client expectation
+      questionCount: filteredQuestions.length,
+    });
+
+  } catch (error) {
+    // console.error('[SERVER] Quiz generation error:', error);
+    
+    // Cleanup any partial files
+    if (newPath && fs.existsSync(newPath)) {
+      try {
+        fs.unlinkSync(newPath);
+      } catch (cleanupError) {
+        // console.error('[SERVER] Cleanup failed:', cleanupError);
+      }
+    }
+
+    res.status(500).json({ 
+      error: 'Quiz generation failed',
+      details: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+});
+
+/*-------------*/ 
+/*  Prune logs */
+/*-------------*/ 
 app.post('/prune-logs', async (req, res) => {
   try {
     const { quizName, maxCount } = req.body;
@@ -332,7 +551,7 @@ app.post('/prune-logs', async (req, res) => {
     fs.writeFileSync(logPath, JSON.stringify(pruned));
     res.sendStatus(200);
   } catch (error) {
-    console.error('[Server] Pruning error:', error);
+    // console.error('[Server] Pruning error:', error);
     res.status(500).json({ error: 'Log pruning failed' });
   }
 });
@@ -360,4 +579,50 @@ function hash(value) {
     hash |= 0; // Convert to 32bit integer
   }
   return hash.toString(); // Important: must return string to match client
+}
+
+function getAttemptCategory(attempts) {
+  if (attempts >= 4) return '4+';
+  if (attempts === 3) return '3';
+  if (attempts === 2) return '2';
+  return '1';
+}
+
+function number_to_suffix(num) {
+  if (num < 0) return '';
+  let suffix = '';
+  while (num >= 0) {
+    suffix = String.fromCharCode(97 + (num % 26)) + suffix;
+    num = Math.floor(num / 26) - 1;
+  }
+  return suffix;
+}
+
+// For use with getUniqueName function
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Get Unique Name
+function getUniqueName(baseName, dir) {
+  const basePattern = new RegExp(`^${escapeRegExp(baseName)}([a-z]+)\\.json$`); // appends and then increments letter per version found in folder
+  const existing = fs.readdirSync(dir)
+    .filter(file => file.match(basePattern))
+    .map(file => file.match(basePattern)[1]);
+
+  // Find highest existing letter code
+  const maxChar = existing.reduce((max, code) => {
+    const current = code.charCodeAt(0);
+    return current > max ? current : max;
+  }, 96); // Start at 96 ('a' - 1)
+
+  // Start with 'a' if no existing files, else next character
+  const nextChar = maxChar === 96 ? 'a' : String.fromCharCode(maxChar + 1);
+  return `${baseName}${nextChar}`;
+}
+
+// Update number_to_suffix()
+function number_to_suffix(num) {
+  if (num <= 0) return '';
+  return String.fromCharCode(97 + (num % 26)); // 0→a, 1→b, etc
 }

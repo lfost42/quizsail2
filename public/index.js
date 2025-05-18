@@ -13,8 +13,8 @@ async function loadQuizzes() {
   try {
     const quizSelect = document.getElementById('quiz');
     // Fetch list of quizzes from server
-    const response = await fetch('/api/quizzes');
-    if (!response.ok) throw new Error('Failed to load quizzes');
+    const response = await fetch(`/api/quizzes?t=${Date.now()}`);
+    // if (!response.ok) throw new Error('Failed to load quizzes');
     const quizzes = await response.json();
     
     // Populate dropdown
@@ -25,8 +25,9 @@ async function loadQuizzes() {
       quizSelect.appendChild(option);
     });
   } catch (error) {
-    console.error('Error loading quizzes:', error);
+    // console.error('Error loading quizzes:', error);
   }
+  return;
 }
 
 // Update the deleteSession function
@@ -35,25 +36,32 @@ const deleteSession = async (target) => {
   if (confirm) {
       try {
           const url = target.dataset.url;
-          // Extract sessionId correctly using URLSearchParams
           const sessionId = new URL(url).searchParams.get("session");
+          const quizName = storageSessions[url]?.course; // Get quiz name from storage
+
+          // Delete session state
           const hashedSession = hash(sessionId);
-          
-          // Wait for server confirmation
           const response = await fetch(`/state/${hashedSession}`, { method: 'DELETE' });
           if (!response.ok) throw new Error('Server deletion failed');
 
-          // Update client state only after successful server deletion
+          // Delete flagged log
+          await fetch('/delete-flagged-log', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ quizName, sessionId })
+          });
+
+          // Update client state
           delete storageSessions[url];
           localStorage.setItem(SAVED_SESSIONS, JSON.stringify(storageSessions));
           fadeOut(target.parentElement);
-          
+
           if (Object.keys(storageSessions).length === 0) {
               document.getElementById("resumeTitle")?.remove();
           }
       } catch (error) {
           console.error('Deletion error:', error);
-          alert('Failed to delete session from server');
+          alert('Failed to delete session');
       }
   }
 };
@@ -67,10 +75,26 @@ const deleteAllSessions = async () => {
     const deletions = await Promise.allSettled(
       Object.keys(storageSessions).map(async url => {
         const sessionId = new URL(url).searchParams.get("session");
-        const hashedSession = await hash(sessionId);
+        const quizName = storageSessions[url]?.course;
+        const hashedSession = hash(sessionId);
+
+        // Delete session state
         await fetch(`/state/${hashedSession}`, { method: 'DELETE' });
+        
+        // Delete flagged log
+        await fetch('/delete-flagged-log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quizName, sessionId })
+        });
       })
     );
+
+    // Check for failures
+    const failedDeletions = deletions.filter(result => result.status === 'rejected');
+    if (failedDeletions.length > 0) {
+      console.error('Some deletions failed:', failedDeletions);
+    }
 
     // Clear client storage after server deletions
     storageSessions = {};
@@ -83,6 +107,7 @@ const deleteAllSessions = async () => {
 
   } catch (error) {
     console.error('Error deleting sessions:', error);
+    alert('Failed to delete all sessions');
   }
 };
 
