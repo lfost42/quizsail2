@@ -41,7 +41,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// Refresh Quiz API
+/*---------------*/ 
+/*  Refresh Quiz */
+/*---------------*/ 
 app.post('/refresh-quiz', async (req, res) => {
   const { quizName } = req.body;
   const quizDir = path.join(PUBLIC_DIR, 'quizzes');
@@ -122,7 +124,10 @@ app.post('/refresh-quiz', async (req, res) => {
   }
 });
 
-// Parses quiz directory
+
+/*---------------*/ 
+/*  Get Quizzes  */
+/*----------------*/ 
 app.get('/api/quizzes', (req, res) => {
   fs.readdir(quizDir, (err, files) => {
     if (err) return res.status(500).send('Server error');
@@ -133,7 +138,43 @@ app.get('/api/quizzes', (req, res) => {
   });
 });
 
-// State Management
+
+/*------------------*/ 
+/*  Delete Quizzes  */
+/*-------------------*/ 
+app.post('/delete-quiz', (req, res) => {
+  const { quizName } = req.body;
+  if (!quizName) {
+    return res.status(400).json({ error: 'Missing quiz name' });
+  }
+
+  const quizPath = path.join(quizDir, `${quizName}.json`);
+  const retiredPath = path.join(retiredDir, `${quizName}.json`);
+
+  try {
+    // First try to move to retired directory
+    if (fs.existsSync(quizPath)) {
+      fs.renameSync(quizPath, retiredPath);
+      return res.json({ success: true });
+    }
+    
+    // If not in main directory, check retired directory
+    if (fs.existsSync(retiredPath)) {
+      fs.unlinkSync(retiredPath);
+      return res.json({ success: true });
+    }
+
+    return res.status(404).json({ error: 'Quiz not found' });
+  } catch (error) {
+    console.error('Quiz deletion error:', error);
+    return res.status(500).json({ error: 'Failed to delete quiz' });
+  }
+});
+
+
+/*-------------*/ 
+/*  Get State  */
+/*--------------*/ 
 app.get('/state/:id', (req, res) => {
   const hashid = hash(req.params.id);
   const statePath = path.join(DATA_DIR, hashid); // Removed .json extension
@@ -151,6 +192,9 @@ app.get('/state/:id', (req, res) => {
   }
 });
 
+/*-------------*/ 
+/*  Post State */
+/*--------------*/ 
 app.post("/state/:id", (req, res) => {
   const hashid = hash(req.params.id);
   const statePath = path.join(DATA_DIR, hashid); // Removed .json extension
@@ -168,6 +212,10 @@ app.post("/state/:id", (req, res) => {
   }
 });
 
+
+/*----------------*/ 
+/*  Delete State  */
+/*-----------------*/ 
 app.delete("/state/:id", (req, res) => {
   const hashid = hash(req.params.id);
   const statePath = path.join(DATA_DIR, hashid);
@@ -192,6 +240,9 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
+/*------------*/ 
+/*  Get Logs  */
+/*-------------*/ 
 app.get('/get-logs/:quizName', (req, res) => {
   const logPath = path.join(logsDir, `${req.params.quizName}_logs.json`);
   
@@ -304,6 +355,9 @@ app.post('/save-debuglogs', (req, res) => {
   }
 });
 
+/*-------------*/ 
+/* Log Flagged */
+/*--------------*/ 
 app.post('/log-flagged', (req, res) => {
   const { quizName, sessionId, data } = req.body;
   const logPath = path.join(logsDir, `${quizName}_${sessionId}_flagged.json`);
@@ -406,18 +460,13 @@ app.get('/get-flagged/:quizName/:sessionId', (req, res) => {
 app.post('/generate-quiz', async (req, res) => {
   res.header('Cache-Control', 'no-store, no-cache, must-revalidate');
   let newPath; 
-  const { sourceQuiz, category, flaggedQuestions, suffix } = req.body;
+  const { sourceQuiz, category, flaggedQuestions, suffix, excludedCategories = [] } = req.body;
   console.log('[Server] Received generate-quiz request. Body:', req.body);
-  // console.log('[SERVER] Payload:', req.body);
 
   // Validate all parameters
-    if (!req.body.sourceQuiz || !req.body.category || !req.body.flaggedQuestions || !req.body.suffix) {
+  if (!req.body.sourceQuiz || !req.body.category || !req.body.flaggedQuestions || !req.body.suffix) {
     console.error('[Server] Missing parameters. Received:', Object.keys(req.body));
     return res.status(400).json({ error: 'Missing required fields' });
-  }
-
-  if (!sourceQuiz || !category?.length || !flaggedQuestions?.length || !suffix) {
-    return res.status(400).json({ error: 'Missing/invalid parameters' });
   }
 
   const sourcePath = path.join(quizDir, `${sourceQuiz}.json`);
@@ -432,28 +481,54 @@ app.post('/generate-quiz', async (req, res) => {
     return res.status(500).json({ error: 'Failed to read source quiz' });
   }
 
-  // console.log('[SERVER] Source quiz path:', sourcePath);
-  
-  const filteredQuestions = sourceContent.filter((_, index) => {
-    return flaggedQuestions.some(fq => {
-      // Validate index and incorrectTries
-      if (
-        fq.index >= sourceContent.length || 
-        fq.index < 0 ||
-        typeof fq.incorrectTries !== 'number' ||
-        fq.incorrectTries < 0
-      ) {
-        // console.warn(`[SERVER] Invalid flagged question:`, fq);
-        return false;
-      }
-      return fq.index === index && 
-        category.includes(getAttemptCategory(fq.incorrectTries));
+  let filteredQuestions = [];
+  if (category[0] === '0') {
+    // For category 0 (all questions), create new questions with unique indices
+    const questionMap = new Map();
+    
+    // First pass: create map of original questions
+    sourceContent.forEach((question, index) => {
+      questionMap.set(index, question);
     });
-  });
-  // console.log('[SERVER] Filtered questions count:', filteredQuestions.length);
+
+    // Second pass: create new questions with unique indices
+    let newIndex = 0;
+    flaggedQuestions.forEach(fq => {
+      const originalQuestion = questionMap.get(fq.index);
+      if (originalQuestion) {
+        // Skip if this question is in an excluded category
+        const questionCategory = getAttemptCategory(fq.incorrectTries);
+        if (excludedCategories.includes(questionCategory)) {
+          return;
+        }
+
+        // Create a new question object with a unique index
+        const newQuestion = JSON.parse(JSON.stringify(originalQuestion));
+        newQuestion.originalIndex = fq.index; // Keep track of original index
+        newQuestion.incorrectTries = fq.incorrectTries; // Store incorrect tries
+        filteredQuestions.push(newQuestion);
+        newIndex++;
+      }
+    });
+  } else {
+    // Original behavior for specific categories
+    filteredQuestions = sourceContent.filter((_, index) => {
+      return flaggedQuestions.some(fq => {
+        if (
+          fq.index >= sourceContent.length || 
+          fq.index < 0 ||
+          typeof fq.incorrectTries !== 'number' ||
+          fq.incorrectTries < 0
+        ) {
+          return false;
+        }
+        return fq.index === index && 
+          category.includes(getAttemptCategory(fq.incorrectTries));
+      });
+    });
+  }
 
   if (filteredQuestions.length === 0) {
-    // console.log('[SERVER] Generation blocked - empty filtered questions');
     return res.status(400).json({ 
       error: 'No questions matched filters',
       debugInfo: {
@@ -469,50 +544,25 @@ app.post('/generate-quiz', async (req, res) => {
     const newQuizName = `${getUniqueName(baseName, quizDir)}`;
     const newPath = path.join(quizDir, `${newQuizName}.json`);
 
-    // Ensure directory exists
     if (!fs.existsSync(quizDir)) {
       fs.mkdirSync(quizDir, { recursive: true });
     }
 
-    // Write new quiz file
     fs.writeFileSync(newPath, JSON.stringify(filteredQuestions, null, 2));
     console.log('[SERVER] Quiz file created!');
 
-    // Verify file exists
-    const verifyFileCreation = (filePath) => {
-      return fs.existsSync(filePath)
-    };
-
-    // Then update the verification call to:
-    fs.writeFileSync(newPath, JSON.stringify(filteredQuestions, null, 2));
-    // console.log('[SERVER] Quiz file verified!');
-
-    const fileExists = verifyFileCreation(newPath);
-
-    if (!fileExists) {
-      console.error('[SERVER] File not found:', newPath);
-      return res.status(500).json({ 
-        error: 'Quiz file creation failed',
-        debugInfo: { path: newPath }
-      });
-    }
-
-    // Single response with success data
     res.json({ 
       success: true,
-      newQuiz: newQuizName,  // Ensure this matches client expectation
+      newQuiz: newQuizName,
       questionCount: filteredQuestions.length,
     });
 
   } catch (error) {
-    // console.error('[SERVER] Quiz generation error:', error);
-    
-    // Cleanup any partial files
     if (newPath && fs.existsSync(newPath)) {
       try {
         fs.unlinkSync(newPath);
       } catch (cleanupError) {
-        // console.error('[SERVER] Cleanup failed:', cleanupError);
+        console.error('[SERVER] Cleanup failed:', cleanupError);
       }
     }
 
@@ -523,6 +573,7 @@ app.post('/generate-quiz', async (req, res) => {
     });
   }
 });
+
 
 /*-------------*/ 
 /*  Prune logs */
@@ -582,20 +633,11 @@ function hash(value) {
 }
 
 function getAttemptCategory(attempts) {
+  if (attempts === 0) return '0'; // New category for all questions
   if (attempts >= 4) return '4+';
   if (attempts === 3) return '3';
   if (attempts === 2) return '2';
   return '1';
-}
-
-function number_to_suffix(num) {
-  if (num < 0) return '';
-  let suffix = '';
-  while (num >= 0) {
-    suffix = String.fromCharCode(97 + (num % 26)) + suffix;
-    num = Math.floor(num / 26) - 1;
-  }
-  return suffix;
 }
 
 // For use with getUniqueName function

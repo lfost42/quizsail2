@@ -785,19 +785,16 @@ async function handleEndSession() {
 }
 
 async function generateNewQuizzes() {
-  // 1. Get selected category from radio buttons
   const selectedRadio = document.querySelector('.category-radio:checked');
   if (!selectedRadio) {
     alert('Please select a category first');
     return;
   }
-  const category = [selectedRadio.value];
   
-  // 2. Get session information
+  const category = [selectedRadio.value];
   const sessionId = getParam('session');
   const quizName = getParam('src');
 
-  // 3. Validate required parameters
   if (!quizName || !sessionId) {
     console.error('Missing quiz name or session ID');
     alert('Session expired - please start a new session');
@@ -805,33 +802,66 @@ async function generateNewQuizzes() {
     return;
   }
 
-  // 4. Get flagged questions from state
-  const flaggedQuestions = state.complete
-    .filter(q => q.incorrectTries > 0)
-    .map(q => ({
-      index: q.index,
-      incorrectTries: q.incorrectTries
-    }));
+  // Get excluded categories from UI
+  const excludedCategories = new Set();
+  document.querySelectorAll('.exclude-btn').forEach(btn => {
+    if (btn.textContent === 'Included') {
+      excludedCategories.add(btn.getAttribute('data-category'));
+    }
+  });
 
-  // 5. Generate unique suffix using category
+  let flaggedQuestions;
+  if (category[0] === '0') {
+    // For all questions (category 0), include all questions not in excluded categories
+    flaggedQuestions = [];
+    state.complete.forEach(q => {
+      const questionCategory = getAttemptCategory(q.incorrectTries);
+      
+      // Skip questions in excluded categories
+      if (excludedCategories.has(questionCategory)) {
+        return;
+      }
+
+      // Always include the question at least once
+      flaggedQuestions.push({
+        index: q.index,
+        incorrectTries: q.incorrectTries
+      });
+      
+      // Add additional copies for incorrect attempts
+      for (let i = 0; i < q.incorrectTries; i++) {
+        flaggedQuestions.push({
+          index: q.index,
+          incorrectTries: q.incorrectTries
+        });
+      }
+    });
+  } else {
+    // Original behavior for specific categories
+    flaggedQuestions = state.complete
+      .filter(q => q.incorrectTries > 0)
+      .map(q => ({
+        index: q.index,
+        incorrectTries: q.incorrectTries
+      }));
+  }
+
   const suffix = category[0].replace('+', '');
-
-  // 6. Prepare payload
   const payload = {
     sourceQuiz: quizName,
     category,
     flaggedQuestions,
-    suffix
+    suffix,
+    excludedCategories: Array.from(excludedCategories)
   };
 
-  // 7. Add loading state
+  // Add loading state
   const generateBtn = document.getElementById('generateButton');
   const originalText = generateBtn.textContent;
   generateBtn.disabled = true;
   generateBtn.textContent = "Generating...";
 
   try {
-    // 8. Make the request
     const response = await fetch('/generate-quiz', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -844,14 +874,11 @@ async function generateNewQuizzes() {
       throw new Error(responseData.error || 'Server error');
     }
 
-    // 9. Handle successful response
-    // console.log('[DEBUG] Generation successful:', responseData);
-    
     // Reset button state
     generateBtn.disabled = false;
     generateBtn.textContent = originalText;
 
-    // Create or get the links container
+    // Initialize or get the links container
     let linksContainer = document.getElementById('generated-quizzes-container');
     if (!linksContainer) {
       linksContainer = document.createElement('div');
@@ -861,7 +888,15 @@ async function generateNewQuizzes() {
       linksContainer.style.display = 'flex';
       linksContainer.style.flexDirection = 'column';
       linksContainer.style.gap = '10px';
-      E("choice_form").append(new Element(linksContainer));
+      
+      // Insert the container after the completion buttons
+      const completionButtons = document.querySelector('.completion-buttons');
+      if (completionButtons) {
+        completionButtons.after(linksContainer);
+      } else {
+        // Fallback if completion buttons can't be found
+        document.querySelector('.category-list').after(linksContainer);
+      }
     }
 
     if (responseData.newQuiz) {
@@ -915,9 +950,33 @@ async function generateNewQuizzes() {
       deleteBtn.style.width = '20px';
       deleteBtn.style.height = '20px';
       deleteBtn.style.cursor = 'pointer';
-      deleteBtn.onclick = (e) => {
+      deleteBtn.onclick = async (e) => {
         e.stopPropagation();
-        quizLinkContainer.remove();
+        try {
+          // Show deleting state
+          deleteBtn.textContent = '...';
+          deleteBtn.disabled = true;
+          
+          // Call server to delete the quiz
+          const deleteResponse = await fetch('/delete-quiz', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quizName: responseData.newQuiz })
+          });
+
+          if (!deleteResponse.ok) {
+            throw new Error('Failed to delete quiz');
+          }
+
+          // Remove the link from UI
+          quizLinkContainer.remove();
+        } catch (error) {
+          console.error('Delete failed:', error);
+          deleteBtn.textContent = '×';
+          deleteBtn.disabled = false;
+          E("result").html = `❌ Error deleting quiz: ${error.message}`;
+          E("result").e.className = "incorrect";
+        }
       };
 
       // Append all elements
@@ -927,7 +986,6 @@ async function generateNewQuizzes() {
       linksContainer.appendChild(quizLinkContainer);
     }
   } catch (error) {  
-    // 10. Error handling
     console.error('[DEBUG] Generation error:', error);
     
     // Reset button state
@@ -940,10 +998,9 @@ async function generateNewQuizzes() {
   }
 }
 
-
 function showCompletionScreen() {
   const allQuestions = state.complete;
-  let incorrectCounts = { 1: 0, 2: 0, 3: 0, '4+': 0 };
+  let incorrectCounts = { 0: allQuestions.length, 1: 0, 2: 0, 3: 0, '4+': 0 };
 
   allQuestions.forEach(q => {
     const count = q.incorrectTries;
@@ -955,42 +1012,70 @@ function showCompletionScreen() {
 
   E("question").html = `Quiz Complete! 🎉`;
   
-  // Generate radio buttons instead of checkboxes
   E("choice_form").html = `
     <p>Generate new quizzes or end session.</p>
-    <div class="category-list">
+    <div class="category-list" id="categoryList">
+      <label style="display: flex; align-items: center;">
+        <input type="radio" name="category" value="0" class="category-radio" checked>
+        All questions (${incorrectCounts[0]} total)
+      </label>
       ${Object.entries(incorrectCounts)
-        .filter(([_, count]) => count > 0)
+        .filter(([label, count]) => label !== '0' && count > 0)
         .map(([label, count]) => `
-          <label>
-            <input type="radio" name="category" value="${label}" class="category-radio">
-            ${label === '1' ? 'First attempt' : `${label}x`} (${count} questions)
-          </label>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <label style="flex-grow: 1;">
+              <input type="radio" name="category" value="${label}" class="category-radio">
+              ${label === '1' ? 'First attempt' : `${label}x`} (${count} questions)
+            </label>
+            <button class="exclude-btn" data-category="${label}" 
+                    style="padding: 2px 6px; font-size: 12px; background: #ff4444; color: white; border: none; border-radius: 3px;">
+              Exclude
+            </button>
+          </div>
         `).join('')}
     </div>
     <div class="completion-buttons">
-      <button id="generateButton" onclick="generateNewQuizzes()">Generate New Quiz</button>
-      <button id="exitButton" onclick="await handleEndSession()">Exit to Start</button>
+      <button id="generateButton" type="button" onclick="generateNewQuizzes()">Generate New Quiz</button>
+      <button id="exitButton" type="button" onclick="handleEndSession()">Exit to Start</button>
     </div>
   `;
+
+  // Add event listeners to exclude buttons
+  document.querySelectorAll('.exclude-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const category = e.target.getAttribute('data-category');
+      const radio = document.querySelector(`input[value="${category}"]`);
+      
+      if (radio) {
+        if (e.target.textContent === 'Exclude') {
+          e.target.textContent = 'Included';
+          e.target.style.background = '#009f00';
+        } else {
+          e.target.textContent = 'Exclude';
+          e.target.style.background = '#ff4444';
+        }
+      }
+    });
+  });
 
   E("result").html = "";
   E("submitbtn").attr = false;
 }
 
-function number_to_suffix(num) {
-  if (num < 1) return '';
-  let letters = [];
-  while (num > 0) {
-    num--;
-    letters.push(String.fromCharCode(97 + (num % 26)));
-    num = Math.floor(num / 26);
-  }
-  return letters.reverse().join('');
+function getAttemptCategory(attempts) {
+  if (attempts >= 4) return '4+';
+  if (attempts === 3) return '3';
+  if (attempts === 2) return '2';
+  return '1'; // This includes both 1 attempt and 0 attempts
 }
 
 window.submitAnswer = submitAnswer;
 window.show = show;
 window.handleEndSession = handleEndSession;
 window.generateNewQuizzes = generateNewQuizzes;
+window.getAttemptCategory = getAttemptCategory;
+window.showCompletionScreen = showCompletionScreen;
 })(); // End IIFE
