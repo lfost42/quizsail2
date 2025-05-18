@@ -89,7 +89,7 @@ async function start() {
     return;
   }
 
-  console.log('[DEBUG] start() - initial session param:', session);
+  // console.log('[DEBUG] start() - initial session param:', session);
   
   // Detect fresh sessions using sessionStorage flag
   const isNewSession = sessionStorage.getItem('newSession') === 'true';
@@ -105,11 +105,11 @@ async function start() {
   // }
 
   try {
-    console.log('[DEBUG] Loading quiz content for source:', source);
+    // console.log('[DEBUG] Loading quiz content for source:', source);
     if (!content) {
       content = await fetch(`quizzes/${source}.json`)
         .then(res => {
-          console.log('[DEBUG] Quiz fetch response status:', res.status);
+          // console.log('[DEBUG] Quiz fetch response status:', res.status);
           return res.json();
         });
     }
@@ -117,14 +117,14 @@ async function start() {
     content = await fetch(`quizzes/${source}.json`)
       .then(res => {
         if (!res.ok) {
-          console.error('[DEBUG] Quiz fetch failed:', res.status);
+          // console.error('[DEBUG] Quiz fetch failed:', res.status);
           window.location = window.location.origin;
           return;
         }
         return res.json();
       })
       .catch(error => {
-        console.error('[DEBUG] Quiz load error:', error);
+        // console.error('[DEBUG] Quiz load error:', error);
         window.location = window.location.origin;
       });
 
@@ -392,7 +392,7 @@ async function logFlaggedQuestions(questions) {
 
 async function submitAnswer() {
   const currentItem = cur();
-
+  console.log(currentItem.ref.index);
   // Add validation check
   if (!currentItem || !currentItem.ref || typeof currentItem.ref.index === 'undefined') {
     console.error('Invalid currentItem in submitAnswer:', currentItem);
@@ -407,20 +407,6 @@ async function submitAnswer() {
   const numChoices = currentItem.item.c.length;
   const numAnswers = answers.length;
   let correct = true;
-
-  // // DEBUG INDEX -- logs all attempts for debugging purposes when needed
-  // const newLocal = await fetch('/save-debuglogs', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({
-  //     quizName: getParam('src'),
-  //     questionIndex: currentItem.ref.index,
-  //     sessionId: getParam('session'),
-  //     timestamp: new Date().toISOString(),
-  //     isCorrect: correct, // Track correctness
-  //     attemptNumber: questionState.tries + 1
-  //   })
-  // });
 
   Object.values(labels).forEach(label => {
     label.e.style.color = ''; // Reset to default
@@ -461,7 +447,6 @@ async function submitAnswer() {
             }
         }
     }
-
   }
   
   if (correct) {
@@ -479,60 +464,63 @@ async function submitAnswer() {
             })
         });
     }
-  }
-
-  if (!correct) {
-        answers.forEach(answer => {
-            if (labels[answer]) {
-                labels[answer].e.style.color = '#009f00';
-            }
-        });
-    // Handle incorrect answer
-    // console.log('[DEBUG] Incorrect answer detected');
+    questionState.currentStreak = (questionState.currentStreak || 0) + 1;
+    questionState.count = (questionState.count || 0) + 1;
+  } else {
+    // Reset streak on incorrect answer
+    questionState.currentStreak = 0;
     questionState.incorrectTries = (questionState.incorrectTries || 0) + 1;
-
+    
+    // Set firstAttemptCorrect to false if this was the first attempt
+    if (questionState.firstAttemptCorrect === null) {
+        questionState.firstAttemptCorrect = false;
+    }
+    
+    // Handle incorrect answer logging
     const allQuestions = [...state.complete, ...state.working];
     const flagged = allQuestions.filter(q => q.incorrectTries > 0);
-
     await logFlaggedQuestions(flagged).catch(e => console.error('Logging failed:', e));
-    await saveState();
-
-    // Move the question to the end of the working set if present
-    const currentIndex = state.working.findIndex(q => q.index === currentItem.ref.index);
-    if (currentIndex > -1) {
-      const removed = state.working.splice(currentIndex, 1);
-      if (removed.length > 0) {
-        const movedQuestion = removed[0];
-        if (movedQuestion?.index !== undefined) { // Validate before pushing
-          state.working.push(movedQuestion);
-        }
-      }
-    }
-
-    // Preserve lastIndex to prevent immediate repetition
-    state.lastIndex = currentItem.ref.index; // Keep index for avoid check
-    }
-
-    // Increment tries
-    if (!('tries' in questionState)) questionState.tries = 0;
-    questionState.tries++;
-
-    // Handle mode-based progression
-    switch(mode) {
-      case 'fastmode':
-        questionState.currentStreak = 0; // Reset streak
-        // Keep firstAttemptCorrect tracking
-        if (questionState.firstAttemptCorrect === null) {
-            questionState.firstAttemptCorrect = false;
-        }
-        questionState.count = (questionState.count || 0) + 1;
-        break;
-    default:
-      // Increment count for each correct answer in default mode
-      questionState.count = (questionState.count || 0) + 1;
   }
 
-  if ((mode === 'fastmode' && questionState.firstAttemptCorrect) || questionState.count >= 3) {
+  // Move the question to the end of the working set if present
+  const currentIndex = state.working.findIndex(q => q.index === currentItem.ref.index);
+  if (currentIndex > -1) {
+    const removed = state.working.splice(currentIndex, 1);
+    if (removed.length > 0) {
+      const movedQuestion = removed[0];
+      if (movedQuestion?.index !== undefined) {
+        state.working.push(movedQuestion);
+      }
+    }
+  }
+
+  // Preserve lastIndex to prevent immediate repetition
+  state.lastIndex = currentItem.ref.index;
+
+  // Increment tries
+  if (!('tries' in questionState)) questionState.tries = 0;
+  questionState.tries++;
+
+  // Mastery condition - requires either:
+  // 1. Fastmode with first attempt correct, OR
+  // 2. Current streak of 2 correct answers (after initial incorrect)
+  let mastered = false;
+  switch(mode) {
+    case 'fastmode':
+      if (correct) {
+        if (questionState.firstAttemptCorrect === true) {
+          mastered = true;
+        } else if (questionState.currentStreak >= 3) {
+          mastered = true;
+        }
+      }
+      break;
+    default:
+      // Default mode - master after 3 correct answers in a row
+      mastered = questionState.currentStreak >= 3;
+  }
+
+  if (mastered) {
     // Remove from working array
     state.working = state.working.filter(q => q.index !== questionState.index);
     
@@ -545,53 +533,24 @@ async function submitAnswer() {
 
   await saveState();
 
-      // Move questions in working array
-    const currentIndex = state.working.findIndex(q => q.index === currentItem.ref.index);
-    if (currentIndex > -1) {
-      const removed = state.working.splice(currentIndex, 1);
-      if (removed.length > 0) {
-        const movedQuestion = removed[0];
-        if (movedQuestion?.index !== undefined) { // Validate before pushing
-          state.working.push(movedQuestion);
-        }
-      }
-    }
+  let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers.join(', ')}`;
+  // Add explanation if available
+  if (item.e) {
+      resultMessage += `<br><br>${item.e.replace(/\n/g, '<br>')}`;
+  } else {
+      resultMessage += `<br><br>Explanation not provided.`;
+  }
+  E("result").html = resultMessage;
 
-    // Update lastIndex immediately
-    state.lastIndex = currentItem.ref.index;
+  //remove classes, then add new class based on correct/incorrect answer
+  E("result").e.className = "";
+  var newClass = correct ? "correct" : "incorrect";
+  E("result").e.classList.add(newClass);
 
-    switch(mode) {
-      case 'fastmode':
-        questionState.currentStreak = 0; // Reset streak
-        // Keep firstAttemptCorrect tracking
-        if (questionState.firstAttemptCorrect === null) {
-            questionState.firstAttemptCorrect = false;
-        }
-        questionState.count = (questionState.count || 0) + 1;
-        break;
-    default:
-      // Increment count for each correct answer in default mode
-      questionState.count = (questionState.count || 0) + 1;
-  } 
-
-    let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers.join(', ')}`;
-    // Add explanation if available
-    if (item.e) {
-        resultMessage += `<br><br>${item.e.replace(/\n/g, '<br>')}`;
-      } else {
-        resultMessage += `<br><br>Explanation not provided.`;
-    }
-    E("result").html = resultMessage;
-
-    //remove classes, then add new class based on correct/incorrect answer
-    E("result").e.className = "";
-    var newClass = correct ? "correct" : "incorrect";
-    E("result").e.classList.add(newClass);
-
-    E("submitbtn").attr("onclick", 'show()').value = "Next Question";
-    if (!('tries' in currentItem.ref)) {
-        currentItem.ref.tries = 0;
-    }
+  E("submitbtn").attr("onclick", 'show()').value = "Next Question";
+  if (!('tries' in currentItem.ref)) {
+      currentItem.ref.tries = 0;
+  }
 }
 
 class Element {
@@ -886,7 +845,7 @@ async function generateNewQuizzes() {
     }
 
     // 9. Handle successful response
-    console.log('[DEBUG] Generation successful:', responseData);
+    // console.log('[DEBUG] Generation successful:', responseData);
     
     // Reset button state
     generateBtn.disabled = false;

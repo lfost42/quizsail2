@@ -443,7 +443,7 @@ app.post('/generate-quiz', async (req, res) => {
         typeof fq.incorrectTries !== 'number' ||
         fq.incorrectTries < 0
       ) {
-        console.warn(`[SERVER] Invalid flagged question:`, fq);
+        // console.warn(`[SERVER] Invalid flagged question:`, fq);
         return false;
       }
       return fq.index === index && 
@@ -453,7 +453,7 @@ app.post('/generate-quiz', async (req, res) => {
   // console.log('[SERVER] Filtered questions count:', filteredQuestions.length);
 
   if (filteredQuestions.length === 0) {
-    console.log('[SERVER] Generation blocked - empty filtered questions');
+    // console.log('[SERVER] Generation blocked - empty filtered questions');
     return res.status(400).json({ 
       error: 'No questions matched filters',
       debugInfo: {
@@ -485,7 +485,7 @@ app.post('/generate-quiz', async (req, res) => {
 
     // Then update the verification call to:
     fs.writeFileSync(newPath, JSON.stringify(filteredQuestions, null, 2));
-    console.log('[SERVER] Quiz file verified!');
+    // console.log('[SERVER] Quiz file verified!');
 
     const fileExists = verifyFileCreation(newPath);
 
