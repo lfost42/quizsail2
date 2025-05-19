@@ -151,7 +151,7 @@ async function start() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(state)
       });
-
+      
       await logFlaggedQuestions([]);
 
       sessionStorage.removeItem('newSession'); // Clear flag
@@ -392,7 +392,7 @@ async function logFlaggedQuestions(questions) {
 
 async function submitAnswer() {
   const currentItem = cur();
-  console.log(currentItem.ref.index);
+  // console.log(currentItem.ref.index);
   // Add validation check
   if (!currentItem || !currentItem.ref || typeof currentItem.ref.index === 'undefined') {
     console.error('Invalid currentItem in submitAnswer:', currentItem);

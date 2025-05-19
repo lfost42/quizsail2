@@ -10,102 +10,229 @@
 
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <style>
-      * {
-        font-family: 'Roboto',
-        sans-serif;
-        font-size: large;
-      }
-      html {
-        height: 100%;
-      }
-      body {
-        min-height: 100%;
-        padding: 5vh 5vw;
-      }
-      form {
-        margin: 0 auto;
-        padding: 5vh 5vw;
-        text-align: center;
-      }
-      #quiz {
-        margin: 0 auto;
-        min-width: 30vh;
-        max-width: 80vw;
-        text-align: center;
-      }
-      input[type="button"] {
-        background-color: lightgreen;
-        cursor: pointer;
-        display: inherit;
-        margin: 0 auto;
-        padding: 2vh 10vw;
-        margin-top: 5vh;
-      }
-      input[type="button"]:hover {
-        background-color: green;
-        filter: brightness(150%);
-      }
-      .block {
-        background-color: rgba(238, 238, 238, 0.2);
-        border: 1px dotted #eee;
-      }
-      #resumeTitle {
-        width: 100vw;
-        text-align: center;
-      }
-      #savedSessions {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
-      }
-      .savedSession {
-        padding: 2vh 2vw;
-        margin: 1vh 1vw;
-        width: 100vw;
-        max-width: 400px;
-        transition: opacity 1s ease;
-      }
-      .savedSession[hidden] {
-        display: block;
-        opacity: 0;
-      }
-      .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      }
-        .modal-content {
-          background: white;
-          padding: 20px;
-          border-radius: 8px;
-          max-width: 600px;
-          max-height: 80vh;
-          overflow-y: auto;
-        }
-        .session-item {
-          margin: 10px 0;
-          padding: 10px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        .delete-btn {
-          background: #ff4444;
-          color: white;
-          border: none;
-          padding: 5px 10px;
-          border-radius: 4px;
-          cursor: pointer;
-        }
+    * {
+      font-family: 'Roboto',
+      sans-serif;
+      font-size: large;
+    }
+    html {
+      height: 100%;
+    }
+    body {
+      min-height: 100%;
+      padding: 5vh 5vw;
+    }
+    form {
+      margin: 0 auto;
+      padding: 5vh 5vw;
+      text-align: left;
+    }
+    #quiz {
+      margin: 0 auto;
+      min-width: 30vh;
+      max-width: 80vw;
+      text-align: center;
+    }
+    .block {
+      background-color: rgba(238, 238, 238, 0.2);
+      border: 1px dotted #eee;
+    }
+    #resumeTitle {
+      width: 100vw;
+      text-align: center;
+    }
+    #savedSessions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+    .savedSession {
+      padding: 2vh 2vw;
+      margin: 1vh 1vw;
+      width: 100vw;
+      max-width: 400px;
+      transition: opacity 1s ease;
+    }
+    .savedSession[hidden] {
+      display: block;
+      opacity: 0;
+    }
+    .session-item {
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .deleteSession {
+      margin: 4px 0;
+      transition: all 0.2s ease-in-out;
+    }
+    .deleteSession:hover {
+      transform: translateY(-2px);
+      transition: all 0.2s ease-in-out;
+    }
+    .delete-btn {
+      color: #ff4444;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+    .delete-btn:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease-in-out;
+    }
+    /* modal buttons */
+    .half-button {
+      background-color: lightgreen;
+      cursor: pointer;
+      padding: 2vh 4vw;
+      transition: all 0.2s ease-in-out;
+    }
+    .half-button:hover {
+      background-color: green;
+      filter: brightness(150%);
+      transition: all 0.2s ease-in-out;
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      position: relative;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      padding: 0 8px;
+      border-radius: 50%;
+      transition: all 0.2s ease-in-out;
+    }
+    .close-modal:hover {
+      background-color: #eee;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+      transition: all 0.2s ease-in-out;
+    }
+    .modal-footer {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .modal-footer button {
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: filter 0.2s ease;
+    }
+    .modal-footer button:hover {
+      filter: brightness(0.9);
+    }
+    .modal-footer button:disabled {
+      background-color: #cccccc !important;
+      cursor: not-allowed;
+    }
+    .loading {
+      color: #666;
+      font-style: italic;
+      text-align: center;
+      padding: 20px;
+    }
+    .mode-header {
+      cursor: pointer;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mode-header:hover {
+      background-color: #f5f5f5;
+    }
+    .mode-options {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+    }
+    .caret {
+      transition: transform 0.2s ease;
+    }
+
+    .caret.expanded {
+      transform: rotate(180deg);
+    }
+    .mode-selection {
+      margin: 15px 0;
+      padding: 10px;
+      border-top: 1px solid #eee;
+    }
+    .mode-selection label {
+      display: block;
+      margin: 8px 0;
+    }
+    .quiz-item {
+      display: block;
+      margin: 4px 0;
+      padding: 8px;
+    }
+    .quiz-item:hover {
+      background-color: #f5f5f5;
+    }
+    #startSelectedQuiz {
+      background-color: #4CAF50;
+      margin-right: 10px;
+    }
+    #retireButton {
+      background-color: #3c7898;
+    }
+    /* Retired Modal */
+    #restoreButton {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #restoreButton:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    #deleteButton {
+      background-color: #dc3545;
+      margin-left: 10px;
+    }
+    #deleteButton:hover {
+      background-color: #bb2d3b;
+    }
     </style>
     <script src="common.js"></script>
     <script src="index.js"></script>
@@ -121,18 +248,22 @@
     </div>
     <div>
       <form class="block">
-        <select id="quiz" size=2>
-          <!-- json files load dynamically from index.js -->
-        </select>
+        <h2 display="hidden">QuizSail 2.0</h2>
         <p>
-          <input type="radio" id="fastmode" name="mode"/> Fast Mode (mastered when correct on the first try)
+          Start a new quiz using the "Current" button. 
         </p>
-        <p>
-          <input type="radio" id="reviewmode" name="mode"/> Review Mode (** in progress **)
-        </p>
-        <p>
-          <input type="button" value="Start" id="startButton" />
-        </p>
+        <ul>
+          <li>Standard - Mastered after 3 consecutively correct answeres</li>
+          <li>Fast - Mastered if correct on the first try</li>
+          <li>Review - Displays questions, answers, and explanations</li>
+        </ul>
+
+        <select id="quiz" hidden></select>
+
+        <p style="display: flex; gap: 4vh; justify-content: left; margin-top: 4vh; margin-left: 4vw">
+        <input type="button" value="Current" id="currentButton" class="half-button" />
+        <input type="button" value="Retired" id="retiredButton" class="half-button" />
+    </p>
       </form>
     </div>
     <section id="savedSessions" display="none"></section>

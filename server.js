@@ -34,9 +34,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 app.use((req, res, next) => {
-  // console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   if (req.body) {
-    // console.log('Request Body:', JSON.stringify(req.body, null, 2));
   }
   next();
 });
@@ -138,35 +136,91 @@ app.get('/api/quizzes', (req, res) => {
   });
 });
 
+/*-----------------------*/ 
+/*  Get Retired Quizzes  */
+/*-----------------------*/ 
+app.get('/api/retired-quizzes', (req, res) => {
+  fs.readdir(retiredDir, (err, files) => {
+    if (err) return res.status(500).send('Server error');
+    const quizzes = files
+      .filter(file => file.endsWith('.json'))
+      .map(file => file.replace('.json', ''));
+    res.json(quizzes);
+  });
+});
 
-/*------------------*/ 
-/*  Delete Quizzes  */
-/*-------------------*/ 
-app.post('/delete-quiz', (req, res) => {
+
+/*---------------*/ 
+/*  Retire Quiz  */
+/*----------------*/ 
+app.post('/retire-quiz', (req, res) => {
   const { quizName } = req.body;
-  if (!quizName) {
-    return res.status(400).json({ error: 'Missing quiz name' });
-  }
+  if (!quizName) return res.status(400).json({ error: 'Missing quiz name' });
 
-  const quizPath = path.join(quizDir, `${quizName}.json`);
-  const retiredPath = path.join(retiredDir, `${quizName}.json`);
+  const sourcePath = path.join(quizDir, `${quizName}.json`);
+  const destPath = path.join(retiredDir, `${quizName}.json`);
 
   try {
-    // First try to move to retired directory
-    if (fs.existsSync(quizPath)) {
-      fs.renameSync(quizPath, retiredPath);
+    if (fs.existsSync(sourcePath)) {
+      fs.renameSync(sourcePath, destPath);
+      return res.json({ success: true });
+    }
+    return res.status(404).json({ error: 'Quiz not found' });
+  } catch (error) {
+    console.error('Retire error:', error);
+    return res.status(500).json({ error: 'Failed to retire quiz' });
+  }
+});
+
+/*----------------*/ 
+/*  Restore Quiz  */
+/*-----------------*/ 
+app.post('/restore-quiz', (req, res) => {
+  const { quizName } = req.body;
+  if (!quizName) return res.status(400).json({ error: 'Missing quiz name' });
+
+  const sourcePath = path.join(retiredDir, `${quizName}.json`);
+  const destPath = path.join(quizDir, `${quizName}.json`);
+
+  try {
+    if (fs.existsSync(sourcePath)) {
+      fs.renameSync(sourcePath, destPath);
+      return res.json({ success: true });
+    }
+    return res.status(404).json({ error: 'Quiz not found in retired' });
+  } catch (error) {
+    console.error('Restore error:', error);
+    return res.status(500).json({ error: 'Failed to restore quiz' });
+  }
+});
+
+/*---------------*/
+/*  Delete Quiz  */
+/*---------------*/
+app.post('/delete-quiz', (req, res) => {
+  const { quizName } = req.body;
+  if (!quizName) return res.status(400).json({ error: 'Missing quiz name' });
+
+  const retiredPath = path.join(retiredDir, `${quizName}.json`);
+  const activePath = path.join(quizDir, `${quizName}.json`);
+  
+  try {
+    // First try active directory
+    if (fs.existsSync(activePath)) {
+      fs.unlinkSync(activePath);
       return res.json({ success: true });
     }
     
-    // If not in main directory, check retired directory
+    // Then try retired directory
     if (fs.existsSync(retiredPath)) {
       fs.unlinkSync(retiredPath);
       return res.json({ success: true });
     }
 
+    // If not found in either
     return res.status(404).json({ error: 'Quiz not found' });
   } catch (error) {
-    console.error('Quiz deletion error:', error);
+    console.error('Deletion error:', error);
     return res.status(500).json({ error: 'Failed to delete quiz' });
   }
 });
@@ -246,12 +300,20 @@ if (!fs.existsSync(DATA_DIR)) {
 app.get('/get-logs/:quizName', (req, res) => {
   const logPath = path.join(logsDir, `${req.params.quizName}_logs.json`);
   
+  if (!req.params.quizName) {
+    return res.status(400).json({ error: 'Missing quiz name' });
+  }
+
   try {
     if (fs.existsSync(logPath)) {
       const logs = JSON.parse(fs.readFileSync(logPath, 'utf8'));
-      res.json(logs);
-    } else {
-      res.json({});
+      // Filter out future timestamps
+      const validLogs = Object.fromEntries(
+        Object.entries(logs).filter(([id, session]) => 
+          new Date(session.timestamp) <= new Date()
+        )
+      );
+      res.json(validLogs);
     }
   } catch (error) {
     // console.error('[Server] Log retrieval failed:', error);
@@ -280,6 +342,7 @@ app.post('/delete-log', (req, res) => {
 app.post('/save-log', (req, res) => {
   const { quizName, questionIndex, sessionId } = req.body;
   const logPath = path.join(logsDir, `${quizName}_logs.json`);
+
   // Skip invalid indices
   if (questionIndex === -1) return res.sendStatus(200);
   try {
@@ -296,6 +359,12 @@ app.post('/save-log', (req, res) => {
       };
     }
 
+    // DEBUG CODE
+    if (req.body.timestamp && new Date(req.body.timestamp) > new Date()) {
+      console.error('[SERVER] Future timestamp rejected');
+      return res.status(400).json({ error: 'Invalid future timestamp' });
+    }
+
     // Append valid index
     if (!allLogs[sessionId].firstCorrect.includes(questionIndex)) {
       allLogs[sessionId].firstCorrect.push(questionIndex);
@@ -304,10 +373,14 @@ app.post('/save-log', (req, res) => {
     }
 
     res.sendStatus(200);
-  } catch (err) {
-    // console.error('[Server] Log save failed:', err);
-    res.status(500).send('Server error');
-  }
+    } catch (err) {
+      console.error('[SERVER] Log save failed:', err);
+      console.error('[SERVER] Error details:', {
+        body: req.body,
+        stack: err.stack
+      });
+      res.status(500).send('Server error');
+    }
 });
 
 // debug logger
@@ -397,22 +470,11 @@ app.get('/get-flagged/:quizName/:sessionId', (req, res) => {
     console.error('[SERVER] Missing parameters in get-flagged');
     return res.status(400).json({ error: 'Missing parameters' });
   }
-  // console.log('[SERVER] Received get-flagged request with:', { quizName, sessionId });
 
   const logPath = path.join(logsDir, `${quizName}_${sessionId}_flagged.json`);
-  // console.log('[SERVER] Constructed path:', logPath);
-  
+
   try {
     const data = JSON.parse(fs.readFileSync(logPath, 'utf8'));
-
-    // Add this RIGHT AFTER parsing the data
-    console.log('[SERVER] Sample flagged data (first 3 entries):', 
-      data.slice(0, 3).map(d => ({
-        index: d.index,
-        incorrectTries: d.incorrectTries,
-        valid: typeof d.index === 'number' && typeof d.incorrectTries === 'number'
-      }))
-    );
     
     // Add validation
     if (!Array.isArray(data)) {
@@ -444,11 +506,6 @@ app.get('/get-flagged/:quizName/:sessionId', (req, res) => {
     console.error('Flagged error:', error);
     res.header('Access-Control-Allow-Origin', '*'); // Ensure CORS headers
     res.status(500).json([]);
-    console.log('[SERVER] Error details:', {
-      code: error.code,
-      path: error.path,
-      stack: error.stack
-    });
     res.status(500).json([]);
   }
 });
@@ -461,7 +518,6 @@ app.post('/generate-quiz', async (req, res) => {
   res.header('Cache-Control', 'no-store, no-cache, must-revalidate');
   let newPath; 
   const { sourceQuiz, category, flaggedQuestions, suffix, excludedCategories = [] } = req.body;
-  console.log('[Server] Received generate-quiz request. Body:', req.body);
 
   // Validate all parameters
   if (!req.body.sourceQuiz || !req.body.category || !req.body.flaggedQuestions || !req.body.suffix) {
@@ -549,7 +605,6 @@ app.post('/generate-quiz', async (req, res) => {
     }
 
     fs.writeFileSync(newPath, JSON.stringify(filteredQuestions, null, 2));
-    console.log('[SERVER] Quiz file created!');
 
     res.json({ 
       success: true,
