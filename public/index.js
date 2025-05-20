@@ -1,19 +1,5 @@
 let storageSessions = getStorageSessions();
 
-
-const COLORS = {
-  TEAL: '#3A9D9D',
-  DEEP_BLUE: '#172e46',
-  RED: '#FF6B6B',
-  GREEN: '#4CAF50',
-  LIGHT_OCEAN: '#88C1D0',
-  GRAY: 'rgba(128, 128, 128, 0.7)',
-  HOVER_TEAL: '#45a049',
-  HOVER_DEEP_BLUE: '#1976D2',
-  HOVER_RED: '#bb2d3b',
-  BACKGROUND_GRAY: '#E8F4F8'
-};
-
 const fadeOut = (element) => {
     element.hidden = true;
     setTimeout(() => {
@@ -69,8 +55,8 @@ const showCurrentModal = () => {
     <div class="loading">Loading quizzes...</div>
   </div>
   <div class="modal-footer">
-    <button id="startSelectedQuiz" disabled>Start Quiz</button>
-    <button id="retireButton" disabled>Retire Quiz</button>
+    <button id="startSelectedQuiz" class="start-button" disabled>Start Quiz</button>
+    <button id="retireButton" class="retire-button" disabled>Retire Quiz</button>
   </div>
 `;
 
@@ -163,8 +149,6 @@ const showCurrentModal = () => {
         if (defaultQuiz) {
           selectedQuiz = defaultQuiz;
           if (defaultQuiz && fetchedQuizzes.includes(defaultQuiz)) {
-            modalContent.querySelector('#startSelectedQuiz').style.backgroundColor = COLORS.TEAL;
-            modalContent.querySelector('#retireButton').style.backgroundColor = COLORS.DEEP_BLUE;
             selectedQuiz = defaultQuiz;
             modalContent.querySelector('#startSelectedQuiz').disabled = false;
             modalContent.querySelector('#retireButton').disabled = false;
@@ -173,8 +157,6 @@ const showCurrentModal = () => {
 
         list.querySelectorAll('input[type="radio"]').forEach(radio => {
           radio.addEventListener('change', (e) => {
-          modalContent.querySelector('#startSelectedQuiz').style.backgroundColor = COLORS.TEAL;
-          modalContent.querySelector('#retireButton').style.backgroundColor = COLORS.DEEP_BLUE;
           selectedQuiz = e.target.value;
           // Enable buttons when selection changes
           modalContent.querySelector('#startSelectedQuiz').disabled = false;
@@ -195,7 +177,6 @@ const showCurrentModal = () => {
 
   // Handle Start
   modalContent.querySelector('#startSelectedQuiz').addEventListener('click', () => {
-  modalContent.querySelector('#startSelectedQuiz').style.backgroundColor = COLORS.TEAL;
   if (!selectedQuiz || !fetchedQuizzes.includes(selectedQuiz)) {
     alert('Invalid quiz selection');
     return;
@@ -222,7 +203,6 @@ const showCurrentModal = () => {
 
   // Handle Retire
   modalContent.querySelector('#retireButton').addEventListener('click', () => {
-    modalContent.querySelector('#retireButton').style.backgroundColor = COLORS.DEEP_BLUE;
     if (!selectedQuiz) return;
 
     fetch('/retire-quiz', {
@@ -290,8 +270,8 @@ const showRetiredModal = () => {
       <div class="loading">Loading retired quizzes...</div>
     </div>
     <div class="modal-footer">
-      <button id="retiredRestoreButton" style="background-color: ${COLORS.TEAL}" disabled>Restore Quiz</button>
-      <button id="retiredDeleteButton" style="background-color: ${COLORS.RED}" disabled>Delete Quiz</button>
+      <button id="retiredRestoreButton" class="restore-button" disabled>Restore Quiz</button>
+      <button id="retiredDeleteButton" class="delete-button" disabled>Delete Quiz</button>
     </div>
   `;
 
@@ -329,7 +309,6 @@ const showRetiredModal = () => {
 
   // Handle restore
   modalContent.querySelector('#retiredRestoreButton').addEventListener('click', () => {
-    modalContent.querySelector('#retiredRestoreButton').style.backgroundColor = COLORS.TEAL;
     if (!selectedQuiz) return;
 
     fetch('/restore-quiz', {
@@ -377,7 +356,6 @@ const showRetiredModal = () => {
 
   // Handle delete
   modalContent.querySelector('#retiredDeleteButton').addEventListener('click', () => {
-    modalContent.querySelector('#retiredDeleteButton').style.backgroundColor = COLORS.RED;
     if (!selectedQuiz) return;
     
     const confirmDelete = confirm(`⚠️ WARNING ⚠️ \n This action cannot be oneone! \n\n Confirm permanent deletion for "${selectedQuiz}".`);
@@ -405,7 +383,6 @@ const showRetiredModal = () => {
         : '<p>No retired quizzes found</p>';
       
       selectedQuiz = null;
-      modalContent.querySelector('#retiredDeleteButton').style.backgroundColor = COLORS.RED;
       modalContent.querySelector('#retiredRestoreButton').disabled = true;
       modalContent.querySelector('#retiredDeleteButton').disabled = true;
       
@@ -439,9 +416,7 @@ document.addEventListener("click", ({ target }) => {
 async function loadQuizzes() {
   try {
     const quizSelect = document.getElementById('quiz');
-    // Fetch list of quizzes from server
     const response = await fetch(`/api/quizzes?t=${Date.now()}`);
-    // if (!response.ok) throw new Error('Failed to load quizzes');
     const quizzes = await response.json();
     
     // Populate dropdown
@@ -549,7 +524,7 @@ const renderSessions = () => {
           <div class="savedSession block">
           <a href="${url}">
             ${course}: ${lastAccess}</a> 
-          <button data-url="${url}" class="deleteSession" style="color: ${COLORS.RED}"> × </button><br>
+          <button data-url="${url}" class="deleteSession"> × </button><br>
           </div>
       `;
   }

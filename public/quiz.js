@@ -6,20 +6,6 @@ let labels = {};
 var state = null;
 var content = null;
 
-
-const COLORS = {
-  TEAL: '#3A9D9D',
-  DEEP_BLUE: '#172e46',
-  RED: '#FF6B6B',
-  GREEN: '#4CAF50',
-  LIGHT_OCEAN: '#88C1D0',
-  GRAY: 'rgba(128, 128, 128, 0.7)',
-  HOVER_TEAL: '#45a049',
-  HOVER_DEEP_BLUE: '#1976D2',
-  HOVER_RED: '#bb2d3b',
-  BACKGROUND_GRAY: '#E8F4F8'
-};
-
 (function init() {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('mode') === 'review') {
@@ -450,7 +436,7 @@ async function submitAnswer() {
     // Text input handling
     if (inputs.value.trim() === '' || inputs.value.toUpperCase() !== answers[0].toUpperCase()) {
         correct = false;
-        inputs.e.style.backgroundColor = COLORS.GRAY;
+        inputs.e.style.backgroundColor = '#a82b0e';
     } else {
         inputs.e.style.backgroundColor = '#246464';
     }
@@ -476,7 +462,7 @@ async function submitAnswer() {
         // Mark incorrect selections
         for (const [choice, input] of Object.entries(inputs)) {
             if (input.checked && !answers.includes(choice)) {
-                labels[choice].e.style.color = COLORS.GRAY;
+                labels[choice].e.style.color = '#a82b0e';
                 correct = false;
             }
         }
@@ -677,7 +663,7 @@ async function saveState(callback) {
       callback();
     }
   } catch (e) {
-    // console.error("Failed to save state:", e);
+    console.error("Failed to save state:", e);
   }
 }
 
@@ -838,10 +824,14 @@ async function generateNewQuizzes() {
 
   // Get excluded categories from UI
   const excludedCategories = new Set();
-  document.querySelectorAll('.exclude-btn').forEach(btn => {
-    if (btn.textContent === 'Included') {
-      excludedCategories.add(btn.getAttribute('data-category'));
-    }
+    document.querySelectorAll('.exclude-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const button = e.target;
+      button.classList.toggle('included');
+      button.textContent = button.classList.contains('included') ? 'Included' : 'Exclude';
+    });
   });
 
   let flaggedQuestions;
@@ -933,22 +923,6 @@ async function generateNewQuizzes() {
       }
     }
 
-    const completionButtons = `
-      button {
-        background: ${COLORS.TEAL};
-        color: white;
-      }
-      #exitButton {
-        background: ${COLORS.RED};
-      }
-      button:hover {
-        background: ${COLORS.HOVER_TEAL};
-      }
-      #exitButton:hover {
-        background: ${COLORS.HOVER_RED};
-      }
-    `;
-
     if (responseData.newQuiz) {
       // Create individual quiz link container
       const quizLinkContainer = document.createElement('div');
@@ -992,23 +966,8 @@ async function generateNewQuizzes() {
 
       // Add delete button
       const deleteBtn = document.createElement('button');
-      deleteBtn.style.transition = 'all 0.2s ease-in-out';
-      deleteBtn.addEventListener('mouseover', () => {
-        deleteBtn.style.transform = 'translateY(-1px)';
-        deleteBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-      });
-      deleteBtn.addEventListener('mouseout', () => {
-        deleteBtn.style.transform = 'none';
-        deleteBtn.style.boxShadow = 'none';
-      });
+      deleteBtn.className = 'delete-btn';
       deleteBtn.textContent = '×';
-      deleteBtn.style.backgroundcolor = 'COLOR.RED';
-      deleteBtn.style.color = 'white';
-      deleteBtn.style.border = 'none';
-      deleteBtn.style.borderRadius = '50%';
-      deleteBtn.style.width = '20px';
-      deleteBtn.style.height = '20px';
-      deleteBtn.style.cursor = 'pointer';
       deleteBtn.onclick = async (e) => {
         e.stopPropagation();
         try {
@@ -1094,8 +1053,8 @@ function showCompletionScreen() {
         `).join('')}
     </div>
     <div class="completion-buttons">
-      <button id="generateButton" style="background: ${COLORS.TEAL}; color: white" type="button" onclick="generateNewQuizzes()">Generate New Quiz</button>
-      <button id="exitButton" style="background: ${COLORS.RED}; color: white" type="button" onclick="handleEndSession()">Exit to Start</button>
+      <button id="generateButton" class="completion-buttons" type="button" onclick="generateNewQuizzes()">Generate New Quiz</button>
+      <button id="exitButton" class="completion-buttons" type="button" onclick="handleEndSession()">Exit to Start</button>
     </div>
   `;
 
@@ -1107,16 +1066,7 @@ function showCompletionScreen() {
       
       const category = e.target.getAttribute('data-category');
       const radio = document.querySelector(`input[value="${category}"]`);
-      
-      if (radio) {
-        if (e.target.textContent === 'Exclude') {
-          e.target.textContent = 'Included';
-          e.target.style.background = COLORS.TEAL;
-        } else {
-          e.target.textContent = 'Exclude';
-          e.target.style.background = '#FF6B6B';
-        }
-      }
+      e.target.classList.toggle('included');
     });
   });
 

@@ -10,18 +10,33 @@
 
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <style>
+      :root {
+        --primary-color: #172e46;
+        --secondary-color: #88C1D0;
+        --correct-color: #153939;
+        --incorrect-color: #FF6B6B;
+        --danger-color: #bb2d3b;
+        --success-color: #276c6c;
+        --background-light: #F8FBFD;
+        --surface-light: #eff5f7;
+        --light-teal: #3A9D9D;
+        --dark-teal: teal;
+      }
+
+    /* Global Styles */
     * {
       font-family: 'Roboto',
       sans-serif;
       font-size: large;
     }
-    html {
-      height: 100%;
-    }
+
+    html { height: 100%; }
     body {
       min-height: 100%;
       padding: 5vh 5vw;
     }
+
+    /* Form & Quiz Layout */
     form {
       margin: 0 auto;
       padding: 5vh 5vw;
@@ -34,13 +49,15 @@
       text-align: center;
     }
     .block {
-      background-color: rgba(238, 238, 238, 0.2);
-      border: 1px dotted #eee;
+      background-color: var(--surface-light);
+      border: 1px dotted var(--secondary-color);
     }
     #resumeTitle {
       width: 100vw;
       text-align: center;
     }
+
+    /* Session Management */
     #savedSessions {
       display: flex;
       flex-wrap: wrap;
@@ -60,12 +77,14 @@
     .session-item {
       margin: 10px 0;
       padding: 10px;
-      border: 1px solid #88C1D0;
+      border: 1px solid var(--secondary-color);
       border-radius: 4px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+
+    /* Buttons & Interactions */
     .deleteSession {
       margin: 4px 0;
       transition: all 0.2s ease-in-out;
@@ -74,79 +93,45 @@
       transform: translateY(-2px);
       transition: all 0.2s ease-in-out;
     }
-    .delete-btn {
-      color: #FF6B6B;
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
-    }
-    .delete-btn:hover {
-      color: #bb2d3b;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: all 0.2s ease-in-out;
-    }
-    /* prune modal buttons */
-    #refresh-btn, #continue-btn {
-      padding: 12px 24px;
-      margin: 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-weight: 500;
-    }
-    #retiredRestoreButton:hover, #retiredDeleteButton:hover {
-      background-color: #3A9D9D;
-    }
-    #continue-btn {
-      background-color: #3A9D9D; /* Teal */
+    
+    /* Button Color Groups */
+    .retireButton,
+    #retiredRestoreButton:hover,
+    #continue-btn, 
+    #startSelectedQuiz,
+    .start-button,
+    #retiredRestoreButton.restore-button {
+      background-color: var(--light-teal);
       color: white;
     }
-    #refresh-btn {
-      background-color: #172e46; /* Deep blue */
+    .retireButton:hover,
+    #retiredRestoreButton,
+    #continue-btn:hover,
+    #startSelectedQuiz:HOVER,
+    .start-button:hover,
+    #retiredRestoreButton.restore-button:hover {
+      background-color: var(--dark-teal);
       color: white;
     }
-    #refresh-btn:hover, #continue-btn:hover {
-      background-color: #3A9D9D;
+
+    #retireButton.retire-button,
+    #refresh-btn,
+    #retiredDeleteButton,
+    .delete-button,
+    .delete-btn,
+    #exitbutton {
+      background-color: var(--incorrect-color);
+      color: white;
     }
-    #generateButton:hover{
-      background-color: #172e46;
-    }
+    #retireButton.retire-button:hover,
+    #retiredDeleteButton:hover,
+    .delete-button:hover,
+    .delete-btn:hover,
     #exitbutton:hover {
-      background-color: #bb2d3b;
+      background-color: var(--danger-color);
     }
-    /* Add button container styling */
-    #sessions-list {
-      margin-top: 20px;
-    }
-    .session-list {
-      margin: 15px 0;
-    }
-    .modal-content button {
-      margin: 4px;
-    }
-    /* Add button grouping */
-    .modal-content .button-group {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 15px;
-    }
-    /* modal buttons */
-    .half-button {
-      background-color: #88C1D0; /* Light ocean blue */
-      color: #172e46; /* Deep blue text */
-      cursor: pointer;
-      padding: 2vh 4vw;
-      border: none;
-      border-radius: 4px;
-      transition: all 0.2s ease-in-out;
-    }
-    .half-button:hover {
-      background-color: #172e46; /* Deep blue */
-      color: white;
-      filter: brightness(150%);
-      transition: all 0.2s ease-in-out;
-    }
+
+    /* Modal System */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -206,9 +191,15 @@
     .modal-footer button:hover {
       filter: brightness(0.9);
     }
-    .modal-footer button:disabled {
-      background-color: #cccccc !important;
+    #retiredRestoreButton:disabled,
+    #retiredRestoreButton:disabled:hover,
+    #retiredDeleteButton:disabled,
+    #retiredDeleteButton:disabled:hover, 
+    .modal-footer button:disabled,
+    .modal-footer button:disabled:hover {
+      background-color: #cccccc; /* disabled color */
       cursor: not-allowed;
+      pointer-events: none;
     }
     .loading {
       color: #666;
@@ -226,28 +217,27 @@
       align-items: center;
     }
     .mode-header:hover {
-      background-color: #E8F4F8;
+      background-color: #eee;
     }
     .mode-options {
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-top: none;
-      border-radius: 0 0 4px 4px;
+      padding: 4px;
+    }
+    .mode-options, label:hover {
+      padding: 6px;
     }
     .caret {
       transition: transform 0.2s ease;
     }
-
     .caret.expanded {
       transform: rotate(180deg);
     }
     .mode-selection {
       margin: 15px 0;
       padding: 10px;
-      border-top: 1px solid #eee;
+      border-top: 1px solid #eee; /* Light peach */
     }
     .mode-selection label {
-      background-color: #E8F4F8;
+      background-color: #E8F4F8; /* Light blue */
       display: block;
       margin: 8px 0;
     }
@@ -257,26 +247,54 @@
       padding: 8px;
     }
     .quiz-item:hover {
-      background-color: #f5f5f5;
+      background-color: #eee; /* Light peach */
     }
-    #startSelectedQuiz {
-      background-color: #4CAF50;
-      margin-right: 10px;
-    }
-    #retireButton {
-      background-color: #172e46;
-    }
-    /* Retired Modal */
-    #retiredRestoreButton {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 20px;
+
+    #refresh-btn, #continue-btn {
+      padding: 12px 24px;
+      margin: 10px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
     }
+
+    /* Add button container styling */
+    #sessions-list {
+      margin-top: 20px;
+    }
+    .session-list {
+      margin: 15px 0;
+    }
+    .modal-content button {
+      margin: 4px;
+    }
+    .modal-content .button-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    .half-button {
+      background-color: #88C1D0; /* Light ocean blue */
+      color: #172e46; /* Deep blue */
+      cursor: pointer;
+      padding: 2vh 4vw;
+      border: none;
+      border-radius: 4px;
+      transition: all 0.2s ease-in-out;
+    }
+    .half-button:hover {
+      background-color: #172e46; /* Deep blue */
+      color: white;
+      filter: brightness(150%);
+      transition: all 0.2s ease-in-out;
+    }
+
+    /* Retired Modal */
     #retiredRestoreButton:disabled {
-      background-color: #cccccc;
+      background-color: #cccccc; /* disabled color */
       cursor: not-allowed;
     }
     #retiredDeleteButton {
@@ -289,7 +307,33 @@
     .deleteSession:hover {
       color: #bb2d3b;
     }
+    .modal-overlay .delete-btn {
+        border: none;
+        border-radius: 50%;
+        background: transparent;
+        color: #FF6B6B; /* Coral color */
+        width: 30px;
+        height: px;
+        font-size: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .modal-overlay .delete-btn:hover {
+        color: #bb2d3b; /* Coral-red on hover */
+        background-color: rgba(255, 107, 107, 0.1);
+        transform: scale(1.1);
+    }
+
+    /* Consistent Focus States */
+    button:focus {
+      outline: 2px solid var(--secondary-color);
+    }
     </style>
+
+    <!-- Scripts -->
     <script src="common.js"></script>
     <script src="index.js"></script>
   </head>
@@ -302,6 +346,9 @@
         <a href="https://github.com/lfost42/quizsail2" target="_blank">github</a>
       </p>
     </div>
+
+    <!-- Main Content -->
+
     <div>
       <form class="block">
         <h2 display="hidden">QuizSail 2.0</h2>
@@ -322,6 +369,8 @@
     </p>
       </form>
     </div>
+
+    <!-- Saved Sessions List -->
     <section id="savedSessions" display="none"></section>
   </body>
 </html>
