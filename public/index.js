@@ -1,14 +1,15 @@
 let storageSessions = getStorageSessions();
 
+
 const COLORS = {
   TEAL: '#3A9D9D',
   DEEP_BLUE: '#172e46',
   RED: '#FF6B6B',
-  GREEN: '#2E7D32',
+  GREEN: '#4CAF50',
   LIGHT_OCEAN: '#88C1D0',
   GRAY: 'rgba(128, 128, 128, 0.7)',
-  HOVER_TEAL: '#358f8f',
-  HOVER_DEEP_BLUE: '#145a8c',
+  HOVER_TEAL: '#45a049',
+  HOVER_DEEP_BLUE: '#1976D2',
   HOVER_RED: '#bb2d3b',
   BACKGROUND_GRAY: '#E8F4F8'
 };

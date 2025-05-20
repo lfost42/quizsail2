@@ -6,15 +6,16 @@ let labels = {};
 var state = null;
 var content = null;
 
+
 const COLORS = {
   TEAL: '#3A9D9D',
   DEEP_BLUE: '#172e46',
   RED: '#FF6B6B',
-  GREEN: '#2E7D32',
+  GREEN: '#4CAF50',
   LIGHT_OCEAN: '#88C1D0',
   GRAY: 'rgba(128, 128, 128, 0.7)',
-  HOVER_TEAL: '#358f8f',
-  HOVER_DEEP_BLUE: '#145a8c',
+  HOVER_TEAL: '#45a049',
+  HOVER_DEEP_BLUE: '#1976D2',
   HOVER_RED: '#bb2d3b',
   BACKGROUND_GRAY: '#E8F4F8'
 };
@@ -268,6 +269,26 @@ async function show() {
   if (!currentItem) {
       currentItem = [...state.working, ...state.unseen]
           .filter(q => q.index !== avoidIndex)[0];
+  }
+
+  // Check if currentItem is still undefined (all questions are avoidIndex)
+  if (!currentItem) {
+      // Check if any questions remain
+      const remainingQuestions = [...state.working, ...state.unseen];
+      if (remainingQuestions.length === 0) {
+          showCompletionScreen();
+          return;
+      } else {
+          // Select the first available question and reset avoidIndex
+          currentItem = remainingQuestions[0];
+          state.lastIndex = -1;
+      }
+  }
+
+  // Ensure currentItem is defined before proceeding
+  if (!currentItem) {
+      showCompletionScreen();
+      return;
   }
 
   shuffle(state.working);
