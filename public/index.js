@@ -1,5 +1,18 @@
 let storageSessions = getStorageSessions();
 
+const COLORS = {
+  TEAL: '#3A9D9D',
+  DEEP_BLUE: '#172e46',
+  RED: '#FF6B6B',
+  GREEN: '#2E7D32',
+  LIGHT_OCEAN: '#88C1D0',
+  GRAY: 'rgba(128, 128, 128, 0.7)',
+  HOVER_TEAL: '#358f8f',
+  HOVER_DEEP_BLUE: '#145a8c',
+  HOVER_RED: '#bb2d3b',
+  BACKGROUND_GRAY: '#E8F4F8'
+};
+
 const fadeOut = (element) => {
     element.hidden = true;
     setTimeout(() => {
@@ -16,8 +29,10 @@ const createIsolatedModal = (title, content) => {
   modalContent.innerHTML = `
     <h2>${title}</h2>
     <p>${content}</p>
-    <button class="close-modal"> × </button>
+    <button class="close-modal">&times;</button>
   `;
+
+  modalContent.querySelector('.close-modal').addEventListener('click', () => modal.remove());
 
   const closeBtn = modalContent.querySelector('.close-modal');
   closeBtn.addEventListener('click', () => modal.remove());
@@ -27,6 +42,7 @@ const createIsolatedModal = (title, content) => {
 };
 
 const showCurrentModal = () => {
+  let fetchedQuizzes = [];
   const modal = document.createElement('div');
   modal.className = 'modal-overlay';
   
@@ -81,27 +97,37 @@ const showCurrentModal = () => {
     });
   });
 
+  let quizzes;
   // Load current quizzes
   fetch('/api/quizzes')
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
     .then(quizzes => {
+      fetchedQuizzes = quizzes;
+      if (!Array.isArray(fetchedQuizzes)) {
+        throw new Error('Invalid quizzes data format');
+      }
       const list = modalContent.querySelector('#currentQuizzesList');
+
       // Get last accessed session
       const sessions = Object.values(storageSessions);
-      const lastSession = sessions.sort((a, b) => 
-        Date.parse(b.lastAccess) - Date.parse(a.lastAccess)
-      )[0];
+      const lastSession = sessions.length > 0 
+        ? sessions.sort((a, b) => Date.parse(b.lastAccess) - Date.parse(a.lastAccess))[0]
+        : null;
 
-      // Determine default mode from last session's URL or default to 'fastmode'
+      // Safely get default mode
       let defaultMode = 'fastmode';
       if (lastSession) {
-          const urlParts = lastSession.url.split('?');
-          if (urlParts.length > 1) {
-              const params = new URLSearchParams(urlParts[1]);
-              const modeParam = params.get('mode');
-              if (modeParam) defaultMode = modeParam;
-          }
+        if (lastSession.url && typeof lastSession.url === 'string') {
+          const urlParams = new URL(lastSession.url).searchParams;
+          defaultMode = urlParams.get('mode') || defaultMode;
+        }
       }
+
+      // Validate quiz existence
+      const availableQuizzes = new Set(quizzes); // From server response
 
       // Update the radio button and selected mode display
       const modeRadios = modalContent.querySelectorAll('input[name="modalMode"]');
@@ -119,10 +145,10 @@ const showCurrentModal = () => {
       
       // Determine default selection
       const lastQuiz = lastSession?.course;
-      const defaultQuiz = lastQuiz || (quizzes.length > 0 ? quizzes[0] : null);
+      const defaultQuiz = lastQuiz || (fetchedQuizzes.length > 0 ? fetchedQuizzes[0] : null);
 
-      list.innerHTML = quizzes.length > 0 
-        ? quizzes.map(quiz => `
+      list.innerHTML = fetchedQuizzes.length > 0 
+        ? fetchedQuizzes.map(quiz => `
             <label class="quiz-item">
               <input type="radio" name="currentQuiz" value="${quiz}" 
                 ${quiz === defaultQuiz ? 'checked' : ''}>
@@ -135,45 +161,67 @@ const showCurrentModal = () => {
         // Auto-enable buttons if default exists
         if (defaultQuiz) {
           selectedQuiz = defaultQuiz;
-          modalContent.querySelector('#startSelectedQuiz').disabled = false;
-          modalContent.querySelector('#retireButton').disabled = false;
+          if (defaultQuiz && fetchedQuizzes.includes(defaultQuiz)) {
+            modalContent.querySelector('#startSelectedQuiz').style.backgroundColor = COLORS.TEAL;
+            modalContent.querySelector('#retireButton').style.backgroundColor = COLORS.DEEP_BLUE;
+            selectedQuiz = defaultQuiz;
+            modalContent.querySelector('#startSelectedQuiz').disabled = false;
+            modalContent.querySelector('#retireButton').disabled = false;
+          }
         }
 
         list.querySelectorAll('input[type="radio"]').forEach(radio => {
           radio.addEventListener('change', (e) => {
-            selectedQuiz = e.target.value;
-            modalContent.querySelector('#startSelectedQuiz').disabled = false;
-            modalContent.querySelector('#retireButton').disabled = false;
-          });
+          modalContent.querySelector('#startSelectedQuiz').style.backgroundColor = COLORS.TEAL;
+          modalContent.querySelector('#retireButton').style.backgroundColor = COLORS.DEEP_BLUE;
+          selectedQuiz = e.target.value;
+          // Enable buttons when selection changes
+          modalContent.querySelector('#startSelectedQuiz').disabled = false;
+          modalContent.querySelector('#retireButton').disabled = false;
+          modeOptions.hidden = true;
+          caret.classList.remove('expanded');
+        });
         });
       }
     })
-    .catch(error => {
-      console.error('Failed to load quizzes:', error);
-      list.innerHTML = '<p>Error loading quizzes</p>';
+    .catch(async (error) => {
+      console.error('[DEBUG] Fetch error:', {
+        error: error.message,
+        status: error.status || 'N/A',
+        response: await error.response?.text().catch(() => 'No response')
+      });
     });
 
   // Handle Start
   modalContent.querySelector('#startSelectedQuiz').addEventListener('click', () => {
-    if (!selectedQuiz) return;
+  modalContent.querySelector('#startSelectedQuiz').style.backgroundColor = COLORS.TEAL;
+  if (!selectedQuiz || !fetchedQuizzes.includes(selectedQuiz)) {
+    alert('Invalid quiz selection');
+    return;
+    }
+    setTimeout(() => {
+        startQuizWithValidation(selectedQuiz, mode, sessionId, fetchedQuizzes);
+      }, 1);
+      
     
     const quizSelect = document.getElementById('quiz');
     quizSelect.value = selectedQuiz;
     
     // Get selected mode from modal
-    const mode = modalContent.querySelector('input[name="modalMode"]:checked').value;
-    
+    const mode = modalContent.querySelector('input[name="modalMode"]:checked')?.value || 'default';
+    const sessionId = crypto.randomUUID();
+
     modal.remove();
     
     // Start with selected mode
-    const sessionId = crypto.randomUUID();
     setTimeout(() => {
-      startQuizWithValidation(selectedQuiz, mode, sessionId);
+      startQuizWithValidation(selectedQuiz, mode, sessionId, fetchedQuizzes);
     }, 1);
   });
 
   // Handle Retire
   modalContent.querySelector('#retireButton').addEventListener('click', () => {
+    modalContent.querySelector('#retireButton').style.backgroundColor = COLORS.DEEP_BLUE;
     if (!selectedQuiz) return;
 
     fetch('/retire-quiz', {
@@ -188,6 +236,8 @@ const showCurrentModal = () => {
     .then(res => res.json())
     .then(quizzes => {
       const list = modalContent.querySelector('#currentQuizzesList');
+
+      
       list.innerHTML = quizzes.length > 0 
         ? quizzes.map(quiz => `
             <label class="quiz-item">
@@ -226,7 +276,7 @@ const showCurrentModal = () => {
 
 const showRetiredModal = () => {
   const modal = document.createElement('div');
-  modal.className = 'modal-overlay';
+  modal.className = 'modal-overlay retired-modal';
   
   const modalContent = document.createElement('div');
   modalContent.className = 'modal-content';
@@ -239,8 +289,8 @@ const showRetiredModal = () => {
       <div class="loading">Loading retired quizzes...</div>
     </div>
     <div class="modal-footer">
-      <button id="restoreButton" disabled>Restore Quiz</button>
-      <button id="deleteButton" disabled>Delete Quiz</button>
+      <button id="retiredRestoreButton" style="background-color: ${COLORS.TEAL}" disabled>Restore Quiz</button>
+      <button id="retiredDeleteButton" style="background-color: ${COLORS.RED}" disabled>Delete Quiz</button>
     </div>
   `;
 
@@ -264,8 +314,8 @@ const showRetiredModal = () => {
         list.querySelectorAll('input[type="radio"]').forEach(radio => {
           radio.addEventListener('change', (e) => {
             selectedQuiz = e.target.value;
-            modalContent.querySelector('#restoreButton').disabled = false;
-            modalContent.querySelector('#deleteButton').disabled = false;
+            modalContent.querySelector('#retiredRestoreButton').disabled = false;
+            modalContent.querySelector('#retiredDeleteButton').disabled = false;
           });
         });
       }
@@ -277,7 +327,8 @@ const showRetiredModal = () => {
     });
 
   // Handle restore
-  modalContent.querySelector('#restoreButton').addEventListener('click', () => {
+  modalContent.querySelector('#retiredRestoreButton').addEventListener('click', () => {
+    modalContent.querySelector('#retiredRestoreButton').style.backgroundColor = COLORS.TEAL;
     if (!selectedQuiz) return;
 
     fetch('/restore-quiz', {
@@ -304,13 +355,14 @@ const showRetiredModal = () => {
 
       // Reset selection state
       selectedQuiz = null;
-      modalContent.querySelector('#restoreButton').disabled = true;
+      modalContent.querySelector('#retiredRestoreButton').disabled = true;
       
       // Reattach event listeners to new radio buttons
       list.querySelectorAll('input[type="radio"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
           selectedQuiz = e.target.value;
-          modalContent.querySelector('#restoreButton').disabled = false;
+          modalContent.querySelector('#retiredRestoreButton').disabled = false;
+          modalContent.querySelector('#retiredDeleteButton').disabled = false; 
         });
       });
       
@@ -323,7 +375,8 @@ const showRetiredModal = () => {
   });
 
   // Handle delete
-  modalContent.querySelector('#deleteButton').addEventListener('click', () => {
+  modalContent.querySelector('#retiredDeleteButton').addEventListener('click', () => {
+    modalContent.querySelector('#retiredDeleteButton').style.backgroundColor = COLORS.RED;
     if (!selectedQuiz) return;
     
     const confirmDelete = confirm(`⚠️ WARNING ⚠️ \n This action cannot be oneone! \n\n Confirm permanent deletion for "${selectedQuiz}".`);
@@ -351,14 +404,15 @@ const showRetiredModal = () => {
         : '<p>No retired quizzes found</p>';
       
       selectedQuiz = null;
-      modalContent.querySelector('#restoreButton').disabled = true;
-      modalContent.querySelector('#deleteButton').disabled = true;
+      modalContent.querySelector('#retiredDeleteButton').style.backgroundColor = COLORS.RED;
+      modalContent.querySelector('#retiredRestoreButton').disabled = true;
+      modalContent.querySelector('#retiredDeleteButton').disabled = true;
       
       list.querySelectorAll('input[type="radio"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
           selectedQuiz = e.target.value;
-          modalContent.querySelector('#restoreButton').disabled = false;
-          modalContent.querySelector('#deleteButton').disabled = false;
+          modalContent.querySelector('#retiredRestoreButton').disabled = false;
+          modalContent.querySelector('#retiredDeleteButton').disabled = false;
         });
       });
     })
@@ -397,7 +451,7 @@ async function loadQuizzes() {
       quizSelect.appendChild(option);
     });
   } catch (error) {
-    // console.error('Error loading quizzes:', error);
+    console.error('Error loading quizzes:', error);
   }
   return;
 }
@@ -492,9 +546,9 @@ const renderSessions = () => {
   for (let [url, { course, lastAccess }] of sortedSessions) {
       links += `
           <div class="savedSession block">
-              <a href="${url}">
-                  ${course}: ${lastAccess}</a> 
-              <button data-url="${url}" class="deleteSession"> × </button><br>
+          <a href="${url}">
+            ${course}: ${lastAccess}</a> 
+          <button data-url="${url}" class="deleteSession" style="color: ${COLORS.RED}"> × </button><br>
           </div>
       `;
   }
@@ -513,12 +567,8 @@ const start = async () => {
     return;
   }
   try {
-    console.log('[DEBUG] Starting quiz:', src);
     const logUrl = `/get-logs/${encodeURIComponent(src)}`;
-    console.log('[DEBUG] Fetching from:', logUrl);
-    
     const logResponse = await fetch(logUrl);
-    console.log('[DEBUG] Response status:', logResponse.status);
 
     if (!logResponse.ok) {
       console.error('[DEBUG] Failed response:', await logResponse.text());
@@ -533,12 +583,7 @@ const start = async () => {
       return sessionDate <= new Date();
     });
 
-    console.log('[DEBUG] Total sessions:', Object.keys(logs).length);
-    console.log('[DEBUG] Valid sessions:', validSessions.length);
-    console.log('[DEBUG] Sample sessions:', validSessions.slice(0, 2));
-
     if (validSessions.length >= 5) {
-      console.log('[DEBUG] Showing prune modal');
       const proceed = await showStartModal(logs, src);
       if (!proceed) return;
     }
@@ -558,21 +603,36 @@ const start = async () => {
   }, 1);
 };
 
-async function startQuizWithValidation(quizName, mode, sessionId) {
+async function startQuizWithValidation(quizName, mode, sessionId, quizzes) {
+  if (!quizName || !quizzes.includes(quizName)) {
+    alert('Invalid quiz name - resetting to default');
+    quizName = quizzes.length > 0 ? quizzes[0] : null;
+    if (!quizName) {
+      alert('No valid quizzes available');
+      return;
+    }
+  }
   try {
-    const logs = await fetch(`/get-logs/${encodeURIComponent(quizName)}`).then(res => res.json());
+    // Properly encode quizName and handle empty logs
+    const logs = await fetch(`/get-logs/${encodeURIComponent(quizName)}`)
+      .then(res => res.ok ? res.json() : {}) // Handle 404 responses
+      .catch(() => ({})); // Handle network errors
+
+    // Ensure validSessions is always an array
     const validSessions = Object.values(logs).filter(session => 
-      new Date(session.timestamp) <= new Date()
+      session.timestamp && new Date(session.timestamp) <= new Date()
     );
-    
+
     if (validSessions.length >= 5) {
       const proceed = await showStartModal(logs, quizName);
       if (!proceed) return;
     }
     
-    window.location = `quiz-engine.html?src=${quizName}&mode=${mode}&session=${sessionId}`;
+    // Only redirect if validation passes
+    window.location = `quiz-engine.html?src=${encodeURIComponent(quizName)}&mode=${mode}&session=${sessionId}`;
   } catch (error) {
     console.error('Pre-check failed:', error);
+    alert(`Failed to start quiz: ${error.message}`);
   }
 }
 

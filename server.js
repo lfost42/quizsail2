@@ -128,7 +128,10 @@ app.post('/refresh-quiz', async (req, res) => {
 /*----------------*/ 
 app.get('/api/quizzes', (req, res) => {
   fs.readdir(quizDir, (err, files) => {
-    if (err) return res.status(500).send('Server error');
+    if (err) {
+      console.error('Quiz directory error:', err);
+      return res.status(500).send('Server error');
+    }
     const quizzes = files
       .filter(file => file.endsWith('.json'))
       .map(file => file.replace('.json', ''));

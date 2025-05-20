@@ -60,7 +60,7 @@
     .session-item {
       margin: 10px 0;
       padding: 10px;
-      border: 1px solid #ddd;
+      border: 1px solid #88C1D0;
       border-radius: 4px;
       display: flex;
       justify-content: space-between;
@@ -75,23 +75,75 @@
       transition: all 0.2s ease-in-out;
     }
     .delete-btn {
-      color: #ff4444;
+      color: #FF6B6B;
       cursor: pointer;
       transition: all 0.2s ease-in-out;
     }
     .delete-btn:hover {
+      color: #bb2d3b;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       transition: all 0.2s ease-in-out;
     }
+    /* prune modal buttons */
+    #refresh-btn, #continue-btn {
+      padding: 12px 24px;
+      margin: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+    #retiredRestoreButton:hover, #retiredDeleteButton:hover {
+      background-color: #3A9D9D;
+    }
+    #continue-btn {
+      background-color: #3A9D9D; /* Teal */
+      color: white;
+    }
+    #refresh-btn {
+      background-color: #172e46; /* Deep blue */
+      color: white;
+    }
+    #refresh-btn:hover, #continue-btn:hover {
+      background-color: #3A9D9D;
+    }
+    #generateButton:hover{
+      background-color: #172e46;
+    }
+    #exitbutton:hover {
+      background-color: #bb2d3b;
+    }
+    /* Add button container styling */
+    #sessions-list {
+      margin-top: 20px;
+    }
+    .session-list {
+      margin: 15px 0;
+    }
+    .modal-content button {
+      margin: 4px;
+    }
+    /* Add button grouping */
+    .modal-content .button-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
     /* modal buttons */
     .half-button {
-      background-color: lightgreen;
+      background-color: #88C1D0; /* Light ocean blue */
+      color: #172e46; /* Deep blue text */
       cursor: pointer;
       padding: 2vh 4vw;
+      border: none;
+      border-radius: 4px;
       transition: all 0.2s ease-in-out;
     }
     .half-button:hover {
-      background-color: green;
+      background-color: #172e46; /* Deep blue */
+      color: white;
       filter: brightness(150%);
       transition: all 0.2s ease-in-out;
     }
@@ -174,7 +226,7 @@
       align-items: center;
     }
     .mode-header:hover {
-      background-color: #f5f5f5;
+      background-color: #E8F4F8;
     }
     .mode-options {
       padding: 8px;
@@ -195,6 +247,7 @@
       border-top: 1px solid #eee;
     }
     .mode-selection label {
+      background-color: #E8F4F8;
       display: block;
       margin: 8px 0;
     }
@@ -211,10 +264,10 @@
       margin-right: 10px;
     }
     #retireButton {
-      background-color: #3c7898;
+      background-color: #172e46;
     }
     /* Retired Modal */
-    #restoreButton {
+    #retiredRestoreButton {
       background-color: #4CAF50;
       color: white;
       padding: 10px 20px;
@@ -222,16 +275,19 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    #restoreButton:disabled {
+    #retiredRestoreButton:disabled {
       background-color: #cccccc;
       cursor: not-allowed;
     }
-    #deleteButton {
-      background-color: #dc3545;
+    #retiredDeleteButton {
+      background-color: #FF6B6B;
       margin-left: 10px;
     }
-    #deleteButton:hover {
+    #retiredDeleteButton:hover {
       background-color: #bb2d3b;
+    }
+    .deleteSession:hover {
+      color: #bb2d3b;
     }
     </style>
     <script src="common.js"></script>

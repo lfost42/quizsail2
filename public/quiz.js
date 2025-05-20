@@ -6,6 +6,19 @@ let labels = {};
 var state = null;
 var content = null;
 
+const COLORS = {
+  TEAL: '#3A9D9D',
+  DEEP_BLUE: '#172e46',
+  RED: '#FF6B6B',
+  GREEN: '#2E7D32',
+  LIGHT_OCEAN: '#88C1D0',
+  GRAY: 'rgba(128, 128, 128, 0.7)',
+  HOVER_TEAL: '#358f8f',
+  HOVER_DEEP_BLUE: '#145a8c',
+  HOVER_RED: '#bb2d3b',
+  BACKGROUND_GRAY: '#E8F4F8'
+};
+
 (function init() {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('mode') === 'review') {
@@ -117,14 +130,14 @@ async function start() {
     content = await fetch(`quizzes/${source}.json`)
       .then(res => {
         if (!res.ok) {
-          // console.error('[DEBUG] Quiz fetch failed:', res.status);
+          alert(`Quiz "${source}" not found!`); // Add error message
           window.location = window.location.origin;
           return;
         }
         return res.json();
       })
       .catch(error => {
-        // console.error('[DEBUG] Quiz load error:', error);
+        alert(`Failed to load quiz: ${error.message}`); // Add error message
         window.location = window.location.origin;
       });
 
@@ -416,15 +429,15 @@ async function submitAnswer() {
     // Text input handling
     if (inputs.value.trim() === '' || inputs.value.toUpperCase() !== answers[0].toUpperCase()) {
         correct = false;
-        inputs.e.style.backgroundColor = 'rgba(128, 128, 128, 0.7)';
+        inputs.e.style.backgroundColor = COLORS.GRAY;
     } else {
-        inputs.e.style.backgroundColor = '#009f00';
+        inputs.e.style.backgroundColor = '#246464';
     }
   } else {
     // Highlight correct answers in green
     answers.forEach(correctAnswer => {
         if (labels[correctAnswer]) {
-            labels[correctAnswer].e.style.color = '#009f00';
+            labels[correctAnswer].e.style.color = '#246464';
         }
     });
 
@@ -442,7 +455,7 @@ async function submitAnswer() {
         // Mark incorrect selections
         for (const [choice, input] of Object.entries(inputs)) {
             if (input.checked && !answers.includes(choice)) {
-                labels[choice].e.style.color = 'rgba(128, 128, 128, 0.7)';
+                labels[choice].e.style.color = COLORS.GRAY;
                 correct = false;
             }
         }
@@ -899,6 +912,22 @@ async function generateNewQuizzes() {
       }
     }
 
+    const completionButtons = `
+      button {
+        background: ${COLORS.TEAL};
+        color: white;
+      }
+      #exitButton {
+        background: ${COLORS.RED};
+      }
+      button:hover {
+        background: ${COLORS.HOVER_TEAL};
+      }
+      #exitButton:hover {
+        background: ${COLORS.HOVER_RED};
+      }
+    `;
+
     if (responseData.newQuiz) {
       // Create individual quiz link container
       const quizLinkContainer = document.createElement('div');
@@ -942,8 +971,17 @@ async function generateNewQuizzes() {
 
       // Add delete button
       const deleteBtn = document.createElement('button');
+      deleteBtn.style.transition = 'all 0.2s ease-in-out';
+      deleteBtn.addEventListener('mouseover', () => {
+        deleteBtn.style.transform = 'translateY(-1px)';
+        deleteBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+      });
+      deleteBtn.addEventListener('mouseout', () => {
+        deleteBtn.style.transform = 'none';
+        deleteBtn.style.boxShadow = 'none';
+      });
       deleteBtn.textContent = '×';
-      deleteBtn.style.background = '#ff4444';
+      deleteBtn.style.backgroundcolor = 'COLOR.RED';
       deleteBtn.style.color = 'white';
       deleteBtn.style.border = 'none';
       deleteBtn.style.borderRadius = '50%';
@@ -1028,15 +1066,15 @@ function showCompletionScreen() {
               ${label === '1' ? 'First attempt' : `${label}x`} (${count} questions)
             </label>
             <button class="exclude-btn" data-category="${label}" 
-                    style="padding: 2px 6px; font-size: 12px; background: #ff4444; color: white; border: none; border-radius: 3px;">
+                    style="padding: 2px 6px; font-size: 12px; background: #FF6B6B; color: white; border: none; border-radius: 3px;">
               Exclude
             </button>
           </div>
         `).join('')}
     </div>
     <div class="completion-buttons">
-      <button id="generateButton" type="button" onclick="generateNewQuizzes()">Generate New Quiz</button>
-      <button id="exitButton" type="button" onclick="handleEndSession()">Exit to Start</button>
+      <button id="generateButton" style="background: ${COLORS.TEAL}; color: white" type="button" onclick="generateNewQuizzes()">Generate New Quiz</button>
+      <button id="exitButton" style="background: ${COLORS.RED}; color: white" type="button" onclick="handleEndSession()">Exit to Start</button>
     </div>
   `;
 
@@ -1052,10 +1090,10 @@ function showCompletionScreen() {
       if (radio) {
         if (e.target.textContent === 'Exclude') {
           e.target.textContent = 'Included';
-          e.target.style.background = '#009f00';
+          e.target.style.background = COLORS.TEAL;
         } else {
           e.target.textContent = 'Exclude';
-          e.target.style.background = '#ff4444';
+          e.target.style.background = '#FF6B6B';
         }
       }
     });
@@ -1069,7 +1107,7 @@ function getAttemptCategory(attempts) {
   if (attempts >= 4) return '4+';
   if (attempts === 3) return '3';
   if (attempts === 2) return '2';
-  return '1'; // This includes both 1 attempt and 0 attempts
+  return '1';
 }
 
 window.submitAnswer = submitAnswer;
