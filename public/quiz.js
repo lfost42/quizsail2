@@ -5,6 +5,7 @@ let labels = {};
 
 var state = null;
 var content = null;
+let excludedCategories = new Set();
 
 (function init() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -88,28 +89,14 @@ async function start() {
     window.location = window.location.origin;
     return;
   }
-
-  // console.log('[DEBUG] start() - initial session param:', session);
   
   // Detect fresh sessions using sessionStorage flag
   const isNewSession = sessionStorage.getItem('newSession') === 'true';
 
-  // if (!session) {
-  //   // Create new session and set flag
-  //   const newSession = makeid(128);
-  //   sessionStorage.setItem('newSession', 'true'); // Flag new session
-  //   const params = new URLSearchParams(window.location.search);
-  //   params.set('session', newSession);
-  //   window.location.search = params.toString();
-  //   return;
-  // }
-
   try {
-    // console.log('[DEBUG] Loading quiz content for source:', source);
     if (!content) {
       content = await fetch(`quizzes/${source}.json`)
         .then(res => {
-          // console.log('[DEBUG] Quiz fetch response status:', res.status);
           return res.json();
         });
     }
@@ -117,14 +104,14 @@ async function start() {
     content = await fetch(`quizzes/${source}.json`)
       .then(res => {
         if (!res.ok) {
-          alert(`Quiz "${source}" not found!`); // Add error message
+          alert(`Quiz "${source}" not found!`);
           window.location = window.location.origin;
           return;
         }
         return res.json();
       })
       .catch(error => {
-        alert(`Failed to load quiz: ${error.message}`); // Add error message
+        alert(`Failed to load quiz: ${error.message}`);
         window.location = window.location.origin;
       });
 
@@ -195,12 +182,11 @@ async function show() {
     return;
   }
   if (!content || !Array.isArray(content)) {
-    // console.error('No quiz content loaded');
     window.location = window.location.origin;
     return;
   }
   if (!state || !state.unseen || !state.working) {
-    // console.error('Invalid state:', state);
+
     window.location = window.location.origin;
     return;
   }
@@ -811,6 +797,7 @@ async function generateNewQuizzes() {
     return;
   }
   
+  const excluded = new Set(excludedCategories);
   const category = [selectedRadio.value];
   const sessionId = getParam('session');
   const quizName = getParam('src');
@@ -823,61 +810,96 @@ async function generateNewQuizzes() {
   }
 
   // Get excluded categories from UI
-  const excludedCategories = new Set();
-    document.querySelectorAll('.exclude-btn').forEach(btn => {
+  document.querySelectorAll('.exclude-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       const button = e.target;
-      button.classList.toggle('included');
-      button.textContent = button.classList.contains('included') ? 'Included' : 'Exclude';
+      const category = button.getAttribute('data-category');
+      
+      // Toggle in global excludedCategories
+      if (excludedCategories.has(category)) {
+        excludedCategories.delete(category);
+        button.classList.remove('excluded');
+      } else {
+        excludedCategories.add(category);
+        button.classList.add('excluded');
+      }
+      
+      button.textContent = excludedCategories.has(category) ? 'Excluded' : 'Exclude';
     });
   });
 
-  let flaggedQuestions;
-  if (category[0] === '0') {
-    // For all questions (category 0), include all questions not in excluded categories
-    flaggedQuestions = [];
-    state.complete.forEach(q => {
-      const questionCategory = getAttemptCategory(q.incorrectTries);
-      
-      // Skip questions in excluded categories
-      if (excludedCategories.has(questionCategory)) {
-        return;
-      }
+  let flaggedQuestions = [];
+  let suffix = '';
 
-      // Always include the question at least once
-      flaggedQuestions.push({
-        index: q.index,
-        incorrectTries: q.incorrectTries
-      });
-      
-      // Add additional copies for incorrect attempts
+  if (category[0] === '0') {
+    // Weighted questions (N copies per question)
+    state.complete.forEach(q => {
+      if (q.incorrectTries === 0) return;
+      const questionCategory = getAttemptCategory(q.incorrectTries);
+      if (excluded.has(questionCategory)) return;
+
       for (let i = 0; i < q.incorrectTries; i++) {
         flaggedQuestions.push({
           index: q.index,
-          incorrectTries: q.incorrectTries
+          incorrectTries: q.incorrectTries,
+          sequence: i + 1
         });
       }
     });
-  } else {
-    // Original behavior for specific categories
-    flaggedQuestions = state.complete
-      .filter(q => q.incorrectTries > 0)
-      .map(q => ({
-        index: q.index,
-        incorrectTries: q.incorrectTries
-      }));
+    suffix = category[0].replace('+', '');
+  } 
+  else if (category[0] === 'a') {
+  state.complete.forEach(q => {
+    if (q.incorrectTries === 0) return;
+    const questionCategory = getAttemptCategory(q.incorrectTries);
+    if (excluded.has(questionCategory)) return;
+
+    flaggedQuestions.push({
+      index: q.index,
+      incorrectTries: q.incorrectTries,
+      sequence: 1
+    });
+  });
+
+  // Add validation filter
+  flaggedQuestions = flaggedQuestions.filter(q => q.index < content.length);
+  
+  if (flaggedQuestions.length === 0) {
+    throw new Error('No valid questions after index validation');
+  }
+  
+    suffix = 'a';
+  } 
+  else {
+    // Specific attempt counts
+    const attemptCount = parseInt(category[0]);
+    state.complete.forEach(q => {
+      const questionCategory = getAttemptCategory(q.incorrectTries);
+      if (q.incorrectTries === attemptCount && !excluded.has(questionCategory)) {
+        flaggedQuestions.push({
+          index: q.index,
+          incorrectTries: q.incorrectTries,
+          sequence: 1
+        });
+      }
+    });
+    suffix = category[0].replace('+', '');
   }
 
-  const suffix = category[0].replace('+', '');
+  if (flaggedQuestions.length === 0) {
+  throw new Error('No valid questions after final filtering');
+  }
+
   const payload = {
     sourceQuiz: quizName,
     category,
     flaggedQuestions,
     suffix,
-    excludedCategories: Array.from(excludedCategories)
+    excludedCategories: Array.from(excluded)
   };
+  // console.log('[DEBUG] Final payload:', JSON.stringify(payload, null, 2));
 
   // Add loading state
   const generateBtn = document.getElementById('generateButton');
@@ -1004,7 +1026,6 @@ async function generateNewQuizzes() {
       linksContainer.appendChild(quizLinkContainer);
     }
   } catch (error) {  
-    console.error('[DEBUG] Generation error:', error);
     
     // Reset button state
     generateBtn.disabled = false;
@@ -1022,25 +1043,42 @@ function showCompletionScreen() {
 
   allQuestions.forEach(q => {
     const count = q.incorrectTries;
-    if (count >= 4) incorrectCounts['4+']++;
-    else if (count === 3) incorrectCounts[3]++;
-    else if (count === 2) incorrectCounts[2]++;
-    else if (count === 1) incorrectCounts[1]++;
+    
+    // Only count questions with at least 1 incorrect attempt
+    if (count > 0) {
+      if (count >= 4) incorrectCounts['4+']++;
+      else if (count === 3) incorrectCounts[3]++;
+      else if (count === 2) incorrectCounts[2]++;
+      else if (count === 1) incorrectCounts[1]++;
+      incorrectCounts[0]++;
+    }
   });
+
+  const calculateUniqueCount = () => {
+    return state.complete.filter(q => {
+      const category = getAttemptCategory(q.incorrectTries);
+      return q.incorrectTries > 0 && !excludedCategories.has(category);
+    }).length;
+  };
+  const uniqueCount = calculateUniqueCount();
 
   E("question").html = `Quiz Complete! 🎉`;
   
   E("choice_form").html = `
-    <p>Generate new quizzes or end session.</p>
-    <div class="category-list" id="categoryList">
-      <label style="display: flex; align-items: center;">
-        <input type="radio" name="category" value="0" class="category-radio" checked>
-        All questions (${incorrectCounts[0]} total)
-      </label>
+  <p>Generate new quizzes or end session.</p>
+  <div class="category-list" id="categoryList">
+    <label style="display: flex; align-items: center;">
+      <input type="radio" name="category" value="0" class="category-radio">
+      All questions, weighted mode (${uniqueCount})
+    </label>
+    <label style="display: flex; align-items: center;">
+      <input type="radio" name="category" value="a" class="category-radio">
+      All questions (${uniqueCount})
+    </label>
       ${Object.entries(incorrectCounts)
         .filter(([label, count]) => label !== '0' && count > 0)
         .map(([label, count]) => `
-          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;" class="category-item">
             <label style="flex-grow: 1;">
               <input type="radio" name="category" value="${label}" class="category-radio">
               ${label === '1' ? 'First attempt' : `${label}x`} (${count} questions)
@@ -1057,19 +1095,7 @@ function showCompletionScreen() {
       <button id="exitButton" class="completion-buttons" type="button" onclick="handleEndSession()">Exit to Start</button>
     </div>
   `;
-
-  // Add event listeners to exclude buttons
-  document.querySelectorAll('.exclude-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
       
-      const category = e.target.getAttribute('data-category');
-      const radio = document.querySelector(`input[value="${category}"]`);
-      e.target.classList.toggle('included');
-    });
-  });
-
   E("result").html = "";
   E("submitbtn").attr = false;
 }

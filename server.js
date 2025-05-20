@@ -362,12 +362,6 @@ app.post('/save-log', (req, res) => {
       };
     }
 
-    // DEBUG CODE
-    if (req.body.timestamp && new Date(req.body.timestamp) > new Date()) {
-      console.error('[SERVER] Future timestamp rejected');
-      return res.status(400).json({ error: 'Invalid future timestamp' });
-    }
-
     // Append valid index
     if (!allLogs[sessionId].firstCorrect.includes(questionIndex)) {
       allLogs[sessionId].firstCorrect.push(questionIndex);
@@ -542,7 +536,39 @@ app.post('/generate-quiz', async (req, res) => {
 
   let filteredQuestions = [];
   if (category[0] === '0') {
-    // For category 0 (all questions), create new questions with unique indices
+    const questionMap = new Map();
+    
+    // First pass: create map of original questions
+    sourceContent.forEach((question, index) => {
+      questionMap.set(index, question);
+    });
+
+    // Second pass: create new questions with unique indices
+    let newIndex = 0;
+    flaggedQuestions.forEach(fq => {
+      const originalQuestion = questionMap.get(fq.index);
+      if (originalQuestion) {
+        // Skip if this question is in an excluded category
+        const questionCategory = getAttemptCategory(fq.incorrectTries);
+        if (excludedCategories.includes(questionCategory)) {
+          return;
+        }
+
+        // Create a new question object with a unique index
+        const newQuestion = JSON.parse(JSON.stringify(originalQuestion));
+        newQuestion.originalIndex = fq.index; // Keep track of original index
+        newQuestion.incorrectTries = fq.incorrectTries; // Store incorrect tries
+        filteredQuestions.push(newQuestion);
+        newIndex++;
+      }
+    });
+  } else if (category[0] === 'a') {
+    filteredQuestions = sourceContent.filter((_, index) => 
+      flaggedQuestions.some(fq => 
+        fq.index === index && 
+        fq.incorrectTries > 0
+      )
+    );
     const questionMap = new Map();
     
     // First pass: create map of original questions
