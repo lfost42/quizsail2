@@ -5,7 +5,6 @@ let labels = {};
 
 var state = null;
 var content = null;
-let excludedCategories = new Set();
 
 (function init() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -797,7 +796,6 @@ async function generateNewQuizzes() {
     return;
   }
   
-  const excluded = new Set(excludedCategories);
   const category = [selectedRadio.value];
   const sessionId = getParam('session');
   const quizName = getParam('src');
@@ -809,27 +807,6 @@ async function generateNewQuizzes() {
     return;
   }
 
-  // Get excluded categories from UI
-  document.querySelectorAll('.exclude-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const button = e.target;
-      const category = button.getAttribute('data-category');
-      
-      // Toggle in global excludedCategories
-      if (excludedCategories.has(category)) {
-        excludedCategories.delete(category);
-        button.classList.remove('excluded');
-      } else {
-        excludedCategories.add(category);
-        button.classList.add('excluded');
-      }
-      
-      button.textContent = excludedCategories.has(category) ? 'Excluded' : 'Exclude';
-    });
-  });
-
   let flaggedQuestions = [];
   let suffix = '';
 
@@ -838,7 +815,6 @@ async function generateNewQuizzes() {
     state.complete.forEach(q => {
       if (q.incorrectTries === 0) return;
       const questionCategory = getAttemptCategory(q.incorrectTries);
-      if (excluded.has(questionCategory)) return;
 
       for (let i = 0; i < q.incorrectTries; i++) {
         flaggedQuestions.push({
@@ -854,7 +830,6 @@ async function generateNewQuizzes() {
   state.complete.forEach(q => {
     if (q.incorrectTries === 0) return;
     const questionCategory = getAttemptCategory(q.incorrectTries);
-    if (excluded.has(questionCategory)) return;
 
     flaggedQuestions.push({
       index: q.index,
@@ -877,7 +852,7 @@ async function generateNewQuizzes() {
     const attemptCount = parseInt(category[0]);
     state.complete.forEach(q => {
       const questionCategory = getAttemptCategory(q.incorrectTries);
-      if (q.incorrectTries === attemptCount && !excluded.has(questionCategory)) {
+      if (q.incorrectTries === attemptCount) {
         flaggedQuestions.push({
           index: q.index,
           incorrectTries: q.incorrectTries,
@@ -896,8 +871,7 @@ async function generateNewQuizzes() {
     sourceQuiz: quizName,
     category,
     flaggedQuestions,
-    suffix,
-    excludedCategories: Array.from(excluded)
+    suffix
   };
   // console.log('[DEBUG] Final payload:', JSON.stringify(payload, null, 2));
 
@@ -1057,7 +1031,7 @@ function showCompletionScreen() {
   const calculateUniqueCount = () => {
     return state.complete.filter(q => {
       const category = getAttemptCategory(q.incorrectTries);
-      return q.incorrectTries > 0 && !excludedCategories.has(category);
+      return q.incorrectTries > 0;
     }).length;
   };
   const uniqueCount = calculateUniqueCount();
@@ -1083,10 +1057,6 @@ function showCompletionScreen() {
               <input type="radio" name="category" value="${label}" class="category-radio">
               ${label === '1' ? 'First attempt' : `${label}x`} (${count} questions)
             </label>
-            <button class="exclude-btn" data-category="${label}" 
-                    style="padding: 2px 6px; font-size: 12px; background: #FF6B6B; color: white; border: none; border-radius: 3px;">
-              Exclude
-            </button>
           </div>
         `).join('')}
     </div>

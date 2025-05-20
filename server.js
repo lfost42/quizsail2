@@ -514,7 +514,7 @@ app.get('/get-flagged/:quizName/:sessionId', (req, res) => {
 app.post('/generate-quiz', async (req, res) => {
   res.header('Cache-Control', 'no-store, no-cache, must-revalidate');
   let newPath; 
-  const { sourceQuiz, category, flaggedQuestions, suffix, excludedCategories = [] } = req.body;
+  const { sourceQuiz, category, flaggedQuestions, suffix } = req.body;
 
   // Validate all parameters
   if (!req.body.sourceQuiz || !req.body.category || !req.body.flaggedQuestions || !req.body.suffix) {
@@ -548,12 +548,6 @@ app.post('/generate-quiz', async (req, res) => {
     flaggedQuestions.forEach(fq => {
       const originalQuestion = questionMap.get(fq.index);
       if (originalQuestion) {
-        // Skip if this question is in an excluded category
-        const questionCategory = getAttemptCategory(fq.incorrectTries);
-        if (excludedCategories.includes(questionCategory)) {
-          return;
-        }
-
         // Create a new question object with a unique index
         const newQuestion = JSON.parse(JSON.stringify(originalQuestion));
         newQuestion.originalIndex = fq.index; // Keep track of original index
@@ -581,12 +575,6 @@ app.post('/generate-quiz', async (req, res) => {
     flaggedQuestions.forEach(fq => {
       const originalQuestion = questionMap.get(fq.index);
       if (originalQuestion) {
-        // Skip if this question is in an excluded category
-        const questionCategory = getAttemptCategory(fq.incorrectTries);
-        if (excludedCategories.includes(questionCategory)) {
-          return;
-        }
-
         // Create a new question object with a unique index
         const newQuestion = JSON.parse(JSON.stringify(originalQuestion));
         newQuestion.originalIndex = fq.index; // Keep track of original index
