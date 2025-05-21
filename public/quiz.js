@@ -1039,7 +1039,7 @@ function showCompletionScreen() {
   E("question").html = `Quiz Complete! 🎉`;
   
   E("choice_form").html = `
-  <p>Generate new quizzes or end session.</p>
+  <p>Generate new quizzes based on incorrect answers or clear session.</p>
   <div class="category-list" id="categoryList">
     <label style="display: flex; align-items: center;">
       <input type="radio" name="category" value="0" class="category-radio">

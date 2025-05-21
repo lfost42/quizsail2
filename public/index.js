@@ -180,11 +180,7 @@ const showCurrentModal = () => {
   if (!selectedQuiz || !fetchedQuizzes.includes(selectedQuiz)) {
     alert('Invalid quiz selection');
     return;
-    }
-    setTimeout(() => {
-        startQuizWithValidation(selectedQuiz, mode, sessionId, fetchedQuizzes);
-      }, 1);
-      
+    } 
     
     const quizSelect = document.getElementById('quiz');
     quizSelect.value = selectedQuiz;
@@ -195,10 +191,11 @@ const showCurrentModal = () => {
 
     modal.remove();
     
-    // Start with selected mode
-    setTimeout(() => {
-      startQuizWithValidation(selectedQuiz, mode, sessionId, fetchedQuizzes);
-    }, 1);
+    // Start quiz with parameters
+    startQuizWithValidation(selectedQuiz, mode, sessionId, fetchedQuizzes);
+    
+    // Clean up any remaining modal elements
+    document.querySelectorAll('.modal-overlay').forEach(m => m.remove());
   });
 
   // Handle Retire
@@ -563,21 +560,22 @@ const start = async () => {
       const proceed = await showStartModal(logs, src);
       if (!proceed) return;
     }
+
+    // Get mode parameters after handling errors
+    const mode = document.getElementById('reviewmode').checked ? 'review' : 
+                document.getElementById('fastmode').checked ? 'fastmode' : 'default';
+    const sessionId = crypto.randomUUID();
+
+    // Do not delete! Prevents a race condition. 
+    setTimeout(() => {
+      window.location = `quiz-engine.html?src=${encodeURIComponent(src)}&mode=${mode}&session=${sessionId}`;
+    }, 1);
+
   } catch (error) {
     console.error('Log check failed:', error);
-    return; // Prevent redirect on error
+    return;
   }
-
-  // Get mode parameters after handling errors
-  const mode = document.getElementById('reviewmode').checked ? 'review' : 
-              document.getElementById('fastmode').checked ? 'fastmode' : 'default';
-  const sessionId = crypto.randomUUID();
-
-  // Do not delete! Prevents a race condition. 
-  setTimeout(() => {
-    window.location = `quiz-engine.html?src=${src}&mode=${mode}&session=${sessionId}`;
-  }, 1);
-};
+}
 
 async function startQuizWithValidation(quizName, mode, sessionId, quizzes) {
   if (!quizName || !quizzes.includes(quizName)) {
