@@ -679,7 +679,54 @@ app.post('/prune-logs', async (req, res) => {
   }
 });
 
-// Static files LAST
+
+/*-----------*/ 
+/*  Get logs */
+/*-----------*/ 
+// Get all log files
+app.get('/api/logs', (req, res) => {
+  fs.readdir(logsDir, (err, files) => {
+    if (err) return res.status(500).send('Server error');
+    res.json(files.filter(f => f.endsWith('.json')));
+  });
+});
+
+/*------------------*/ 
+/*  Delete log file */
+/*------------------*/ 
+app.delete('/delete-log-file', (req, res) => {
+  const { fileName } = req.body;
+  const filePath = path.join(logsDir, fileName);
+  
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      res.sendStatus(200);
+    } else {
+      res.status(404).send('File not found');
+    }
+  } catch (error) {
+    res.status(500).send('Deletion failed');
+  }
+});
+
+/*------------------*/ 
+/*  Delete all logs */
+/*------------------*/ 
+app.delete('/delete-all-logs', (req, res) => {
+  try {
+    fs.readdirSync(logsDir).forEach(file => {
+      if (file.endsWith('.json')) {
+        fs.unlinkSync(path.join(logsDir, file));
+      }
+    });
+    res.sendStatus(200);
+  } catch (error) {
+    res.status(500).send('Deletion failed');
+  }
+});
+
+// Static files
 app.use(express.static(PUBLIC_DIR));
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

@@ -696,6 +696,78 @@ const showStartModal = (sessions, quizName) => {
   });
 };
 
+// Logs Modal
+document.addEventListener("click", ({ target }) => {
+  if (target.id === "logsButton") showLogsModal();
+});
+
+// New modal function
+const showLogsModal = () => {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  
+  const modalContent = document.createElement('div');
+  modalContent.className = 'modal-content';
+  modalContent.innerHTML = `
+    <div class="modal-header">
+      <h2>Log Files</h2>
+      <button class="close-modal">&times;</button>
+    </div>
+    <div class="modal-body" id="logsList">
+      <div class="loading">Loading logs...</div>
+    </div>
+    <div class="modal-footer">
+      <button id="deleteAllLogs" class="delete-button">Delete All Logs</button>
+    </div>
+  `;
+
+  // Load logs
+  fetch('/api/logs')
+    .then(res => res.json())
+    .then(logs => {
+      const list = modalContent.querySelector('#logsList');
+      list.innerHTML = logs.length > 0 
+        ? logs.map(log => `
+            <div class="log-item">
+              ${log}
+              <button class="delete-log-btn" data-file="${log}">×</button>
+            </div>
+          `).join('')
+        : '<p>No log files found</p>';
+    });
+
+  // Handle individual deletions
+  modalContent.addEventListener('click', (e) => {
+    if (e.target.classList.contains('delete-log-btn')) {
+      const fileName = e.target.dataset.file;
+      fetch('/delete-log-file', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileName })
+      })
+      .then(() => e.target.parentElement.remove())
+      .catch(err => alert('Deletion failed'));
+    }
+  });
+
+  // Handle delete all
+  modalContent.querySelector('#deleteAllLogs').addEventListener('click', () => {
+    if (confirm('Delete ALL log files? This cannot be undone!')) {
+      fetch('/delete-all-logs', { method: 'DELETE' })
+        .then(() => {
+          modalContent.querySelector('#logsList').innerHTML = '<p>All logs deleted</p>';
+          modalContent.querySelector('#deleteAllLogs').disabled = true;
+        })
+        .catch(err => alert('Deletion failed'));
+    }
+  });
+
+  // Close handling
+  modalContent.querySelector('.close-modal').addEventListener('click', () => modal.remove());
+  modal.appendChild(modalContent);
+  document.body.appendChild(modal);
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     renderSessions();
     loadQuizzes();

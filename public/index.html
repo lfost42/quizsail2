@@ -18,7 +18,7 @@
         --danger-color: #bb2d3b;
         --success-color: #276c6c;
         --background-light: #F8FBFD;
-        --surface-light: #eff5f7;
+        --surface-light: #f5f8f9;
         --light-teal: #3A9D9D;
         --dark-teal: teal;
       }
@@ -243,13 +243,9 @@
     }
     .quiz-item {
       display: block;
-      margin: 4px 0;
+      margin: 8px 0;
       padding: 8px;
     }
-    .quiz-item:hover {
-      background-color: #eee; /* Light peach */
-    }
-
     #refresh-btn, #continue-btn {
       padding: 12px 24px;
       margin: 10px;
@@ -356,7 +352,7 @@
           Start a new quiz using the "Current" button. 
         </p>
         <ul>
-          <li>Standard - Mastered after 3 consecutively correct answeres</li>
+          <li>Standard - Mastered after 3 consecutively correct answers</li>
           <li>Fast - Mastered if correct on the first try</li>
           <li>Review - Displays questions, answers, and explanations</li>
         </ul>
@@ -366,6 +362,7 @@
         <p style="display: flex; gap: 4vh; justify-content: left; margin-top: 4vh; margin-left: 4vw">
         <input type="button" value="Current" id="currentButton" class="half-button" />
         <input type="button" value="Retired" id="retiredButton" class="half-button" />
+        <input type="button" value="Logs" id="logsButton" class="half-button" />
     </p>
       </form>
     </div>
