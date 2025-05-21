@@ -269,8 +269,8 @@ async function show() {
     const currentItem = cur();
     if (!currentItem) return;
 
-        E("stats").html = `mastered: ${state.complete.length} <BR>`
-            + `in-flight:  ${state.working.length}<BR>`
+        E("stats").html = `mastered: ${state.complete.length} ・ `
+            + `in-flight:  ${state.working.length} ・ `
             + `unseen: ${state.unseen.length}`;
         inputs = {};
         labels = {};
@@ -1041,11 +1041,11 @@ function showCompletionScreen() {
   E("choice_form").html = `
   <p>Generate new quizzes based on incorrect answers or clear session.</p>
   <div class="category-list" id="categoryList">
-    <label style="display: flex; align-items: center;">
+    <label style="display: flex; align-items: center; gap: 5px;">
       <input type="radio" name="category" value="0" class="category-radio">
       All questions, weighted mode (${uniqueCount})
     </label>
-    <label style="display: flex; align-items: center;">
+    <label style="display: flex; align-items: center; gap: 5px;">
       <input type="radio" name="category" value="a" class="category-radio">
       All questions (${uniqueCount})
     </label>

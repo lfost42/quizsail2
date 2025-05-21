@@ -90,7 +90,7 @@
       transition: all 0.2s ease-in-out;
     }
     .deleteSession:hover {
-      transform: translateY(-2px);
+      /* transform: translateY(-2px); */
       transition: all 0.2s ease-in-out;
     }
     
@@ -177,7 +177,7 @@
       transition: all 0.2s ease-in-out;
     }
     .modal-footer {
-      margin-top: 20px;
+      margin-top: 2vh;
       text-align: right;
     }
     .modal-footer button {
@@ -244,7 +244,13 @@
     .quiz-item {
       display: block;
       margin: 8px 0;
-      padding: 8px;
+    }
+    .quiz-item:hover {
+      background-color: #E8F4F8; /* Light blue */
+      border-radius: 4px;
+    }
+    .quiz-item, .session-item, .log-item {
+      padding: 8px 12px !important;
     }
     #refresh-btn, #continue-btn {
       padding: 12px 24px;
@@ -370,8 +376,8 @@
 
     /* Ensure buttons maintain spacing */
     #currentButton, #retiredButton, #logsButton {
-      margin: 1vh 1vw;
-      padding: 2vh 4vw;
+      margin: 1vh;
+      padding: 2.5vh 4vw;
       justify-content: flex-end;
     }
     </style>
@@ -406,7 +412,7 @@
 
         <select id="quiz" hidden></select>
 
-    <p style="display: flex; gap: 4vh; justify-content: left; margin-top: 4vh; margin-left: 4vw; margin-bottom: 4vh;">
+    <p style="display: flex; gap: 3vh; justify-content: left; margin-top: 4vh; margin-left: 4vw; margin-bottom: 4vh;">
         <input type="button" value="Current" id="currentButton" class="half-button">
       <input type="button" value="Retired" id="retiredButton" class="half-button">
       <input type="button" value="Logs" id="logsButton" class="half-button">
