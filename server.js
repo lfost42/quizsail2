@@ -301,12 +301,13 @@ if (!fs.existsSync(DATA_DIR)) {
 /*  Get Logs  */
 /*-------------*/ 
 app.get('/get-logs/:quizName', (req, res) => {
-  const logPath = path.join(logsDir, `${req.params.quizName}_logs.json`);
-  
-  if (!req.params.quizName) {
+  const quizName = req.params.quizName;
+  if (!quizName) {
     return res.status(400).json({ error: 'Missing quiz name' });
   }
 
+  const logPath = path.join(logsDir, `${quizName}_logs.json`);
+  
   try {
     if (fs.existsSync(logPath)) {
       const logs = JSON.parse(fs.readFileSync(logPath, 'utf8'));
@@ -317,9 +318,11 @@ app.get('/get-logs/:quizName', (req, res) => {
         )
       );
       res.json(validLogs);
+    } else {
+      res.status(404).json({}); // Send empty response if no logs exist
     }
   } catch (error) {
-    // console.error('[Server] Log retrieval failed:', error);
+    console.error('[Server] Log retrieval failed:', error);
     res.status(500).json({ error: 'Failed to retrieve logs' });
   }
 });
