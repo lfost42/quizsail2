@@ -328,17 +328,17 @@
       outline: 2px solid var(--secondary-color);
     }
 
-    /* Tooltip styles */
-    .tooltip {
+    /* Home page button tooltips */
+    .tooltip-wrapper {
       position: relative;
       display: inline-block;
     }
 
-    .tooltip .tooltiptext {
+    .tooltip-wrapper .tooltiptext {
       visibility: hidden;
       width: 200px;
-      background-color: #172e46;
-      color: #fff;
+      background-color: var(--primary-color);
+      color: white;
       text-align: center;
       border-radius: 6px;
       padding: 8px;
@@ -349,9 +349,10 @@
       transform: translateX(-50%);
       opacity: 0;
       transition: opacity 0.3s;
+      font-size: 14px;
     }
 
-    .tooltip .tooltiptext::after {
+    .tooltip-wrapper .tooltiptext::after {
       content: "";
       position: absolute;
       top: 100%;
@@ -359,12 +360,17 @@
       margin-left: -5px;
       border-width: 5px;
       border-style: solid;
-      border-color: #172e46 transparent transparent transparent;
+      border-color: var(--primary-color) transparent transparent transparent;
     }
 
-    .tooltip:hover .tooltiptext {
+    .tooltip-wrapper:hover .tooltiptext {
       visibility: visible;
       opacity: 1;
+    }
+
+    /* Ensure buttons maintain spacing */
+    #currentButton, #retiredButton, #logsButton {
+      margin: 0 5px; /* Adjust spacing as needed */
     }
     </style>
 
@@ -399,12 +405,12 @@
         <select id="quiz" hidden></select>
 
     <p style="display: flex; gap: 4vh; justify-content: left; margin-top: 4vh; margin-left: 4vw">
-       <div class="tooltip">
-          <input type="button" value="Current" id="currentButton" class="half-button" />
-          <span class="tooltiptext">If the quiz doesn't redirect, please refresh your browser!</span>
-        </div>
-        <input type="button" value="Retired" id="retiredButton" class="half-button" />
-        <input type="button" value="Logs" id="logsButton" class="half-button" />
+      <div class="tooltip-wrapper">
+        <input type="button" value="Current" id="currentButton" class="half-button">
+        <span class="tooltiptext">Start a new quiz session. Refresh if not redirected.</span>
+      </div>
+      <input type="button" value="Retired" id="retiredButton" class="half-button">
+      <input type="button" value="Logs" id="logsButton" class="half-button">
     </p>
       </form>
     </div>
