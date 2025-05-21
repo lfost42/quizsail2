@@ -36,6 +36,27 @@
       padding: 5vh 5vw;
     }
 
+    .top-bar {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        z-index: 1000;
+        font-weight:600;
+      }
+
+    .top-bar span {
+        color: var(--dark-teal);
+        margin: 10px;
+        padding: 1vh 2vw;
+        font-weight: 600;
+        font-size: 1.5em;
+        padding-right: 1vw;
+        transform: translateY(1.7vh);
+      }
+      
     /* Form & Quiz Layout */
     form {
       margin: 0 auto;
@@ -64,11 +85,20 @@
       justify-content: space-around;
     }
     .savedSession {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       padding: 2vh 2vw;
+      gap: 1vw;
       margin: 1vh 1vw;
-      width: 100vw;
-      max-width: 400px;
+      max-width: 50vw;
       transition: opacity 1s ease;
+    }
+    .savedSession a{
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .savedSession[hidden] {
       display: block;
@@ -376,7 +406,7 @@
 
     /* Ensure buttons maintain spacing */
     #currentButton, #retiredButton, #logsButton {
-      margin: 1vh;
+      margin: 0.5vh;
       padding: 2.5vh 4vw;
       justify-content: flex-end;
     }
@@ -389,7 +419,8 @@
 
   <body>
     <div>
-      <h1>Thanks for visiting QuizSail.</h1>
+      <div class="top-bar">
+      <span><h1>QuizSail 2.0</h1></span></div>
       <p>
         Feel free to contribute or submit issues: 
         <a href="https://github.com/lfost42/quizsail2" target="_blank">github</a>
@@ -400,7 +431,6 @@
 
     <div>
       <form class="block">
-        <h2 display="hidden">QuizSail 2.0</h2>
         <p>
           Start a new quiz using the "Current" button. 
         </p>
