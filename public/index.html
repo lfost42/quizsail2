@@ -327,6 +327,45 @@
     button:focus {
       outline: 2px solid var(--secondary-color);
     }
+
+    /* Tooltip styles */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: #172e46;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #172e46 transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
     </style>
 
     <!-- Scripts -->
@@ -359,8 +398,11 @@
 
         <select id="quiz" hidden></select>
 
-        <p style="display: flex; gap: 4vh; justify-content: left; margin-top: 4vh; margin-left: 4vw">
-        <input type="button" value="Current" id="currentButton" class="half-button" />
+    <p style="display: flex; gap: 4vh; justify-content: left; margin-top: 4vh; margin-left: 4vw">
+       <div class="tooltip">
+          <input type="button" value="Current" id="currentButton" class="half-button" />
+          <span class="tooltiptext">If the quiz doesn't redirect, please refresh your browser!</span>
+        </div>
         <input type="button" value="Retired" id="retiredButton" class="half-button" />
         <input type="button" value="Logs" id="logsButton" class="half-button" />
     </p>
