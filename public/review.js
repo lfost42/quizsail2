@@ -284,6 +284,7 @@
 
   function createChoiceElement(choiceText, index) {
       const answerDiv = document.createElement('div');
+      answerDiv.classList.add('incorrect-answer'); // Default to gray
       answerDiv.innerHTML = `${choiceLetters[index]}: ${choiceText}`;
       answerDiv.appendChild(createResultsDiv('choice', index));
       return answerDiv;
@@ -340,7 +341,7 @@
       <div class="correct"></div>
         ${answerIndices.length > 0 
           ? `<br>Answer: ${answerIndices.map(i => 
-            `<span class="correct"> ${question.c[i]}</span>`
+            `<span class="correct-answer"> ${question.c[i]}</span>`
           ).join(', ')}`
           : '⚠️ No valid answers found'
         }
@@ -353,11 +354,20 @@
 
   function highlightCorrectChoices(answerIndices) {
     const choicesForm = document.getElementById('choice_form');
+    Array.from(choicesForm.children).forEach(choice => {
+    choice.classList.remove('correct', 'incorrect-answer');
+  });
     answerIndices.forEach(index => {
       if (choicesForm.children[index]) {
-        choicesForm.children[index].classList.add('correct');
+        choicesForm.children[index].classList.add('correct-answer');
       }
     });
+    // Add incorrect-answer class to non-correct choices
+    Array.from(choicesForm.children).forEach((choice, idx) => {
+    if (!answerIndices.includes(idx)) {
+      choice.classList.add('incorrect-answer');
+    }
+  });
   }
 
   async function deleteEndSession() {
@@ -387,9 +397,7 @@
 
   function createNextButton() {
     const buttonContainer = document.createElement('div');
-    buttonContainer.style.marginTop = '20px';
-    buttonContainer.style.display = 'flex';
-    buttonContainer.style.gap = '20px';
+    buttonContainer.className = 'review-buttons'; // Add class
     buttonContainer.innerHTML = `
       <input type="button" id="editButton" value="Edit">
       <input type="button" id="nextButton" value="Next">

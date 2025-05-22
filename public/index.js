@@ -760,6 +760,7 @@ const showLogsModal = () => {
         })
         .catch(err => alert('Deletion failed'));
     }
+    modal.remove();
   });
 
   // Close handling

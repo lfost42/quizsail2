@@ -21,15 +21,10 @@
         :root {
             --primary-color: #172e46;
             --secondary-color: #88C1D0;
-            --correct-color: #153939;
             --incorrect-color: #FF6B6B;
             --danger-color: #bb2d3b;
-            --success-color: #276c6c;
             --background-light: #f5f8f9;
             --surface-light: #eff3f6;
-            --light-teal: #3A9D9D;
-            --dark-teal: teal;
-            --deep-blue: #172e46;
         }
 
         /* ================ *
@@ -72,14 +67,27 @@
             padding: 4vh 3vw;
             text-align: left;
         }
+        .input label:hover {
+            padding: 4px;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            transition: all 0.2s ease-in-out;
+        }
         #result {
           padding-top: 2vh;
         }
         #choice_form input {
             margin: 8px;
-        }        
+        }
         .category-list input {
             margin-right: 10px;
+        }
+        .review-buttons {
+            padding-bottom: 3vh;
+            margin-bottom: 2vh;
+            margin-top: 2vh;
+            display: flex;
+            gap: 2vw;
         }
         /* ================ *
          *  Button Styles    *
@@ -100,23 +108,27 @@
           padding-top: 2vh;
         }
         input[type="button"] {
-            background-color: var(--secondary-color);
-            color: var(--deep-blue);
-            margin: 2vh;
+          background-color: var(--secondary-color);
+          color: var(--primary-color); 
+          cursor: pointer;
+          padding: 2vh 4vw;
+          border: none;
+          border-radius: 4px;
+          transition: all 0.2s ease-in-out;
         }
-
         input[type="button"]:hover {
-            background-color: var(--primary-color);
-            color: white;
+          background-color: var(--primary-color);
+          color: white;
+          transition: all 0.2s ease-in-out;
         }
 
         /* Special Buttons */
         #generateButton {
-            background-color: var(--light-teal);
+            background-color: var(--secondary-color);
             border: none;
             margin: 4vh;
             border-radius: 4px;
-            color: white;
+            color: var(--primary-color);
             padding: 2vh 5vw;
         }
 
@@ -129,7 +141,8 @@
             padding: 2vh 5vw;
         }
         #generateButton:hover {
-            background-color: var(--success-color)
+            background-color: var(--primary-color);
+            color: white;
         }
         #exitButton:hover {
           background-color: var(--danger-color);
@@ -153,12 +166,16 @@
         }
 
         /* Answer Feedback */
-        .correct { color: var(--correct-color);}
+        .correct { color: var(--primary-color);}
         .incorrect { color: var(--danger-color); }
 
         .correct-answer {
           color: var(--deep-blue);
           font-weight: 600;
+          font-size: 1.1em;
+        }
+        .incorrect-answer {
+          color: #666666;
         }
 
 
@@ -171,6 +188,7 @@
             bottom: 0;
             left: 0;
             right: 0;
+            margin-top: 2vh;
             padding: 10px;
             align-items: left;
         }
@@ -233,7 +251,7 @@
                 max-width: 100vw;
                 min-width: 90vw;
             }
-            input[type="button"] { padding: 1vh 2vw; }
+            input[type="button"], .editButton, .nextButton { padding: 1vh 2vw; }
             .footer {
                 padding: 10px 5px;
                 gap: 10px;
@@ -251,15 +269,14 @@
          /* ================= *
          *  Accessible Clicks *
          * ================== */
-        button:hover, #homeButton:hover,
-        input[type="button"]:focus, input[type="button"]:hover {
-            outline: 2px solid var(--dark-teal);
+        a link, button:hover, #homeButton:hover, input[type="button"]:focus, input[type="button"]:hover, .input input[type="radio"]:hover, .input input[type="checkbox"]:hover {
+            outline: 2px solid var(--secondary-color);
             outline-offset: 2px;
         }
 
-        button:focus, button:active, #homeButton:active,
-        input[type="button"]:focus, input[type="button"]:active {
-            outline: 4px solid var(--deep-blue);
+        a link, button:focus, button:active, #homeButton:active,
+        input[type="button"]:focus, input[type="button"]:active, .input label:active, .input label:focus, .input input[type="radio"]:focus, .input input[type="checkbox"]:focus, .input input[type="radio"]:active, .input input[type="checkbox"]:active {
+            outline: 4px solid var(--primary-color);
             outline-offset: 3px;
         }
 

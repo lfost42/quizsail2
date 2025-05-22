@@ -16,12 +16,10 @@
         --correct-color: #153939;
         --incorrect-color: #FF6B6B;
         --danger-color: #bb2d3b;
-        --success-color: #276c6c;
         --background-light: #F8FBFD;
         --surface-light: #f5f8f9;
-        --light-teal: #3A9D9D;
-        --dark-teal: teal;
         --deep-blue: #172e46;
+        --disabled-color: #cccccc;;
       }
 
     /* Global Styles */
@@ -50,7 +48,7 @@
       }
 
     .top-bar span {
-        color: var(--deep-blue);
+        color: var(--primary-color);
         margin: 10px;
         padding: 1vh 2vw;
         font-weight: 600;
@@ -79,7 +77,6 @@
       width: 100vw;
       text-align: center;
     }
-
     /* Session Management */
     #savedSessions {
       display: flex;
@@ -159,8 +156,8 @@
     #startSelectedQuiz,
     .start-button,
     #retiredRestoreButton.restore-button {
-      background-color: var(--light-teal);
-      color: white;
+      background-color: var(--secondary-color);
+      color: var(--primary-color);
     }
     .retireButton:hover,
     #retiredRestoreButton,
@@ -168,7 +165,7 @@
     #startSelectedQuiz:HOVER,
     .start-button:hover,
     #retiredRestoreButton.restore-button:hover {
-      background-color: var(--dark-teal);
+      background-color: var(--primary-color);
       color: white;
     }
 
@@ -187,6 +184,7 @@
     .delete-btn:hover,
     #exitbutton:hover {
       background-color: var(--danger-color);
+      color: white;
     }
 
     /* Modal System */
@@ -249,7 +247,8 @@
     #retiredDeleteButton:disabled:hover, 
     .modal-footer button:disabled,
     .modal-footer button:disabled:hover {
-      background-color: #cccccc; /* disabled color */
+      background-color: var(--disabled-color);
+      color: white;
       cursor: not-allowed;
       pointer-events: none;
     }
@@ -268,14 +267,20 @@
     .mode-header {
       cursor: pointer;
       padding: 8px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--secondary-color);
+      background-color: var(--primary-color);
+      color: white;
       border-radius: 4px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+    #currentQuizzesList, #retiredQuizzesList, #logsList {
+      border: 1px solid var(--secondary-color);
+    }
     .mode-options {
-      border: 1px solid #ddd;
+      border: 1px solid var(--secondary-color);
+      border-radius: 4px;
     }
     .mode-selection label, .quiz-item {
       display: block;
@@ -301,7 +306,10 @@
       transition: all 0.2s ease;
       font-weight: 500;
     }
-
+    .mode-header:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
     /* Add button container styling */
     #sessions-list {
       margin-top: 20px;
@@ -416,15 +424,15 @@
     /* ================= *
     *  Accessible Clicks *
     * ================== */
-    button:hover, #homeButton:hover, .mode-header:hover,
+    a:hover, button:hover, #homeButton:hover, .mode-header:hover,
     input[type="button"]:focus, input[type="button"]:hover, .mode-selection label:hover, .quiz-item:hover, .session-item:hover, .log-item:hover, .savedSession:hover {
-        outline: 2px solid var(--dark-teal);
+        outline: 2px solid var(--secondary-color);
         outline-offset: 2px;
     }
 
-    button:focus, button:active, #refreshButton:active,
+    a:active, #resumeTitle a:focus, a link:focus,a link:active, button:focus, button:active, #refreshButton:active,
     input[type="button"]:focus, input[type="button"]:active, .mode-header:active, .mode-selection label:active, .quiz-item:active, .session-item:active, .log-item:active, .savedSession:active {
-        outline: 4px solid var(--deep-blue);
+        outline: 4px solid var(--primary-color);
         outline-offset: 3px;
     }
     

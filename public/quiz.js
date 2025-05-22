@@ -436,7 +436,7 @@ async function submitAnswer() {
     // Gray out all incorrect answers (both selected and unselected)
     Object.keys(labels).forEach(choice => {
         if (!answers.includes(choice)) {
-            labels[choice].e.style.color = '#8b8b8b';
+            labels[choice].e.style.color = '#666666';
         }
     });
 
@@ -454,7 +454,7 @@ async function submitAnswer() {
         // Mark incorrect selections
         for (const [choice, input] of Object.entries(inputs)) {
             if (input.checked && !answers.includes(choice)) {
-                labels[choice].e.style.color = '#8b8b8b';
+                labels[choice].e.style.color = '##666666';
                 correct = false;
             }
         }
