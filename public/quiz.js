@@ -206,9 +206,10 @@ async function show() {
   }
 
   const modeDisplayNames = {
-    'default': 'Standard',
-    'fastmode': 'Fast',
-    'review': 'Review'
+    'default': 'standard',
+    'fastmode': 'fast',
+    'lightning': 'lightning',
+    'review': 'review'
   };
 
   E("stats").html = `
@@ -536,10 +537,14 @@ async function submitAnswer() {
         }
       }
       break;
+      
+    case 'lightning':
+      mastered = questionState.currentStreak >= 1;
+      break;
+
     default:
-      // Default mode - master after 3 correct answers in a row
       mastered = questionState.currentStreak >= 3;
-  }
+}
 
   if (mastered) {
     // Remove from working array

@@ -38,18 +38,18 @@
 
     .top-bar {
         position: fixed;
-        top: 20px;
-        right: 20px;
+        top: 1.25em;
+        right: 1.25em;
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 1em;
         z-index: 1000;
         font-weight:600;
       }
 
     .top-bar span {
         color: var(--primary-color);
-        margin: 10px;
+        margin: 0.625em;
         padding: 1vh 2vw;
         font-weight: 600;
         font-size: 1.5em;
@@ -71,7 +71,10 @@
     }
     .block {
       background-color: var(--surface-light);
-      border: 1px dotted var(--secondary-color);
+      border: 0.07em dotted var(--secondary-color);
+    }
+    .block ul li {
+      margin-bottom: 0.7em;
     }
     #resumeTitle {
       width: 100vw;
@@ -104,10 +107,9 @@
       opacity: 0;
     }
     .session-item {
-      margin: 10px 0;
-      padding: 10px;
-      border: 1px solid var(--secondary-color);
-      border-radius: 4px;
+      margin: 0.6em 0;
+      border: 0.07em solid var(--secondary-color);
+      border-radius: 0.25em;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -116,7 +118,7 @@
     .log-item {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 1em;
       max-width: 70vw;
     }
 
@@ -134,9 +136,9 @@
       border-radius: 50%;
       background: #ffe8e8;
       color: var(--incorrect-color);
-      width: 30px;
-      height: 30px;
-      font-size: 28px;
+      width: 1.5em;
+      height: 1.5em;
+      font-size: 1.5em;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -146,7 +148,7 @@
     .delete-log-btn:hover,
     .close-modal:hover {
       transition: all 0.2s ease-in-out;
-      border : 1px solid var(--danger-color);
+      border : 0.004em solid var(--danger-color);
     }
     
     /* Button Color Groups */
@@ -203,43 +205,43 @@
     .modal-content {
       background: white;
       position: relative;
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 600px;
+      border-radius: 0.5em;
+      width: 60vw;
+      max-width: 90vw;
       max-height: 80vh;
       overflow-y: auto;
     }
     .modal-header {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 15px;
+      margin-left: 0.4em;
+      margin-bottom: 0.4em;
     }
     .close-modal {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 0.625em;
+      right: 0.625em;
       background: transparent;
       border: none;
       font-size: 1.5em;
       cursor: pointer;
-      padding: 0 8px;
       border-radius: 50%;
       transition: all 0.2s ease-in-out;
     }
     .modal-footer {
-      margin-top: 2vh;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8em;
+      margin-top: 0.8em;
       text-align: right;
     }
     .modal-footer button {
       color: white;
-      padding: 10px 20px;
+      padding: 0.625em 1.25em;
       border: none;
-      border-radius: 4px;
+      border-radius: 0.25em;
       cursor: pointer;
       transition: filter 0.2s ease;
-    }
-    .modal-footer button:hover {
-      filter: brightness(0.9);
     }
     #retiredRestoreButton:disabled,
     #retiredRestoreButton:disabled:hover,
@@ -256,7 +258,7 @@
       color: #666;
       font-style: italic;
       text-align: center;
-      padding: 20px;
+      padding: 1.25em;
     }
     .caret {
       transition: transform 0.2s ease;
@@ -266,42 +268,42 @@
     }
     .mode-header {
       cursor: pointer;
-      padding: 8px;
-      border: 1px solid var(--secondary-color);
+      padding: 0.5em;
+      border: 0.07em solid var(--secondary-color);
       background-color: var(--primary-color);
       color: white;
-      border-radius: 4px;
+      border-radius: 0.25em;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     #currentQuizzesList, #retiredQuizzesList, #logsList {
-      border: 1px solid var(--secondary-color);
+      border: 0.07em solid var(--secondary-color);
     }
     .mode-options {
-      border: 1px solid var(--secondary-color);
-      border-radius: 4px;
+      border: 0.07em solid var(--secondary-color);
+      border-radius: 0.25em;
     }
     .mode-selection label, .quiz-item {
       display: block;
-      margin: 8px 0;
+      margin: 0.5em 0;
     }
     .mode-selection label:hover,
     .quiz-item:hover, 
     .mode-options input:hover, 
     .mode-header:hover {
       background-color: #E8F4F8; /* Light blue */
-      border-radius: 4px;
+      border-radius: 0.25em;
     }
     .quiz-item, .session-item, .log-item, 
     .mode-selection label {
-      padding: 8px 12px !important;
+      padding: 0.5em 0.75em !important;
     }
     #refresh-btn, #continue-btn {
-      padding: 12px 24px;
-      margin: 10px;
+      padding: 0.75em 2.25em;
+      margin: 0.6em;
       border: none;
-      border-radius: 4px;
+      border-radius: 0.25em;
       cursor: pointer;
       transition: all 0.2s ease;
       font-weight: 500;
@@ -312,20 +314,26 @@
     }
     /* Add button container styling */
     #sessions-list {
-      margin-top: 20px;
+      margin: 1em;
     }
-    .session-list {
-      margin: 15px 0;
+    .modal-content {
+      padding: 1em;
     }
     .modal-content button {
-      margin: 4px;
-      border: 2px solid transparent;
+      border: 0.125em solid transparent;
     }
     .modal-content .button-group {
       display: flex;
-      gap: 10px;
       justify-content: center;
-      margin-bottom: 15px;
+      margin-bottom: 0.5em;
+    }
+    .modal-content .session-list {
+      padding-left: 0;
+    }
+    .modal-content .session-list li {
+      border-radius: 0.25em;
+      background-color: var(--surface-light);
+      border: 0.07em solid var(--secondary-color);
     }
     .half-button {
       background-color: #88C1D0; /* Light ocean blue */
@@ -333,7 +341,7 @@
       cursor: pointer;
       padding: 2vh 4vw;
       border: none;
-      border-radius: 4px;
+      border-radius: 0.25em;
       transition: all 0.2s ease-in-out;
     }
     .half-button:hover {
@@ -349,7 +357,6 @@
     }
     #retiredDeleteButton {
       background-color: #FF6B6B;
-      margin-left: 10px;
     }
     #retiredDeleteButton:hover {
       background-color: #bb2d3b;
@@ -359,9 +366,9 @@
         border-radius: 50%;
         background: transparent;
         color: #FF6B6B; /* Coral color */
-        width: 30px;
-        height: px;
-        font-size: 28px;
+        width: 1.875em;
+        height: 1.875em;
+        font-size: 1.2em;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -382,12 +389,12 @@
 
     .tooltip-wrapper .tooltiptext {
       visibility: hidden;
-      width: 200px;
+      width: 12.5em;
       background-color: var(--primary-color);
       color: white;
       text-align: center;
-      border-radius: 6px;
-      padding: 8px;
+      border-radius: 0.775em;
+      padding: 0.5em;
       position: absolute;
       z-index: 1;
       bottom: 125%;
@@ -395,7 +402,7 @@
       transform: translateX(-50%);
       opacity: 0;
       transition: opacity 0.3s;
-      font-size: 14px;
+      font-size: 10.25em;
     }
 
     .tooltip-wrapper .tooltiptext::after {
@@ -403,8 +410,8 @@
       position: absolute;
       top: 100%;
       left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
+      margin-left: -0.3125em;
+      border-width: 0.3125em;
       border-style: solid;
       border-color: var(--primary-color) transparent transparent transparent;
     }
@@ -426,14 +433,14 @@
     * ================== */
     a:hover, button:hover, #homeButton:hover, .mode-header:hover,
     input[type="button"]:focus, input[type="button"]:hover, .mode-selection label:hover, .quiz-item:hover, .session-item:hover, .log-item:hover, .savedSession:hover {
-        outline: 2px solid var(--secondary-color);
-        outline-offset: 2px;
+        outline: 0.125em solid var(--secondary-color);
+        outline-offset: 0.125em;
     }
 
     a:active, #resumeTitle a:focus, a link:focus,a link:active, button:focus, button:active, #refreshButton:active,
     input[type="button"]:focus, input[type="button"]:active, .mode-header:active, .mode-selection label:active, .quiz-item:active, .session-item:active, .log-item:active, .savedSession:active {
-        outline: 4px solid var(--primary-color);
-        outline-offset: 3px;
+        outline: 0.25em solid var(--primary-color);
+        outline-offset: 0.1875em;
     }
     
     </style>
@@ -462,7 +469,8 @@
         </p>
         <ul>
           <li>Standard - Mastered after 3 consecutively correct answers</li>
-          <li>Fast - Mastered if correct on the first try</li>
+          <li>Fast - Mastered when correct on the first try</li>
+          <li>Lightning - Mastered at 1 correct answer</li>
           <li>Review - Displays questions, answers, and explanations</li>
         </ul>
 

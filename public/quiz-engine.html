@@ -52,7 +52,7 @@
         /* Question Container */
         #question {
             padding: 2vh 2vw;
-            margin-bottom: 10px;
+            margin-bottom: 0.625em;
         }
 
         /* Choices Container */
@@ -63,12 +63,12 @@
 
         #choice_form {
             background-color: var(--surface-light);
-            border: 1px dotted var(--secondary-color);
+            border: 0.06em dotted var(--secondary-color);
             padding: 4vh 3vw;
             text-align: left;
         }
         .input label:hover {
-            padding: 4px;
+            padding: 0.25em;
             background-color: var(--secondary-color);
             color: var(--primary-color);
             transition: all 0.2s ease-in-out;
@@ -77,10 +77,10 @@
           padding-top: 2vh;
         }
         #choice_form input {
-            margin: 8px;
+            margin: 0.5em;
         }
         .category-list input {
-            margin-right: 10px;
+            margin-right: 0.625em;
         }
         .review-buttons {
             padding-bottom: 3vh;
@@ -95,14 +95,14 @@
         .btn {
             cursor: pointer;
             border: none;
-            border-radius: 4px;
+            border-radius: 0.25em;
             transition: all 0.2s ease-in-out;
-            padding: 5px 10px;
+            padding: 0.31em 0.625em;
         }
         #submitbtn {
           padding: 2vh 4vw;
           border: none;
-          border-radius: 4px;
+          border-radius: 0.25em;
         }
         #submit {
           padding-top: 2vh;
@@ -113,7 +113,7 @@
           cursor: pointer;
           padding: 2vh 4vw;
           border: none;
-          border-radius: 4px;
+          border-radius: 0.25em;
           transition: all 0.2s ease-in-out;
         }
         input[type="button"]:hover {
@@ -127,7 +127,7 @@
             background-color: var(--secondary-color);
             border: none;
             margin: 4vh;
-            border-radius: 4px;
+            border-radius: 0.25em;
             color: var(--primary-color);
             padding: 2vh 5vw;
         }
@@ -137,7 +137,7 @@
             color: white;
             border: none;
             margin: 4vh;
-            border-radius: 4px;
+            border-radius: 0.25em;
             padding: 2vh 5vw;
         }
         #generateButton:hover {
@@ -152,9 +152,9 @@
           border-radius: 50%;
           background: #ffe8e8;
           color: var(--incorrect-color);
-          width: 30px;
-          height: 30px;
-          font-size: 28px;
+          width: 1.5em;
+          height: 1.5em;
+          font-size: 1.75em;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -162,7 +162,7 @@
 
         .delete-btn:hover {
           transition: all 0.2s ease-in-out;
-          border : 1px solid var(--danger-color);
+          border : 0.06em solid var(--danger-color);
         }
 
         /* Answer Feedback */
@@ -185,7 +185,7 @@
         .footer {
             background-color: var(--surface-light);
             position: fixed;
-            border: 1px solid var(--secondary-color);
+            border: 0.06em solid var(--secondary-color);
             bottom: 0;
             left: 0;
             right: 0;
@@ -205,18 +205,18 @@
         .top-bar {
             justify-content: flex-start;
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 1.25em;
+            right: 1.25em;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 0.9em;
             z-index: 1000;
             font-weight:600;
           }
 
         .top-bar span {
             color: var(--deep-blue);
-            margin: 10px;
+            margin: 0.625em;
             padding: 1vh 2vw;
             font-weight: 600;
             font-size: 1.1em;
@@ -238,7 +238,7 @@
             cursor: pointer;
             transition: all 0.2s ease-in-out;
             z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 0.125em 0.31em rgba(0,0,0,0.2);
             font-size: 1.5em;
         }
 
@@ -246,7 +246,7 @@
             background-color: var(--primary-color);
             color: white;
             transform: rotate(180deg) scale(1.1);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 0.19em 0.5em rgba(0,0,0,0.3);
         }
 
         /* ================ *
@@ -263,10 +263,10 @@
                 gap: 1vw;
             }
             #homeButton {
-                top: 10px;
-                right: 10px;
-                width: 35px;
-                height: 35px;
+                top: 0.625em;
+                right: 0.625em;
+                width: 2.19em;
+                height: 2.19em;
                 font-size: 1.2em;
             }
         }
@@ -275,14 +275,14 @@
          *  Accessible Clicks *
          * ================== */
         a link, button:hover, #homeButton:hover, input[type="button"]:focus, input[type="button"]:hover, .input input[type="radio"]:hover, .input input[type="checkbox"]:hover {
-            outline: 2px solid var(--secondary-color);
-            outline-offset: 2px;
+            outline: 0.125em solid var(--secondary-color);
+            outline-offset: 0.125em;
         }
 
         a link, button:focus, button:active, #homeButton:active,
         input[type="button"]:focus, input[type="button"]:active, .input label:active, .input label:focus, .input input[type="radio"]:focus, .input input[type="checkbox"]:focus, .input input[type="radio"]:active, .input input[type="checkbox"]:active {
-            outline: 4px solid var(--primary-color);
-            outline-offset: 3px;
+            outline: 0.25em solid var(--primary-color);
+            outline-offset: 0.19em;
         }
 
         /* ================ *
@@ -302,13 +302,13 @@
         .modal-content { 
             background-color: white; 
             margin: 15% auto; 
-            padding: 20px; 
-            border: 1px solid #888; 
+            padding: 1.25em; 
+            border: 0.06em solid #888; 
             width: 80%; 
         }
 
         .modal-content button {
-            border: 2px solid transparent; /* Reserve space for border */
+            border: 0.125em solid transparent; /* Reserve space for border */
         }
 
         code, #stats {

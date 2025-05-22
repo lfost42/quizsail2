@@ -55,8 +55,8 @@ const showCurrentModal = () => {
     <div class="loading">Loading quizzes...</div>
   </div>
   <div class="modal-footer">
-    <button id="startSelectedQuiz" class="start-button" disabled>Start Quiz</button>
-    <button id="retireButton" class="retire-button" disabled>Retire Quiz</button>
+    <button id="startSelectedQuiz" class="start-button" disabled>Start</button>
+    <button id="retireButton" class="retire-button" disabled>Retire</button>
   </div>
 `;
 
@@ -267,8 +267,8 @@ const showRetiredModal = () => {
       <div class="loading">Loading retired quizzes...</div>
     </div>
     <div class="modal-footer">
-      <button id="retiredRestoreButton" class="restore-button" disabled>Restore Quiz</button>
-      <button id="retiredDeleteButton" class="delete-button" disabled>Delete Quiz</button>
+      <button id="retiredRestoreButton" class="restore-button" disabled>Restore</button>
+      <button id="retiredDeleteButton" class="delete-button" disabled>Delete</button>
     </div>
   `;
 
@@ -625,8 +625,8 @@ const showStartModal = (sessions, quizName) => {
 
     modalContent.innerHTML = `
       <p>Found ${sessionList.length} saved sessions. Please select an option below.</p>
-      <button id="refresh-btn">Refresh Quiz</button>
-      <button id="continue-btn">Continue to Quiz</button>
+      <button id="refresh-btn">Refresh</button>
+      <button id="continue-btn">Continue</button>
       <div id="sessions-list">
         <ul class="session-list">
           ${sessionList.map(([id, session]) => `
