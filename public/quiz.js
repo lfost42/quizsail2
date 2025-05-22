@@ -190,21 +190,33 @@ async function show() {
     return;
   }
 
+
   // Check for quiz completion
   if (state.unseen.length === 0 && state.working.length === 0) {
   const allQuestions = state.complete;
   let incorrectCounts = { 1: 0, 2: 0, 3: 0, '4+': 0 };
 
-  allQuestions.forEach(q => {
-    const count = q.incorrectTries;
-    if (count >= 4) incorrectCounts['4+']++;
-    else if (count === 3) incorrectCounts[3]++;
-    else if (count === 2) incorrectCounts[2]++;
-    else if (count === 1) incorrectCounts[1]++;
-  });
+      allQuestions.forEach(q => {
+        const count = q.incorrectTries;
+        if (count >= 4) incorrectCounts['4+']++;
+        else if (count === 3) incorrectCounts[3]++;
+        else if (count === 2) incorrectCounts[2]++;
+        else if (count === 1) incorrectCounts[1]++;
+      });
+  }
 
+  const modeDisplayNames = {
+    'default': 'Standard',
+    'fastmode': 'Fast',
+    'review': 'Review'
+  };
 
-}
+  E("stats").html = `
+    <span style="margin-right: 1vw">${source} (${modeDisplayNames[mode]})</span>
+    mastered: ${state.complete.length} ・ 
+    in-flight: ${state.working.length} ・ 
+    unseen: ${state.unseen.length}
+  `;
 
   let currentItem;
   const avoidIndex = state.lastIndex;
@@ -269,9 +281,6 @@ async function show() {
     const currentItem = cur();
     if (!currentItem) return;
 
-        E("stats").html = `mastered: ${state.complete.length} ・ `
-            + `in-flight:  ${state.working.length} ・ `
-            + `unseen: ${state.unseen.length}`;
         inputs = {};
         labels = {};
         
