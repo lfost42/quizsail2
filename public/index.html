@@ -21,6 +21,7 @@
         --surface-light: #f5f8f9;
         --light-teal: #3A9D9D;
         --dark-teal: teal;
+        --deep-blue: #172e46;
       }
 
     /* Global Styles */
@@ -34,6 +35,7 @@
     body {
       min-height: 100%;
       padding: 5vh 5vw;
+      padding-top: 12vh;
     }
 
     .top-bar {
@@ -48,7 +50,7 @@
       }
 
     .top-bar span {
-        color: var(--dark-teal);
+        color: var(--deep-blue);
         margin: 10px;
         padding: 1vh 2vw;
         font-weight: 600;
@@ -114,14 +116,40 @@
       align-items: center;
     }
 
-    /* Buttons & Interactions */
-    .deleteSession {
-      margin: 4px 0;
-      transition: all 0.2s ease-in-out;
+    .log-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      max-width: 70vw;
     }
-    .deleteSession:hover {
-      /* transform: translateY(-2px); */
+
+    .log-item span {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden !important;
+      text-overflow: ellipsis;
+    }
+    /* Buttons & Interactions */
+    .deleteSession,
+    .delete-log-btn,
+    .close-modal {
+      border: none;
+      border-radius: 50%;
+      background: #ffe8e8;
+      color: var(--incorrect-color);
+      width: 30px;
+      height: 30px;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .deleteSession:hover, 
+    .delete-log-btn:hover,
+    .close-modal:hover {
       transition: all 0.2s ease-in-out;
+      border : 1px solid var(--danger-color);
     }
     
     /* Button Color Groups */
@@ -200,12 +228,6 @@
       border-radius: 50%;
       transition: all 0.2s ease-in-out;
     }
-    .close-modal:hover {
-      background-color: #eee;
-      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-      transform: translateY(-2px);
-      transition: all 0.2s ease-in-out;
-    }
     .modal-footer {
       margin-top: 2vh;
       text-align: right;
@@ -237,6 +259,12 @@
       text-align: center;
       padding: 20px;
     }
+    .caret {
+      transition: transform 0.2s ease;
+    }
+    .caret.expanded {
+      transform: rotate(180deg);
+    }
     .mode-header {
       cursor: pointer;
       padding: 8px;
@@ -246,40 +274,22 @@
       justify-content: space-between;
       align-items: center;
     }
-    .mode-header:hover {
-      background-color: #eee;
-    }
     .mode-options {
-      padding: 4px;
+      border: 1px solid #ddd;
     }
-    .mode-options, label:hover {
-      padding: 6px;
-    }
-    .caret {
-      transition: transform 0.2s ease;
-    }
-    .caret.expanded {
-      transform: rotate(180deg);
-    }
-    .mode-selection {
-      margin: 15px 0;
-      padding: 10px;
-      border-top: 1px solid #eee; /* Light peach */
-    }
-    .mode-selection label {
-      background-color: #E8F4F8; /* Light blue */
+    .mode-selection label, .quiz-item {
       display: block;
       margin: 8px 0;
     }
-    .quiz-item {
-      display: block;
-      margin: 8px 0;
-    }
-    .quiz-item:hover {
+    .mode-selection label:hover,
+    .quiz-item:hover, 
+    .mode-options input:hover, 
+    .mode-header:hover {
       background-color: #E8F4F8; /* Light blue */
       border-radius: 4px;
     }
-    .quiz-item, .session-item, .log-item {
+    .quiz-item, .session-item, .log-item, 
+    .mode-selection label {
       padding: 8px 12px !important;
     }
     #refresh-btn, #continue-btn {
@@ -301,6 +311,7 @@
     }
     .modal-content button {
       margin: 4px;
+      border: 2px solid transparent;
     }
     .modal-content .button-group {
       display: flex;
@@ -320,7 +331,6 @@
     .half-button:hover {
       background-color: #172e46; /* Deep blue */
       color: white;
-      filter: brightness(150%);
       transition: all 0.2s ease-in-out;
     }
 
@@ -335,9 +345,6 @@
     }
     #retiredDeleteButton:hover {
       background-color: #bb2d3b;
-    }
-    .deleteSession:hover {
-      color: #bb2d3b;
     }
     .modal-overlay .delete-btn {
         border: none;
@@ -357,11 +364,6 @@
         color: #bb2d3b; /* Coral-red on hover */
         background-color: rgba(255, 107, 107, 0.1);
         transform: scale(1.1);
-    }
-
-    /* Consistent Focus States */
-    button:focus {
-      outline: 2px solid var(--secondary-color);
     }
 
     /* Home page button tooltips */
@@ -410,6 +412,22 @@
       padding: 2.5vh 4vw;
       justify-content: flex-end;
     }
+
+    /* ================= *
+    *  Accessible Clicks *
+    * ================== */
+    button:hover, #homeButton:hover, .mode-header:hover,
+    input[type="button"]:focus, input[type="button"]:hover, .mode-selection label:hover, .quiz-item:hover, .session-item:hover, .log-item:hover, .savedSession:hover {
+        outline: 2px solid var(--dark-teal);
+        outline-offset: 2px;
+    }
+
+    button:focus, button:active, #refreshButton:active,
+    input[type="button"]:focus, input[type="button"]:active, .mode-header:active, .mode-selection label:active, .quiz-item:active, .session-item:active, .log-item:active, .savedSession:active {
+        outline: 4px solid var(--deep-blue);
+        outline-offset: 3px;
+    }
+    
     </style>
 
     <!-- Scripts -->

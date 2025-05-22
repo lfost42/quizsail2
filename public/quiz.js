@@ -414,7 +414,7 @@ async function submitAnswer() {
   let correct = true;
 
   Object.values(labels).forEach(label => {
-    label.e.style.color = ''; // Reset to default
+    label.e.className = '';
   });
 
   if (numAnswers == 1 && numChoices == 1) {
@@ -429,7 +429,14 @@ async function submitAnswer() {
     // Highlight correct answers in green
     answers.forEach(correctAnswer => {
         if (labels[correctAnswer]) {
-            labels[correctAnswer].e.style.color = '#246464';
+            labels[correctAnswer].e.classList.add('correct-answer');
+        }
+    });
+
+    // Gray out all incorrect answers (both selected and unselected)
+    Object.keys(labels).forEach(choice => {
+        if (!answers.includes(choice)) {
+            labels[choice].e.style.color = '#8b8b8b';
         }
     });
 
@@ -447,7 +454,7 @@ async function submitAnswer() {
         // Mark incorrect selections
         for (const [choice, input] of Object.entries(inputs)) {
             if (input.checked && !answers.includes(choice)) {
-                labels[choice].e.style.color = '#a82b0e';
+                labels[choice].e.style.color = '#8b8b8b';
                 correct = false;
             }
         }
@@ -1012,6 +1019,7 @@ async function generateNewQuizzes() {
 }
 
 function showCompletionScreen() {
+  E("homeButton").visible = false
   const allQuestions = state.complete;
   let incorrectCounts = { 0: allQuestions.length, 1: 0, 2: 0, 3: 0, '4+': 0 };
 
@@ -1036,7 +1044,7 @@ function showCompletionScreen() {
   };
   const uniqueCount = calculateUniqueCount();
 
-  E("question").html = `Quiz Complete! 🎉`;
+  E("question").html = `<h1>🎉 Quiz Complete 🎉<h1>`;
   
   E("choice_form").html = `
   <p>Generate new quizzes based on incorrect answers or clear session.</p>
