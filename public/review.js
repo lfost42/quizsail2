@@ -51,17 +51,13 @@ async function loadQuizData(src) {
 
 // UI components
 function initializeQuizInterface() {
-  setTimeout(() => {
+  const submitBtn = document.getElementById('submitbtn');
+    if (submitBtn) submitBtn.remove();
+
     resetQuizState();
     displayQuestion(state.questions[0]);
     setupNavigationControls();
     initializeEditHandlers();
-    const submitBtn = document.getElementById('submitbtn');
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.removeAttribute('onclick');
-    }
-  }, 50);
 }
 
 function createEditSelectionModal() {
@@ -97,8 +93,7 @@ function openEditSelectionModal() {
   
   // Choices with current text
   currentQuestion.c.forEach((choiceText, index) => {
-    html += `<li data-target-type="choice" data-target-index="${index}" class="truncate-item">
-  &#x2022; ${choiceText}</li>`;
+    html += `<li data-target-type="choice" data-target-index="${index}" class="truncate-item">${choiceText}</li>`;
   });
   // Add a choice
     html += '<li data-target-type="add-choice">➕ Add New Choice</li>';
@@ -306,21 +301,27 @@ function updateQuestionText(question) {
 }
 
 function createChoiceElements(question) {
-    const choicesForm = document.getElementById('choice_form');
-    clearElement(choicesForm);
-    
-    question.c.forEach((choiceText, index) => {
-        choicesForm.appendChild(createChoiceElement(choiceText, index));
-    });
+  const choicesForm = document.getElementById('choice_form');
+  clearElement(choicesForm);
+  
+  question.c.forEach((choiceText, index) => {
+    const div = document.createElement('div');
+    div.className = 'choice-item';
+    div.innerHTML = `
+      <span class="choice-letter">${choiceLetters[index]}:</span>
+      <div class="choice-text">${choiceText}</div>
+    `;
+    choicesForm.appendChild(div);
+  });
 }
 
-function createChoiceElement(choiceText, index) {
-    const answerDiv = document.createElement('div');
-    answerDiv.classList.add('incorrect-answer'); // Default to gray
-    answerDiv.innerHTML = `${choiceLetters[index]}: ${choiceText}`;
-    answerDiv.appendChild(createResultsDiv('choice', index));
-    return answerDiv;
-}
+// function createChoiceElement(choiceText, index) {
+//     const answerDiv = document.createElement('div');
+//     answerDiv.classList.add('incorrect-answer'); // Default to gray
+//     answerDiv.innerHTML = `${choiceLetters[index]}: ${choiceText}`;
+//     answerDiv.appendChild(createResultsDiv('choice', index));
+//     return answerDiv;
+// }
 
 
 // Answer processing

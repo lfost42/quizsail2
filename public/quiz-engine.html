@@ -71,9 +71,10 @@
             padding: 0.25em;
             background-color: var(--secondary-color);
             color: var(--primary-color);
+            border-radius: 0.25em;
         }
         #result {
-          padding-top: 2vh;
+          padding: 3vh;
         }
         #choice_form input {
             margin: 0.5em;
@@ -166,6 +167,16 @@
         .delete-btn:hover {
           transition: all 0.2s ease-in-out;
           border : 0.06em solid var(--danger-color);
+        }
+        #editSelectionContent li[data-target-type="choice"]::before {
+          content: "☐ ";
+          left: 2em;
+          color: var(--primary-color);
+        }
+        #editSelectionContent li[data-target-type="choice"], #editSelectionContent li[data-target-type="add-choice"] {
+          background-color: var(--background-light);
+          padding-left: 2em;
+          position: relative;
         }
         #editSelectionContent li[data-target-type="question"] {
           white-space: pre-wrap;

@@ -1,5 +1,11 @@
 // quiz.js
 (() => { // IIFE to encapsulate scope
+if (new URLSearchParams(window.location.search).get('mode') === 'review') {
+  const submitBtn = document.getElementById('submitbtn');
+  if (submitBtn) submitBtn.remove();
+  return;
+}
+
 let inputs = [];
 let labels = {};
 
