@@ -806,6 +806,13 @@ async function handleEndSession() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ quizName, sessionId })
     });
+
+    // Delete flagged log file
+    await fetch('/delete-flagged-log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quizName, sessionId })
+    });
     
     // Delete session state
     await deleteEndSession();
