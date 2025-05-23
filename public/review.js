@@ -102,7 +102,7 @@ function openEditSelectionModal() {
     currentQuestion.a}</li>`;
 
   // Explanation with current text
-  html += `<li data-target-type="explanation" class="truncate-item">🔎 ${currentQuestion.e}</li></ul>`;
+  html += `<li data-target-type="explanation" class="truncate-item">📖 ${currentQuestion.e}</li></ul>`;
   
   contentDiv.innerHTML = html;
   
@@ -314,15 +314,6 @@ function createChoiceElements(question) {
     choicesForm.appendChild(div);
   });
 }
-
-// function createChoiceElement(choiceText, index) {
-//     const answerDiv = document.createElement('div');
-//     answerDiv.classList.add('incorrect-answer'); // Default to gray
-//     answerDiv.innerHTML = `${choiceLetters[index]}: ${choiceText}`;
-//     answerDiv.appendChild(createResultsDiv('choice', index));
-//     return answerDiv;
-// }
-
 
 // Answer processing
 function displayAnswerResults(question) {
