@@ -421,6 +421,32 @@
       visibility: visible;
       opacity: 1;
     }
+    .mode-tooltip {
+        position: relative;
+        display: inline-block;
+      }
+      .mode-tooltip .tooltip-text {
+        visibility: hidden;
+        width: 220px;
+        background-color: var(--primary-color);
+        color: #fff;
+        text-align: center;
+        border-radius: 4px;
+        padding: 8px;
+        position: absolute;
+        z-index: 1001;
+        left: 50%;
+        bottom: 5%;
+        transform: translateX(-50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 0.9em;
+        pointer-events: none;
+      }
+      .mode-tooltip:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+      }
 
     /* Ensure buttons maintain spacing */
     #currentButton, #retiredButton, #logsButton {

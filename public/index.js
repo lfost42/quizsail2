@@ -30,6 +30,13 @@ const createIsolatedModal = (title, content) => {
 
 const showCurrentModal = () => {
   let fetchedQuizzes = [];
+  const modeDescriptions = {
+    default: "Requires 3 consecutive correct answers",
+    fastmode: "Mastered when correct on the first try",
+    lightning: "Requires 1 correct answer", 
+    review: "View quiz and edit quiz items"
+  };
+
   const modal = document.createElement('div');
   modal.className = 'modal-overlay';
   
@@ -46,10 +53,26 @@ const showCurrentModal = () => {
       <span class="caret">⌄</span>
     </div>
     <div class="mode-options" hidden>
-      <label><input type="radio" name="modalMode" value="default" checked> Standard</label>
-      <label><input type="radio" name="modalMode" value="fastmode"> Fast</label>
-      <label><input type="radio" name="modalMode" value="lightning"> Lightning</label>
-      <label><input type="radio" name="modalMode" value="review"> Review</label>
+      <label class="mode-tooltip">
+      <input type="radio" name="modalMode" value="default" checked>
+      Standard
+      <span class="tooltip-text">${modeDescriptions.default}</span>
+    </label>
+    <label class="mode-tooltip">
+      <input type="radio" name="modalMode" value="fastmode">
+      Fast
+      <span class="tooltip-text">${modeDescriptions.fastmode}</span>
+    </label>
+    <label class="mode-tooltip">
+      <input type="radio" name="modalMode" value="lightning">
+      Lightning
+      <span class="tooltip-text">${modeDescriptions.lightning}</span>
+    </label>
+    <label class="mode-tooltip">
+      <input type="radio" name="modalMode" value="review">
+      Review
+      <span class="tooltip-text">${modeDescriptions.review}</span>
+    </label>
     </div>
   </div>
   <div class="modal-body" id="currentQuizzesList">
