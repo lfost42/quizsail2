@@ -65,13 +65,13 @@
     modal.className = 'modal';
     modal.innerHTML = `
       <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close-modal">&times;</span>
         <div id="editSelectionContent"></div>
       </div>
     `;
     document.body.appendChild(modal);
     
-    modal.querySelector('.close').addEventListener('click', () => {
+    modal.querySelector('.close-modal').addEventListener('click', () => {
       modal.style.display = 'none';
     });
   }

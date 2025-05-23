@@ -106,7 +106,7 @@
         #submit {
           padding-top: 2vh;
         }
-        input[type="button"] {
+        input[type="button"], #modalBack {
           background-color: var(--secondary-color);
           color: var(--primary-color); 
           cursor: pointer;
@@ -115,7 +115,7 @@
           border-radius: 0.25em;
           transition: all 0.2s ease-in-out;
         }
-        input[type="button"]:hover {
+        input[type="button"]:hover, #modalBack:hover {
           background-color: var(--primary-color);
           color: white;
           transition: all 0.2s ease-in-out;
@@ -143,7 +143,11 @@
             background-color: var(--primary-color);
             color: white;
         }
-        #exitButton:hover {
+        #modalSubmit {
+          background-color: var(--incorrect-color);
+          color: white;
+        }
+        #exitButton:hover, #modalSubmit:hover {
           background-color: var(--danger-color);
         }
         .delete-btn {
@@ -270,20 +274,6 @@
             }
         }
 
-         /* ================= *
-         *  Accessible Clicks *
-         * ================== */
-        a link, button:hover, #homeButton:hover, input[type="button"]:focus, input[type="button"]:hover, .input input[type="radio"]:hover, .input input[type="checkbox"]:hover {
-            outline: 0.12em solid var(--secondary-color);
-            outline-offset: 0.12em;
-        }
-
-        a link, button:focus, button:active, #homeButton:active,
-        input[type="button"]:focus, input[type="button"]:active, .input label:active, .input label:focus, .input input[type="radio"]:focus, .input input[type="checkbox"]:focus, .input input[type="radio"]:active, .input input[type="checkbox"]:active {
-            outline: 0.2em solid var(--primary-color);
-            outline-offset: 0.12em;
-        }
-
         /* ================ *
          *  Modal Styles     *
          * ================ */
@@ -299,6 +289,7 @@
         }
         
         .modal-content { 
+            position: relative;
             background-color: white; 
             margin: 15% auto; 
             padding: 1.25em; 
@@ -307,7 +298,14 @@
         }
 
         .modal-content button {
-            border: 0.125em solid transparent; /* Reserve space for border */
+            border: 0.125em solid transparent;
+            padding: 0.525em 1.15em;
+            border-radius: 0.25em;
+            margin: 0.4em;
+            margin-left: 0;
+            cursor: pointer;
+            transition: filter 0.2s ease;
+            gap: 2vw;
         }
 
         code, #stats {
@@ -319,6 +317,64 @@
           color: var(--primary-color);
         }
 
+        #editSelectionModal .close-modal,
+        .modal-content .close {
+          position: absolute;
+          top: 0.625em;
+          right: 0.625em;
+          background: transparent;
+          border: none;
+          color: var(--incorrect-color);
+          width: 1.5em;
+          height: 1.5em;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border-radius: 50%;
+          font-size: 1.2em;
+          cursor: pointer;
+          border-radius: 50%;
+          transition: all 0.2s ease-in-out;
+        }
+        #editSelectionContent ul {
+          list-style-type: none;
+          padding-left: 0;
+        }
+        #editSelectionModal .close-modal:hover {
+          transition: all 0.2s ease-in-out;
+          border : 0.004em solid var(--danger-color);
+        }
+        #editSelectionContent li {
+          padding: 0.2em;
+          margin: 0.2em;
+          border-radius: 0.25em;
+          font-size: 1em;
+        }
+        #modalTextarea {
+          width: 100%;
+          min-height: 6em;
+          resize: vertical;
+          padding: 0.8em;
+          margin: 1em 0;
+          border-radius: 0.25em;
+          line-height: 1.01;
+        }
+
+         /* ================= *
+         *  Accessible Clicks *
+         * ================== */
+        a link, button:hover, #homeButton:hover, input[type="button"]:focus, input[type="button"]:hover, .input input[type="radio"]:hover, .input input[type="checkbox"]:hover, .editSelectionContent ul li:hover, #editSelectionContent li:hover, #editSelectionModal .close-modal:hover,
+        .modal-content .close:hover, #EditModal #modalTextarea:hover {
+            outline: 0.12em solid var(--secondary-color);
+            outline-offset: 0.12em;
+        }
+
+        a link, button:focus, button:active, #homeButton:active,
+        input[type="button"]:focus, input[type="button"]:active, .input label:active, .input label:focus, .input input[type="radio"]:focus, .input input[type="checkbox"]:focus, .input input[type="radio"]:active, .input input[type="checkbox"]:active, #editSelectionContent li:active, #editSelectionContent li:focus, #editSelectionModal .close-modal:active, #editSelectionModal .close-modal:focus, .modal-content .close:active, .modal-content .close:focus, #EditModal #modalTextarea:active, #EditModal #modalTextarea:focus {
+            outline: 0.2em solid var(--primary-color);
+            outline-offset: 0.12em;
+        }
     </style>
 </head>
 
