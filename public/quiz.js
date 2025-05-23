@@ -977,7 +977,7 @@ async function generateNewQuizzes() {
           quizLink.style.pointerEvents = 'none';
           
           await handleEndSession();
-          window.location.href = `?src=${responseData.newQuiz}&session=${makeid(128)}`;
+          window.location.href = `?src=${responseData.newQuiz}&session=${makeid(128)}&mode=fastmode`;
         } catch (error) {
           console.error('Redirect failed:', error);
           quizLink.textContent = `Start ${responseData.newQuiz}`;
