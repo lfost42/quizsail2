@@ -1085,6 +1085,10 @@ function showCompletionScreen() {
               <input type="radio" name="category" value="${label}" class="category-radio">
               ${label === '1' ? 'First attempt' : `${label}x`} (${count} questions)
             </label>
+            <label style="display: flex; align-items: center; gap: 5px;">
+              <input type="radio" name="category" value="2+" class="category-radio">
+              2+ incorrect attempts (${incorrectCounts['2'] + incorrectCounts['3'] + incorrectCounts['4+']} questions)
+            </label>
           </div>
         `).join('')}
     </div>
