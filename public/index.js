@@ -48,6 +48,7 @@ const showCurrentModal = () => {
     <div class="mode-options" hidden>
       <label><input type="radio" name="modalMode" value="default" checked> Standard</label>
       <label><input type="radio" name="modalMode" value="fastmode"> Fast</label>
+      <label><input type="radio" name="modalMode" value="lightning"> Lightning</label>
       <label><input type="radio" name="modalMode" value="review"> Review</label>
     </div>
   </div>
