@@ -89,7 +89,7 @@ function openEditSelectionModal() {
   
   let html = '<h3>Select Element to Edit</h3><ul>';
   // Question with current text
-  html += `<li data-target-type="question" class="truncate-item">${currentQuestion.q}</li>`;
+  html += `<li data-target-type="question" class="truncate-item">❓ ${currentQuestion.q}</li>`;
   
   // Choices with current text
   currentQuestion.c.forEach((choiceText, index) => {
@@ -102,7 +102,7 @@ function openEditSelectionModal() {
     currentQuestion.a}</li>`;
 
   // Explanation with current text
-  html += `<li data-target-type="explanation" class="truncate-item">${currentQuestion.e}</li></ul>`;
+  html += `<li data-target-type="explanation" class="truncate-item">🔎 ${currentQuestion.e}</li></ul>`;
   
   contentDiv.innerHTML = html;
   
