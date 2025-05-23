@@ -957,7 +957,7 @@ async function generateNewQuizzes() {
       // Create the quiz link
       const quizLink = document.createElement('a');
       quizLink.href = '#';
-      quizLink.textContent = `Start: ${responseData.newQuiz}`;
+      quizLink.textContent = `Start: ${responseData.newQuiz}-${flaggedQuestions.length}`;
       quizLink.style.color = '#0066cc';
       quizLink.style.textDecoration = 'underline';
       quizLink.style.cursor = 'pointer';
