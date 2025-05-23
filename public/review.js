@@ -96,7 +96,7 @@ function openEditSelectionModal() {
     html += `<li data-target-type="choice" data-target-index="${index}" class="truncate-item">${choiceText}</li>`;
   });
   // Add a choice
-    html += '<li data-target-type="add-choice">➕ Add New Choice</li>';
+    html += '<li data-target-type="add-choice">☐ ➕ [ Add New Choice ]</li>';
     // Answer with current values
     html += `<li data-target-type="answer" class="truncate-item">✅ ${
     currentQuestion.a}</li>`;
