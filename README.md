@@ -10,32 +10,49 @@ QuizSail's competency system works by holding a certain number of questions from
 
 ## List of updates for QuizSail 2.0
 
+#### Generate Quizzes With Questions Marked as Incorrect
+At the end of each session, options are given to genereate a new quiz with:  
+
+🔥 All questions  
+🔥 All questions weighted (questions are added the number of times they were answered incorrectly)  
+🔥 Questions marked incorrect on the first try  
+🔥 Questions marked incorrect 2x during the session  
+🔥 Questions marked incorrect 3x during the session  
+🔥 Question marked incorrect 4 or more times during the session  
+
 #### Refresh Quiz
 🔥 Log functionality that keeps track of all successful first attempts for the last 10 sessions.  
 🔥 Option to prune logs once there are 5 in case there are sessions that were deleted prior to starting a new one.  
 🔥 Option to refresh a quiz after 5 sessions: removes the questions that were answered correctly on the first try at least 3 out of the last 5 sessions. Original quiz is moved to the "retired" directory.  
 
-#### Refresh Quiz (in progress)
+#### Review Mode
 ✅ Scroll through all questions, answers and explanations. 
-*️ Current functionality is server-side only *️  
-🔲 Add or modify current explanation.  
-🔲 Modify current answer.  
-🔲 Modify current question.  
-🔲 Modify current choice.  
-🔲 Add a new choice.  
-🔲 Add a new question.  
+✅ Add or modify current explanation  
+✅ Modify current answer  
+✅ Modify current question  
+✅ Modify current choice  
+✅ Add a new choice  
+
+#### File Management
+📁 Retire quizzes  
+📁 Un-retire quizzes  
+📁 Delete quizzes from retired directory  
+📁 Delete logs  
 
 #### Navigation and Features
-☑️ [Delete All Sessions] option added to Start.  
-☑️ [Return to Start] link added to quiz page.  
-☑️ Sessions deleted upon completion.  
-☑️ New quizzes are dynamically added to start menu (add json files to the public/quizzes folder).   
-☑️ Avoids giving the same question twice in a row (mostly) unless it's the last question.  
-☑️ Explanations added to the result if available (need to populate the "e" item in the json file). 
+☑️ [Delete All Sessions] option added to Start  
+☑️ [Return to Start] button added to quiz page  
+☑️ Sessions deleted upon completion  
+☑️ New quizzes are dynamically added to start menu (add json files to the public/quizzes folder)  
+☑️ Avoids giving the same question twice in a row (mostly) unless it's the last question  
+☑️ Explanations added to the result if available (need to populate the "e" item in the json file or use 'Review' mode)  
 
 #### Formatting quiz text flexibility
-⚙️ Able to parse line breaks using \n.  
-⚙️ Text font switches to monotype when wrapped in < code > tags.  
+⚙️ Able to parse line breaks using \n  
+⚙️ Text font switches to monotype when wrapped in < code > tags  
+⚙️ Accessibility styling to make hover, active, and focused elements more visible  
+⚙️ Quiz name and mode added to footer  
+⚙️ Stats moved to footer  
 
 #### Other Helper Scripts
 📃 [codify.py](scripts/quiz_generators/) takes input text, wraps it in < code > tags, adds line breaks, and outputs it into a single line to past back into a quiz json file.  

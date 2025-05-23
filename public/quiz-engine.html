@@ -167,7 +167,42 @@
           transition: all 0.2s ease-in-out;
           border : 0.06em solid var(--danger-color);
         }
-
+        #editSelectionContent li[data-target-type="question"] {
+          white-space: pre-wrap;
+          overflow-wrap: break-word;
+          border: 1px solid var(--secondary-color);
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          max-height: 3em;
+        }
+        #editSelectionContent li[data-target-type="answer"] {
+          white-space: pre-wrap;
+          overflow-wrap: break-word;
+          border: 1px solid var(--secondary-color);
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          max-height: 3em;
+        }
+        #editSelectionContent li[data-target-type="explanation"] {
+          white-space: pre-wrap;
+          overflow-wrap: break-word;
+          border: 1px solid var(--secondary-color);
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          max-height: 3em;
+        }
+        .truncate-item {
+          display: block;
+          width: 100%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: calc(100% - 1.5em);
+          padding-right: 0.93em;
+        }
         /* Answer Feedback */
         .correct { color: var(--primary-color);}
         .incorrect { color: var(--danger-color); }
@@ -294,7 +329,8 @@
             margin: 15% auto; 
             padding: 1.25em; 
             border: 0.06em solid #888; 
-            width: 80%; 
+            width: 80%;
+            max-width: 80vw;
         }
 
         .modal-content button {
@@ -358,9 +394,36 @@
           padding: 0.8em;
           margin: 1em 0;
           border-radius: 0.25em;
+          font-size: 1em;
           line-height: 1.01;
+          white-space: pre-wrap;
+          overflow-y: auto;
+        }
+        .full-preview {
+          padding: 1em;
+          margin: 1em 0;
+          background: var(--surface-light);
+          border: 1px solid var(--secondary-color);
+          border-radius: 4px;
+          max-height: 200px;
+          overflow-y: auto;
+          white-space: pre-wrap;
         }
 
+        .preview-header {
+          font-weight: bold;
+          margin-bottom: 0.5em;
+          color: var(--primary-color);
+        }
+        #editSelectionModal .modal-content {
+          width: 80vw;
+          max-width: 80vw;
+        }
+
+        #editSelectionContent {
+          max-height: 70vh;
+          overflow-y: auto;
+        }
          /* ================= *
          *  Accessible Clicks *
          * ================== */

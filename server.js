@@ -510,6 +510,50 @@ app.get('/get-flagged/:quizName/:sessionId', (req, res) => {
   }
 });
 
+/*----------------*/ 
+/*  Edit Quiz     */
+/*----------------*/ 
+app.post('/edit-quiz', (req, res) => {
+  const { quizName, content } = req.body;
+  if (!validateQuizStructure(content)) {
+    return res.status(400).json({ error: 'Invalid quiz structure' });
+  }
+
+  if (!quizName || !content) {
+    return res.status(400).json({ error: 'Missing quiz name or content' });
+  }
+
+  // Security checks
+  if (quizName.includes('..') || quizName.includes('/')) {
+    return res.status(400).json({ error: 'Invalid quiz name' });
+  }
+
+  // Check both active and retired directories
+  const activePath = path.join(quizDir, `${quizName}.json`);
+  const retiredPath = path.join(retiredDir, `${quizName}.json`);
+  
+  let savePath;
+  if (fs.existsSync(activePath)) {
+    savePath = activePath;
+  } else if (fs.existsSync(retiredPath)) {
+    savePath = retiredPath;
+  } else {
+    return res.status(404).json({ error: 'Quiz not found' });
+  }
+
+  try {
+    // Validate content format
+    if (!Array.isArray(content)) {
+      return res.status(400).json({ error: 'Invalid quiz format' });
+    }
+    
+    fs.writeFileSync(savePath, JSON.stringify(content, null, 2));
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Save error:', error);
+    res.status(500).json({ error: 'Failed to save quiz' });
+  }
+});
 
 /*-----------------*/ 
 /*  Generate Quiz  */
@@ -789,4 +833,13 @@ function getUniqueName(baseName, dir) {
 function number_to_suffix(num) {
   if (num <= 0) return '';
   return String.fromCharCode(97 + (num % 26)); // 0→a, 1→b, etc
+}
+
+function validateQuizStructure(content) {
+  return Array.isArray(content) && content.every(question => 
+    typeof question === 'object' &&
+    typeof question.q === 'string' &&
+    Array.isArray(question.c) &&
+    Array.isArray(question.a)
+  );
 }
