@@ -1063,26 +1063,14 @@ function showCompletionScreen() {
     }
   });
 
-  const calculateUniqueCount = () => {
-    return state.complete.filter(q => {
-      const category = getAttemptCategory(q.incorrectTries);
-      return q.incorrectTries > 0;
-    }).length;
-  };
-  const uniqueCount = calculateUniqueCount();
+  const uniqueCount = allQuestions.filter(q => q.incorrectTries > 0).length;
+  const weightedCount = allQuestions.reduce((sum, q) => sum + q.incorrectTries, 0);
 
   E("question").html = `<h1>🎉 Quiz Complete 🎉<h1>`;
   
   E("choice_form").html = `
-  <p>Generate new quizzes based on incorrect answers or clear session.</p>
+  <p>Generate new quizzes based on incorrect answers or end session.</p>
   <div class="category-list" id="categoryList">
-    <label style="display: flex; align-items: center; gap: 5px;">
-      <input type="radio" name="category" value="0" class="category-radio">
-      All questions, weighted mode (${uniqueCount})
-    </label>
-    <label style="display: flex; align-items: center; gap: 5px;">
-      <input type="radio" name="category" value="a" class="category-radio">
-      All questions (${uniqueCount})
     </label>
       ${Object.entries(incorrectCounts)
         .filter(([label, count]) => label !== '0' && count > 0)
@@ -1090,18 +1078,22 @@ function showCompletionScreen() {
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;" class="category-item">
             <label style="flex-grow: 1;">
               <input type="radio" name="category" value="${label}" class="category-radio">
-              ${label === '1' ? 'First attempt' : `${label}x`} (${count} questions)
-            </label>
-            <label style="display: flex; align-items: center; gap: 5px;">
-              <input type="radio" name="category" value="2+" class="category-radio">
-              2+ incorrect attempts (${incorrectCounts['2'] + incorrectCounts['3'] + incorrectCounts['4+']} questions)
+              ${label === '1' ? 'First attempt' : `${label}+`} (${count})
             </label>
           </div>
         `).join('')}
     </div>
+    <label style="display: flex; align-items: center; gap: 5px;">
+      <input type="radio" name="category" value="a" class="category-radio" checked>
+      All questions (${uniqueCount})
+    </label>
+    <label style="display: flex; align-items: center; gap: 5px;">
+      <input type="radio" name="category" value="0" class="category-radio">
+      All questions, weighted (${weightedCount})
+    </label>
     <div class="completion-buttons">
-      <button id="generateButton" class="completion-buttons" type="button" onclick="generateNewQuizzes()">Generate New Quiz</button>
-      <button id="exitButton" class="completion-buttons" type="button" onclick="handleEndSession()">Exit to Start</button>
+      <button id="generateButton" class="completion-buttons" type="button" onclick="generateNewQuizzes()">Generate</button>
+      <button id="exitButton" class="completion-buttons" type="button" onclick="handleEndSession()">Exit Session</button>
     </div>
   `;
       
@@ -1111,8 +1103,8 @@ function showCompletionScreen() {
 
 function getAttemptCategory(attempts) {
   if (attempts >= 4) return '4+';
-  if (attempts === 3) return '3';
-  if (attempts === 2) return '2';
+  if (attempts >=3) return '3';
+  if (attempts >= 2) return '2';
   return '1';
 }
 
