@@ -660,7 +660,8 @@ app.post('/generate-quiz', async (req, res) => {
   }
 
   try {
-    const baseName = `${sourceQuiz}_${suffix}-${sourceLength}`;
+    const baseName = `${sourceQuiz}_${suffix}-${filteredQuestions.length}`;
+    // console.log('[SERVER] Generating quiz:', baseName, 'with', filteredQuestions.length, 'questions');
     const newQuizName = `${getUniqueName(baseName, quizDir)}`;
     const newPath = path.join(quizDir, `${newQuizName}.json`);
 

@@ -218,13 +218,6 @@ async function show() {
     'review': 'review'
   };
 
-  E("stats").html = `
-    <span style="margin-right: 1vw">${source} (${modeDisplayNames[mode]})</span>
-    mastered: ${state.complete.length} ・ 
-    in-flight: ${state.working.length} ・ 
-    unseen: ${state.unseen.length}
-  `;
-
   let currentItem;
   const avoidIndex = state.lastIndex;
 
@@ -283,6 +276,13 @@ async function show() {
 
   shuffle(state.working);
   state.lastIndex = currentItem.index;
+
+  E("stats").html = `
+    <span style="margin-right: 1vw">${source} (${modeDisplayNames[mode]})</span>
+    mastered: ${state.complete.length} ・ 
+    in-flight: ${state.working.length} ・ 
+    unseen: ${state.unseen.length}
+  `;
 
   saveState(() => {
     const currentItem = cur();
