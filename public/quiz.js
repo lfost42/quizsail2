@@ -191,9 +191,15 @@ async function show() {
     return;
   }
   if (!state || !state.unseen || !state.working) {
-
     window.location = window.location.origin;
     return;
+  }
+  if (!document.getElementById('complete-quiz-btn')) {
+    const btn = document.createElement('button');
+    btn.id = 'complete-quiz-btn';
+    btn.textContent = 'Complete Quiz';
+    btn.onclick = showCompletionScreen;
+    document.body.appendChild(btn);
   }
 
 
@@ -286,7 +292,13 @@ async function show() {
 
   saveState(() => {
     const currentItem = cur();
-    if (!currentItem) return;
+    
+    // Add validation checks for currentItem and its properties
+    if (!currentItem || !currentItem.item || !currentItem.item.q) {
+      console.error('Invalid currentItem in show():', currentItem);
+      showCompletionScreen();
+      return;
+    }
 
         inputs = {};
         labels = {};
@@ -1049,6 +1061,9 @@ function showCompletionScreen() {
   E("homeButton").visible = false
   const allQuestions = state.complete;
   let incorrectCounts = { 0: allQuestions.length, 1: 0, 2: 0, 3: 0, '4+': 0 };
+
+  const btn = document.getElementById('complete-quiz-btn');
+  if (btn) btn.remove();
 
   allQuestions.forEach(q => {
     const count = q.incorrectTries;

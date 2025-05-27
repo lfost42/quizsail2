@@ -168,11 +168,25 @@
           align-items: center;
           justify-content: center;
         }
-
         .delete-btn:hover {
           transition: all 0.2s ease-in-out;
           border : 0.06em solid var(--danger-color);
         }
+        #complete-quiz-btn {
+          position: fixed;
+          left: 1em;
+          bottom: 2.7em;
+          z-index: 1000;
+          background: var(--secondary-color);
+          padding: 0.25em 0.5em;
+          border: none;
+          border-radius: 1em;
+          cursor: pointer;
+        }
+
+        /* ================ *
+         *  Modal Formatting   *
+         * ================ */
         #editSelectionContent li[data-target-type="choice"]::before {
           content: "☐ ";
           left: 2em;
@@ -231,7 +245,6 @@
         .incorrect-answer {
           color: #666666;
         }
-
 
         /* ================ *
          *  Layout Elements  *
