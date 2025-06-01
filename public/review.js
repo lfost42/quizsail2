@@ -361,18 +361,21 @@ function getCorrectAnswerIndices(question) {
 }
 
 function buildResultHTML(question, answerIndices) {
+  const answerHtml = answerIndices.length > 0 
+    ? `✅ ${answerIndices.map(i => 
+        `<span class="correct-answer">${processTextWithCode(question.c[i])}</span>`
+      ).join(', ')}`
+    : '⚠️ No valid answers found';
+  
+  const explanationHtml = question.e 
+    ? `<br><br>${processTextWithCode(question.e)}`
+    : '<br><br>No explanation provided';
+  
   return `
-    <div class="correct"></div>
-      ${answerIndices.length > 0 
-        ? `<br>✅ ${answerIndices.map(i => 
-          `<span class="correct-answer"> ${question.c[i]}</span>`
-        ).join(', ')}`
-        : '⚠️ No valid answers found'
-      }
-      ${question.e 
-        ? `<br><br>${question.e.replace(/\n/g, '<br>')}</div>`
-        : '<br><br>No explanation provided'
-      }
+    <div class="correct">
+      <br>${answerHtml}
+      ${explanationHtml}
+    </div>
   `;
 }
 
@@ -410,6 +413,78 @@ async function deleteEndSession() {
   
   delete sessions[fullUrl];
   localStorage.setItem(SAVED_SESSIONS, JSON.stringify(sessions));
+}
+
+function processTextWithCode(text) {
+    if (!text) return text; // handle undefined or null
+    
+    // Split text into segments (code blocks and regular text)
+    const segments = text.split(/(<code>[\s\S]*?<\/code>)/g);
+    let result = '';
+    
+    segments.forEach(segment => {
+        if (segment.startsWith('<code>') && segment.endsWith('</code>')) {
+            // Process code block: escape HTML entities
+            const inner = segment.substring(6, segment.length - 7);
+            const escaped = inner.replace(/&/g, '&amp;')
+                                .replace(/</g, '&lt;')
+                                .replace(/>/g, '&gt;');
+            result += `<code>${escaped}</code>`;
+        } else {
+            // Process regular text: preserve newlines
+            result += segment;
+        }
+    });
+    
+    return result;
+}
+
+function escapeInsideCodeBlocks(text) {
+    if (!text) return text; // handle undefined or null
+    return text.replace(/<code>[\s\S]*?<\/code>/g, function(match) {
+        let inner = match.substring(6, match.length - 7);
+        inner = inner.replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+        return '<code>' + inner + '</code>';
+    });
+}
+
+function processQuestionText(text) {
+    if (!text) return text;
+    // Split by code blocks (with capturing group to keep them)
+    let segments = text.split(/(<code>[\s\S]*?<\/code>)/g);
+    let processed = '';
+
+    for (let segment of segments) {
+        if (segment.startsWith('<code>') && segment.endsWith('</code>')) {
+            processed += segment;
+        } else {
+            processed += segment.replace(/\n/g, '<br>');
+        }
+    }
+    return escapeInsideCodeBlocks(processed);
+}
+
+function updateQuestionText(question) {
+  const questionEl = document.getElementById('question');
+  questionEl.innerHTML = processTextWithCode(question.q);
+  questionEl.appendChild(createResultsDiv('question'));
+}
+
+function createChoiceElements(question) {
+  const choicesForm = document.getElementById('choice_form');
+  clearElement(choicesForm);
+  
+  question.c.forEach((choiceText, index) => {
+    const div = document.createElement('div');
+    div.className = 'choice-item';
+    div.innerHTML = `
+      <span class="choice-letter">${choiceLetters[index]}:</span>
+      <div class="choice-text">${processTextWithCode(choiceText)}</div>
+    `;
+    choicesForm.appendChild(div);
+  });
 }
 
 // Navigation controls

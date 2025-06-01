@@ -303,7 +303,7 @@ async function show() {
         inputs = {};
         labels = {};
         
-        E("question").html = `${currentItem.item.q.replace(/\n/g, '<br>')}`;
+        E("question").html = processTextWithCode(currentItem.item.q);
         E("choice_form").html = "";
         E("result").html = "";
 
@@ -322,7 +322,7 @@ async function show() {
                     .attr("id", `radio_${index}`)
                     .attr("value", val)
                     .attr("name", `answer_${index}`);
-
+                
         // Add change listener to handle choice limits
         input.e.addEventListener('change', () => {
           const checkboxes = document.querySelectorAll(`input[type="checkbox"][name^="answer_"]`);
@@ -344,7 +344,7 @@ async function show() {
                 inputs[val] = input;
                 const label = New("LABEL")
                     .attr("for", `radio_${index}`);
-                    label.html = `${choiceLetter}: ${val.replace(/\n/g, '<br>')}`;
+                    label.html = `${choiceLetter}: ${processTextWithCode(val)}`;
                 labels[val] = label;
                 div.append(input);
                 div.append(label);
@@ -369,7 +369,7 @@ async function show() {
                         .attr("autocomplete", "off")
                         .attr("name", "answer");
                     const label = New("DIV");
-                    label.text = currentItem.item.c;
+                    label.text = processTextWithCode(val);
                     div.append(label);
                     div.append(inputs);
                 }                
@@ -580,7 +580,7 @@ async function submitAnswer() {
   let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers.join(', ')}`;
   // Add explanation if available
   if (item.e) {
-      resultMessage += `<br><br>${item.e.replace(/\n/g, '<br>')}`;
+      resultMessage += `<br><br>${processTextWithCode(item.e)}`;
   } else {
       resultMessage += `<br><br>Explanation not provided.`;
   }
@@ -1115,6 +1115,32 @@ function showCompletionScreen() {
   E("result").html = "";
   E("submitbtn").attr = false;
 }
+
+// Helper function for escaping code blocks
+function processTextWithCode(text) {
+    if (!text) return text; // handle undefined or null
+
+    // Split text into segments (code blocks and regular text)
+    const segments = text.split(/(<code>[\s\S]*?<\/code>)/g);
+    let result = '';
+
+    segments.forEach(segment => {
+        if (segment.startsWith('<code>') && segment.endsWith('</code>')) {
+            // Process code block: escape HTML entities
+            const inner = segment.substring(6, segment.length - 7);
+            const escaped = inner.replace(/&/g, '&amp;')
+                                  .replace(/</g, '&lt;')
+                                  .replace(/>/g, '&gt;');
+            result += `<code>${escaped}</code>`;
+        } else {
+            // Process regular text: preserve newlines
+            result += segment;
+        }
+    });
+
+    return result;
+}
+
 
 function getAttemptCategory(attempts) {
   if (attempts >= 4) return '4+';

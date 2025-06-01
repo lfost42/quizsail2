@@ -79,13 +79,6 @@
             color: var(--primary-color);
             border-radius: 0.25em;
         }
-        #result {
-          padding: 3vh;
-          padding-bottom: 3em;
-        }
-        #choice_form input {
-            margin: 0.5em;
-        }
         .category-list input {
             margin-right: 0.625em;
         }
@@ -373,16 +366,22 @@
             transition: filter 0.2s ease;
             gap: 2vw;
         }
-
         code, #stats {
             font-family: 'Roboto Mono', monospace;
             font-size: 0.95em;
             overflow-x: auto;
         }
+        code {
+          white-space: pre;
+          display: block;
+          border-radius: 0.25em;
+        }
+        #question, .choice-text, #result {
+          white-space: pre-line;
+        }
         #stats span{
           color: var(--primary-color);
         }
-
         #editSelectionModal .close-modal,
         .modal-content .close {
           position: absolute;
