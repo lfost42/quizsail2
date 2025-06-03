@@ -1080,40 +1080,100 @@ function showCompletionScreen() {
 
   const uniqueCount = allQuestions.filter(q => q.incorrectTries > 0).length;
   const weightedCount = allQuestions.reduce((sum, q) => sum + q.incorrectTries, 0);
+  
+  // Check if there are any incorrect answers
+  const hasIncorrectAnswers = uniqueCount > 0;
+  // Check if all questions were answered correctly on first try
+  const allCorrectFirstTry = allQuestions.every(q => q.incorrectTries === 0);
 
   E("question").html = `<h1>🎉 Quiz Complete 🎉<h1>`;
+  let formHtml = ``;
   
-  E("choice_form").html = `
-  <p>Generate new quizzes based on incorrect answers or end session.</p>
-  <div class="category-list" id="categoryList">
-    </label>
-      ${Object.entries(incorrectCounts)
-        .filter(([label, count]) => label !== '0' && count > 0)
-        .map(([label, count]) => `
-          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;" class="category-item">
-            <label style="flex-grow: 1;">
-              <input type="radio" name="category" value="${label}" class="category-radio">
-              ${label === '1' ? 'First attempt' : `${label}+`} (${count})
-            </label>
-          </div>
-        `).join('')}
-    </div>
-    <label style="display: flex; align-items: center; gap: 5px;">
-      <input type="radio" name="category" value="a" class="category-radio" checked>
-      All questions (${uniqueCount})
-    </label>
-    <label style="display: flex; align-items: center; gap: 5px;">
-      <input type="radio" name="category" value="0" class="category-radio">
-      All questions, weighted (${weightedCount})
-    </label>
+  if (hasIncorrectAnswers) {
+    formHtml += `
+      <p>Generate new quizzes based on incorrect answers or end session.</p>
+      <div class="category-list" id="categoryList">
+        ${Object.entries(incorrectCounts)
+          .filter(([label, count]) => label !== '0' && count > 0)
+          .map(([label, count]) => `
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;" class="category-item">
+              <label style="flex-grow: 1;">
+                <input type="radio" name="category" value="${label}" class="category-radio">
+                ${label === '1' ? 'First attempt' : `${label}+`} (${count})
+              </label>
+            </div>
+          `).join('')}
+      </div>
+      <label style="display: flex; align-items: center; gap: 5px;">
+        <input type="radio" name="category" value="a" class="category-radio" checked>
+        All questions (${uniqueCount})
+      </label>
+      <label style="display: flex; align-items: center; gap: 5px;">
+        <input type="radio" name="category" value="0" class="category-radio">
+        All questions, weighted (${weightedCount})
+      </label>
+    `;
+  } else {
+    formHtml += `<p>🎉 Congratulations! You answered all questions correctly on the first try!</p>`;
+  }
+  
+  formHtml += `
     <div class="completion-buttons">
-      <button id="generateButton" class="completion-buttons" type="button" onclick="generateNewQuizzes()">Generate</button>
+      ${hasIncorrectAnswers ? 
+        `<button id="generateButton" class="completion-buttons" type="button" onclick="generateNewQuizzes()">Generate</button>` : 
+        ''}
+      ${allCorrectFirstTry ? 
+        `<button id="retireButton" class="completion-buttons" type="button" onclick="handleRetireQuiz()">
+          Retire Quiz</button>` : 
+        ''}
       <button id="exitButton" class="completion-buttons" type="button" onclick="handleEndSession()">Exit Session</button>
     </div>
   `;
-      
+  
+  E("choice_form").html = formHtml;
   E("result").html = "";
   E("submitbtn").attr = false;
+}
+
+function handleRetireQuiz() {
+  const quizName = getParam('src');
+  if (!quizName) {
+    alert('Quiz name not found');
+    return;
+  }
+
+  // Add loading state
+  const retireBtn = document.getElementById('retireButton');
+  const originalText = retireBtn.textContent;
+  retireBtn.disabled = true;
+  retireBtn.textContent = "Retiring...";
+
+  // Call server to retire quiz
+  fetch('/retire-quiz', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ quizName })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to retire quiz');
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      handleEndSession();
+    } else {
+      throw new Error(data.error || 'Unknown error');
+    }
+  })
+  .catch(error => {
+    console.error('Retire error:', error);
+    alert(`Error: ${error.message}`);
+    // Reset button state
+    retireBtn.disabled = false;
+    retireBtn.textContent = originalText;
+  });
 }
 
 // Helper function for escaping code blocks
@@ -1137,7 +1197,6 @@ function processTextWithCode(text) {
             result += segment;
         }
     });
-
     return result;
 }
 
@@ -1155,4 +1214,5 @@ window.handleEndSession = handleEndSession;
 window.generateNewQuizzes = generateNewQuizzes;
 window.getAttemptCategory = getAttemptCategory;
 window.showCompletionScreen = showCompletionScreen;
+window.handleRetireQuiz = handleRetireQuiz;
 })(); // End IIFE

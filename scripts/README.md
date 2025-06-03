@@ -55,24 +55,6 @@ I separated these into 2 steps to make it easier to troublehoot if the _q and _a
 * Parses the correct answer/s
 * Output file: file.json
 
-### manual_quiz.py
-
-* Input file: txt that ends with _rawm
-* Use this script if the answers and explanations follow the question/choices. 
-* Each question must begin with a number followed by a period and a space. 
-* Each choice must begin with a capital letter followed by a period and a space. 
-* All other lines will be assumed to be part of an explanation. 
-* Explanations are not required. While the array item can be added after the fact, the text will need to be pasted manually. 
-* Output file: file.json
-
-### explanation_adder.py
-
-I considered that I might need this for older question sets just in case. If the "e" is missing or otherwise blank, the app will display: Explanation not provided
-
-* input file: will run on all .json files in the directQuory
-* it adds an "e" item to every question set. 
-* output file: will add _u to the name of your json file. 
-
 ### Prerequisites
 
 * python3

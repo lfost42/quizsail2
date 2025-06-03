@@ -2,12 +2,13 @@
 node_modules/
 data/
 
-public/logs/
-public/quizzes/
-scripts/quiz_generators/*
+public/logs/*.json
 
-scripts/quiz_generators/OutputFiles/*
+public/quizzes/net_*.json
+public/quizzes/sf_*.json
+
+scripts/quiz_generators/OutputFiles/*.txt
+scripts/quiz_generators/OutputFiles/*.json
 scripts/quiz_generators/*_raw*.txt
-scripts/quiz_generators/cram*
 scripts/quiz_generators/*_2.py
 scripts/quiz_generators/*_2.txt
