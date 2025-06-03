@@ -9,6 +9,7 @@ def parse_questions_to_json(input_file, output_json):
     state = 'start'
     current_question_lines = []
     current_choices = []
+    current_choice = None
     current_answer_letters = None
     current_question_number = None
     current_explanation_lines = []
@@ -46,20 +47,29 @@ def parse_questions_to_json(input_file, output_json):
                     current_question_lines.append(raw_line)
         
         elif state == 'choices':
-            if stripped_line.startswith('Answer:'):
+            if re.match(r'^[A-Z]\.\s', stripped_line):
+                if current_choice is not None: 
+                    current_choices.append(current_choice)
+                # Start a new choice
+                current_choice = re.sub(r'^[A-Z]\.\s*', '', raw_line).strip()
+            elif stripped_line.startswith('Answer:'):
+                if current_choice is not None:
+                    current_choices.append(current_choice)
+                    current_choice = None
                 answer_str = stripped_line[len('Answer:'):].strip()
                 current_answer_letters = re.findall(r'[A-Z]', answer_str)
                 state = 'after_answer'
             else:
-                if re.match(r'^[A-Z]\.\s', stripped_line):
-                    current_choices.append(raw_line)  # Preserve original formatting
+                # Continuation of current choice
+                if current_choice is not None:
+                    current_choice += ' ' + raw_line.strip()
         
         elif state == 'after_answer':
             if re.match(r'^Explanation:', stripped_line, re.IGNORECASE):
                 # Capture explanation with original formatting
                 exp_part = re.sub(r'^Explanation:\s*', '', raw_line, flags=re.IGNORECASE)
                 if exp_part:
-                    current_explanation_lines.append(exp_part)
+                    current_explanation_lines.append(exp_part.strip())
                 state = 'explanation'
             else:
                 state = 'done'
@@ -75,11 +85,14 @@ def parse_questions_to_json(input_file, output_json):
                 state = 'done'
                 index -= 1  # Reprocess this line
             else:
-                current_explanation_lines.append(raw_line)  # Preserve original line
+                current_explanation_lines.append(raw_line.strip())  # Preserve original line
         
         if state == 'done':
-            question_text = '\n'.join(current_question_lines)  # Preserve newlines
-            choices_clean = [re.sub(r'^[A-Z]\.\s', '', c) for c in current_choices]
+            # Join question lines with spaces
+            question_text = ' '.join(current_question_lines).strip()
+            
+            # Choices are already stored in current_choices
+            choices_clean = current_choices
             
             answers_clean = []
             if current_answer_letters:
@@ -94,8 +107,8 @@ def parse_questions_to_json(input_file, output_json):
                 "a": answers_clean
             }
             if current_explanation_lines:
-                # Join explanation lines with actual newlines
-                q_dict["e"] = '\n'.join(current_explanation_lines)
+                # Join explanation lines with spaces
+                q_dict["e"] = ' '.join(current_explanation_lines).strip()
             
             questions_list.append(q_dict)
             
@@ -103,6 +116,7 @@ def parse_questions_to_json(input_file, output_json):
             state = 'start'
             current_question_lines = []
             current_choices = []
+            current_choice = None
             current_answer_letters = None
             current_question_number = None
             current_explanation_lines = []
@@ -111,8 +125,8 @@ def parse_questions_to_json(input_file, output_json):
     
     # Handle last question if file ends without trailing newline
     if state != 'start':
-        question_text = '\n'.join(current_question_lines)
-        choices_clean = [re.sub(r'^[A-Z]\.\s', '', c) for c in current_choices]
+        question_text = ' '.join(current_question_lines).strip()
+        choices_clean = current_choices
         
         answers_clean = []
         if current_answer_letters:
@@ -127,7 +141,7 @@ def parse_questions_to_json(input_file, output_json):
             "a": answers_clean
         }
         if current_explanation_lines:
-            q_dict["e"] = '\n'.join(current_explanation_lines)
+            q_dict["e"] = ' '.join(current_explanation_lines).strip()
         
         questions_list.append(q_dict)
     
