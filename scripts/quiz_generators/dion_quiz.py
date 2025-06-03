@@ -24,17 +24,28 @@ processed = []
 current_idx = 0
 correct_ans = []
 skip = 0
+in_question = False  # Track if we're processing a question
 
 while current_idx < len(raw_lines):
     line = raw_lines[current_idx]
     stripped = line.strip()
     
+    # Handle Domain section (skip Domain line and next line)
     if stripped == 'Domain':
-        skip = 3
+        skip = 2  # Skip Domain line and the next line (domain description)
         current_idx += 1
         continue
     if skip > 0:
         skip -= 1
+        current_idx += 1
+        continue
+        
+    # Handle question start
+    if re.match(r'Question \d+', stripped):
+        in_question = True  # Mark next line as question content
+        # Start a new question section
+        if processed and not processed[-1].startswith("==="):
+            processed.append("\n")  # Add separator between questions
         current_idx += 1
         continue
         
@@ -66,8 +77,10 @@ while current_idx < len(raw_lines):
             current_idx += 2
         else:
             current_idx += 1
+        in_question = False  # Reset question state
         continue
     
+    # Process content based on question state
     if stripped:
         processed.append(line)
     current_idx += 1
