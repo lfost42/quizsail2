@@ -6,6 +6,7 @@ public/logs/*.json
 
 public/quizzes/net_*.json
 public/quizzes/sf_*.json
+public/quizzes/retired/*.json
 
 scripts/quiz_generators/OutputFiles/*.txt
 scripts/quiz_generators/OutputFiles/*.json
