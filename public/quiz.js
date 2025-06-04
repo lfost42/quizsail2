@@ -454,18 +454,36 @@ async function submitAnswer() {
         inputs.e.style.backgroundColor = '#246464';
     }
   } else {
-    // Highlight correct answers in green
-    answers.forEach(correctAnswer => {
-        if (labels[correctAnswer]) {
-            labels[correctAnswer].e.classList.add('correct-answer');
-        }
+    // Multiple-choice handling
+    const selected = [];
+    for (const [choice, input] of Object.entries(inputs)) {
+      if (input.checked) {
+        selected.push(choice);
+      }
+    }
+
+    // NEW VALIDATION LOGIC: Must select all correct answers
+    correct = selected.length === answers.length && 
+              answers.every(a => selected.includes(a));
+    
+    // Reset labels
+    Object.values(labels).forEach(label => {
+      label.e.className = '';
+      label.e.style.color = '';
     });
 
-    // Gray out all incorrect answers (both selected and unselected)
+    // Highlight correct answers in green
+    answers.forEach(correctAnswer => {
+      if (labels[correctAnswer]) {
+        labels[correctAnswer].e.classList.add('correct-answer');
+      }
+    });
+
+    // Mark all incorrect answers as gray
     Object.keys(labels).forEach(choice => {
-        if (!answers.includes(choice)) {
-            labels[choice].e.style.color = '#666666';
-        }
+      if (!answers.includes(choice)) {
+        labels[choice].e.style.color = '#666666';
+      }
     });
 
     // Check if any answer is selected
@@ -487,6 +505,7 @@ async function submitAnswer() {
             }
         }
     }
+
   }
   
   if (correct) {
