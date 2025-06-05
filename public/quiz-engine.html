@@ -83,14 +83,39 @@
         .category-list input {
             margin-right: 0.625em;
         }
-        .review-buttons {
-            padding-bottom: 3vh;
-            margin-bottom: 2vh;
-            margin-top: 2vh;
-            display: flex;
-            gap: 4vw;
+        .nav-button.circle-button .nav-arrow {
+          font-size: 1.8em; /* Increased from 1.2em */
+          line-height: 1;
+          display: block;
+          transform: translateY(-0.05em); /* Fine-tune vertical alignment */
         }
-        #backButton:disabled {
+        .nav-button.circle-button {
+          border-radius: 50%;
+          width: 2.5em;
+          height: 2.5em;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          font-size: 1.2em;
+        }
+        .review-buttons {
+          display: flex;
+          gap: 1em;
+          justify-content: left;
+          align-items: center;
+          padding: 1em 0;
+        }
+        input[type="button"], button.nav-button, #modalBack {
+          background-color: var(--secondary-color);
+          color: var(--primary-color); 
+          cursor: pointer;
+          padding: 0.8em 1.5em;
+          border: none;
+          border-radius: 0.25em;
+          transition: all 0.2s ease-in-out;
+        }
+        #backButton:disabled, #nextButton:disabled {
           background-color: #cccccc;
           cursor: not-allowed;
         }
