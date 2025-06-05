@@ -892,10 +892,12 @@ async function generateNewQuizzes() {
     suffix = category[0].replace('+', '');
   } 
   else if (category[0] === 'a') {
+  const uniqueIndices = new Set();
   state.complete.forEach(q => {
     if (q.incorrectTries === 0) return;
     const questionCategory = getAttemptCategory(q.incorrectTries);
-
+    if (q.incorrectTries === 0 || uniqueIndices.has(q.index)) return;
+    uniqueIndices.add(q.index);
     flaggedQuestions.push({
       index: q.index,
       incorrectTries: q.incorrectTries,
@@ -905,11 +907,9 @@ async function generateNewQuizzes() {
 
   // Add validation filter
   flaggedQuestions = flaggedQuestions.filter(q => q.index < content.length);
-  
   if (flaggedQuestions.length === 0) {
     throw new Error('No valid questions after index validation');
   }
-  
     suffix = 'a';
   } 
   else {
