@@ -733,7 +733,7 @@ document.addEventListener("keyup", async (e) => {
       if (el) {
           el.checked = !el.checked;
       }
-  } else if (e.key === "Enter") {
+  } else if (e.key === "Enter" || e.key === " ") {
       const el = document.getElementById("submitbtn");
       if (el) {
           el.click();
