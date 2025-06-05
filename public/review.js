@@ -57,6 +57,7 @@ function initializeQuizInterface() {
     resetQuizState();
     displayQuestion(state.questions[0]);
     setupNavigationControls();
+    setupKeyboardNavigation();
     initializeEditHandlers();
 }
 
@@ -553,6 +554,38 @@ function handleNextQuestion() {
   } else {
     endReviewSession();
   }
+}
+
+// Add this function to set up keyboard navigation
+function setupKeyboardNavigation() {
+    document.addEventListener('keydown', (event) => {
+        // Ignore if any modal is open
+        const editSelectionModal = document.getElementById('editSelectionModal');
+        const editModal = document.getElementById('EditModal');
+        if ((editSelectionModal && editSelectionModal.style.display === 'block') || 
+            (editModal && editModal.style.display === 'block')) {
+            return;
+        }
+        
+        // Ignore if focused on input/textarea
+        const activeElement = document.activeElement;
+        if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+            return;
+        }
+
+        switch (event.key) {
+            case 'ArrowLeft':
+                if (!document.getElementById('backButton').disabled) {
+                    handlePreviousQuestion();
+                }
+                break;
+            case 'ArrowRight':
+                if (!document.getElementById('nextButton').disabled) {
+                    handleNextQuestion();
+                }
+                break;
+        }
+    });
 }
 
 // Utility functions
