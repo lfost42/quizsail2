@@ -1,9 +1,22 @@
+# Handles question sets that are multi-line and preserves code blocks.
 import re
 import json
 
 def parse_questions_to_json(input_file, output_json):
+    # Read entire file content
     with open(input_file, 'r') as f:
-        lines = f.readlines()
+        content = f.read()
+    
+    # Preprocess code blocks: replace newlines with literal \n
+    code_block_pattern = re.compile(r'<code>(.*?)</code>', re.DOTALL)
+    def replace_code_block(match):
+        inner_content = match.group(1)
+        # Replace newlines with literal \n (two characters)
+        inner_content = inner_content.replace('\n', r'\n')
+        return f'<code>{inner_content}</code>'
+    
+    new_content = code_block_pattern.sub(replace_code_block, content)
+    lines = new_content.splitlines()  # Split into lines for processing
     
     questions_list = []
     state = 'start'
@@ -17,82 +30,92 @@ def parse_questions_to_json(input_file, output_json):
     index = 0
     while index < len(lines):
         line = lines[index]
-        stripped_line = line.strip()
-        raw_line = line.rstrip('\n')  # Preserve original formatting
+        stripped_line = line.strip()  # For pattern matching
+        
+        # Skip "Hide Solution" lines
+        if re.fullmatch(r'Hide Solution\.?', stripped_line, re.IGNORECASE):
+            index += 1
+            continue
         
         if state == 'start':
-            # Match both "Question X:" and "X. " patterns
-            match_question = re.match(r'^Question\s+(\d+):', stripped_line)
-            match_numbered = re.match(r'^(\d+)\.\s', stripped_line)
-            
+            match_question = re.match(r'^Question\s+#?(\d+):', stripped_line)
             if match_question:
                 state = 'question'
                 current_question_number = match_question.group(1)
-                rest = raw_line[len(match_question.group(0)):]
+                rest = line[len(match_question.group(0)):]
                 if rest:
                     current_question_lines.append(rest)
-            elif match_numbered:
-                state = 'question'
-                current_question_number = match_numbered.group(1)
-                rest = raw_line[len(match_numbered.group(0)):]
-                if rest:
-                    current_question_lines.append(rest)
+            else:
+                match_question_no_colon = re.match(r'^Question\s+#?(\d+)\b', stripped_line)
+                if match_question_no_colon:
+                    state = 'question'
+                    current_question_number = match_question_no_colon.group(1)
+                elif state == 'start':
+                    match_numbered = re.match(r'^(\d+)\.\s', stripped_line)
+                    if match_numbered:
+                        state = 'question'
+                        current_question_number = match_numbered.group(1)
+                        rest = line[len(match_numbered.group(0)):]
+                        if rest:
+                            current_question_lines.append(rest)
         
         elif state == 'question':
-            if re.match(r'^[A-Z]\.\s', stripped_line) or stripped_line.startswith('Answer:'):
+            if re.match(r'^[A-Z][\s]*[.:]', stripped_line) or \
+               re.match(r'^(Answer|Correct Answer):', stripped_line, re.IGNORECASE):
                 state = 'choices'
                 index -= 1  # Reprocess line in choices state
             else:
-                if raw_line:
-                    current_question_lines.append(raw_line)
+                if line:
+                    current_question_lines.append(line)
         
         elif state == 'choices':
-            if re.match(r'^[A-Z]\.\s', stripped_line):
-                if current_choice is not None: 
-                    current_choices.append(current_choice)
-                # Start a new choice
-                current_choice = re.sub(r'^[A-Z]\.\s*', '', raw_line).strip()
-            elif stripped_line.startswith('Answer:'):
+            if re.match(r'^(Answer|Correct Answer):', stripped_line, re.IGNORECASE):
                 if current_choice is not None:
                     current_choices.append(current_choice)
                     current_choice = None
-                answer_str = stripped_line[len('Answer:'):].strip()
+                answer_str = re.sub(r'^(Answer|Correct Answer):\s*', '', stripped_line, flags=re.IGNORECASE)
                 current_answer_letters = re.findall(r'[A-Z]', answer_str)
                 state = 'after_answer'
+            elif re.match(r'^[A-Z][\s]*[.:]', stripped_line):
+                if current_choice is not None: 
+                    current_choices.append(current_choice)
+                pattern = r'^\s*[A-Z][\s]*[.:][\s]*'
+                choice_text = re.sub(pattern, '', line, count=1).lstrip()
+                current_choice = choice_text
             else:
-                # Continuation of current choice
                 if current_choice is not None:
-                    current_choice += ' ' + raw_line.strip()
+                    current_choice += ' ' + line.strip()
         
         elif state == 'after_answer':
             if re.match(r'^Explanation:', stripped_line, re.IGNORECASE):
-                # Capture explanation with original formatting
-                exp_part = re.sub(r'^Explanation:\s*', '', raw_line, flags=re.IGNORECASE)
+                exp_part = re.sub(r'^Explanation:\s*', '', line, flags=re.IGNORECASE)
                 if exp_part:
-                    current_explanation_lines.append(exp_part.strip())
+                    current_explanation_lines.append(exp_part)
                 state = 'explanation'
             else:
                 state = 'done'
                 index -= 1  # Reprocess current line
         
         elif state == 'explanation':
-            # Check for next question or blank line
             next_question = (
                 re.match(r'^Question\s+\d+:', stripped_line) or 
                 re.match(r'^\d+\.\s', stripped_line)
             )
             if not stripped_line or next_question:
                 state = 'done'
-                index -= 1  # Reprocess this line
+                index -= 1
             else:
-                current_explanation_lines.append(raw_line.strip())  # Preserve original line
+                current_explanation_lines.append(line)  # Preserve spaces
         
         if state == 'done':
             # Join question lines with spaces
             question_text = ' '.join(current_question_lines).strip()
             
-            # Choices are already stored in current_choices
-            choices_clean = current_choices
+            # Process choices
+            choices_clean = []
+            for choice in current_choices:
+                clean_choice = choice.replace('<code>', '').replace('</code>', '')
+                choices_clean.append(clean_choice)
             
             answers_clean = []
             if current_answer_letters:
@@ -107,8 +130,10 @@ def parse_questions_to_json(input_file, output_json):
                 "a": answers_clean
             }
             if current_explanation_lines:
-                # Join explanation lines with spaces
-                q_dict["e"] = ' '.join(current_explanation_lines).strip()
+                # Join explanation lines with spaces and remove code tags
+                explanation_text = ' '.join(current_explanation_lines).strip()
+                explanation_text = explanation_text.replace('<code>', '').replace('</code>', '')
+                q_dict["e"] = explanation_text
             
             questions_list.append(q_dict)
             
