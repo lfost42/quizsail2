@@ -501,11 +501,11 @@ function createNavigationButtons() {
   buttonContainer.className = 'review-buttons';
   buttonContainer.innerHTML = `
     <button id="backButton" class="nav-button circle-button" aria-label="Previous question">
-      <span class="nav-arrow">‹</span>
+      <span class="nav-arrow">ᐸ</span>
     </button>
     <button id="editButton" class="nav-button">Edit</button>
     <button id="nextButton" class="nav-button circle-button" aria-label="Next question">
-      <span class="nav-arrow">›</span>
+      <span class="nav-arrow">ᐳ</span>
     </button>
   `;
   document.getElementById('choices').appendChild(buttonContainer);
