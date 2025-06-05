@@ -292,6 +292,7 @@ function displayQuestion(question) {
   updateQuestionText(question);
   createChoiceElements(question);
   displayAnswerResults(question);
+  updateNavigationButtons();
 }
 
 function updateQuestionText(question) {
@@ -492,6 +493,43 @@ function setupNavigationControls() {
   createNextButton();
   document.getElementById('editButton').addEventListener('click', openEditSelectionModal);
   document.getElementById('nextButton').addEventListener('click', handleNextQuestion);
+}
+
+function createNavigationButtons() {
+  const buttonContainer = document.createElement('div');
+  buttonContainer.className = 'review-buttons';
+  buttonContainer.innerHTML = `
+    <input type="button" id="backButton" value="Back">
+    <input type="button" id="editButton" value="Edit">
+    <input type="button" id="nextButton" value="Next">
+  `;
+  document.getElementById('choices').appendChild(buttonContainer);
+}
+
+function setupNavigationControls() {
+  createNavigationButtons();
+  document.getElementById('editButton').addEventListener('click', openEditSelectionModal);
+  document.getElementById('nextButton').addEventListener('click', handleNextQuestion);
+  document.getElementById('backButton').addEventListener('click', handlePreviousQuestion);
+  updateNavigationButtons(); // Initialize button states
+}
+
+function handlePreviousQuestion() {
+  if (state.currentQuestionIndex > 0) {
+    state.currentQuestionIndex--;
+    displayQuestion(state.questions[state.currentQuestionIndex]);
+    updateNavigationButtons();
+  }
+}
+
+function updateNavigationButtons() {
+  const backButton = document.getElementById('backButton');
+  const nextButton = document.getElementById('nextButton');
+  
+  if (backButton && nextButton) {
+    backButton.disabled = state.currentQuestionIndex === 0;
+    nextButton.disabled = state.currentQuestionIndex === state.questions.length - 1;
+  }
 }
 
 function createNextButton() {
