@@ -29,7 +29,8 @@ function initializeReviewMode() {
         state.questions = Array.isArray(quizData) ? quizData : quizData.questions;
         initializeQuizInterface();
         createEditSelectionModal();
-        createEditModal(); // Add this line to create the modal
+        createEditModal();
+        createAnswerEditorModal();
       })
       .catch(error => handleError(error));
   }
@@ -98,9 +99,9 @@ function openEditSelectionModal() {
   });
   // Add a choice
     html += '<li data-target-type="add-choice">☐ ➕ [ Add New Choice ]</li>';
-    // Answer with current values
-    html += `<li data-target-type="answer" class="truncate-item">✅ ${
-    currentQuestion.a}</li>`;
+
+  // Add Answer button
+  html += `<li data-target-type="answer">✅ Edit Answer</li>`;
 
   // Explanation with current text
   html += `<li data-target-type="explanation" class="truncate-item">📖 ${currentQuestion.e}</li></ul>`;
@@ -229,6 +230,10 @@ function handleEditSelection(targetType, targetIndex) {
     addNewChoice(currentQuestion);
     return;
   }
+  if (targetType === 'answer') {
+    openAnswerEditorModal();
+    return;
+  }
   switch(targetType) {
     case 'question': content = currentQuestion.q; break;
     case 'choice': content = currentQuestion.c[targetIndex]; break;
@@ -264,6 +269,110 @@ async function persistChanges() {
   }
 }
 
+function createAnswerEditorModal() {
+  const modal = document.createElement('div');
+  modal.id = 'answerEditorModal';
+  modal.className = 'modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <div class="answer-section">
+        <h4>Correct Answers</h4>
+        <div id="selectedAnswers" class="answer-list"></div>
+      </div>
+      <div class="answer-section">
+        <h4>Incorrect Answers</h4>
+        <div id="unselectedAnswers" class="answer-list"></div>
+      </div>
+      <div class="modal-buttons">
+        <button id="answerEditorBack">Back</button>
+        <button id="answerEditorSubmit">Submit</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  modal.querySelector('.close-modal').addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+  
+  modal.querySelector('#answerEditorBack').addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+}
+
+function openAnswerEditorModal() {
+  const modal = document.getElementById('answerEditorModal');
+  if (!modal) return;
+  
+  const currentQuestion = state.questions[state.currentQuestionIndex];
+  const selectedContainer = modal.querySelector('#selectedAnswers');
+  const unselectedContainer = modal.querySelector('#unselectedAnswers');
+  
+  selectedContainer.innerHTML = '';
+  unselectedContainer.innerHTML = '';
+  
+  // Create choice elements for both lists
+  currentQuestion.c.forEach((choiceText, index) => {
+    const isSelected = currentQuestion.a.includes(choiceText);
+    const container = isSelected ? selectedContainer : unselectedContainer;
+    
+    const choiceEl = document.createElement('div');
+    choiceEl.className = 'answer-choice';
+    choiceEl.innerHTML = `
+      <div class="choice-text">${processTextWithCode(choiceText)}</div>
+    `;
+
+    choiceEl.addEventListener('click', () => {
+      const index = currentQuestion.c.indexOf(choiceText);
+      if (index === -1) return;
+      
+      if (isSelected) {
+        // Remove from selected answers
+        const answerIndex = currentQuestion.a.indexOf(choiceText);
+        if (answerIndex > -1) {
+          currentQuestion.a.splice(answerIndex, 1);
+        }
+      } else {
+        // Add to selected answers
+        currentQuestion.a.push(choiceText);
+      }
+      
+      // Reopen modal to refresh lists
+      openAnswerEditorModal();
+    });
+    
+    container.appendChild(choiceEl);
+  });
+  
+  // Save button handler
+  const saveButton = modal.querySelector('#answerEditorSubmit');
+  saveButton.onclick = () => {
+    modal.style.display = 'none';
+    refreshAnswerDisplay();
+    persistChanges().catch(error => {
+      console.error('Failed to save answer changes:', error);
+      alert('Failed to save answer changes');
+    });
+  };
+  
+  modal.style.display = 'block';
+}
+
+function displayAnswerResults(question) {
+  const resultEl = document.getElementById('result');
+  const answerIndices = getCorrectAnswerIndices(question);
+  
+  resultEl.innerHTML = buildResultHTML(question, answerIndices);
+  
+  // Add event listener to the new Edit Answer button
+  const editAnswerBtn = document.getElementById('editAnswerButton');
+  if (editAnswerBtn) {
+    editAnswerBtn.addEventListener('click', openAnswerEditorModal);
+  }
+  
+  highlightCorrectChoices(answerIndices);
+}
 
 function refreshExplanationDisplay() {
   const resultEl = document.getElementById('result');
@@ -323,6 +432,13 @@ function displayAnswerResults(question) {
   const answerIndices = getCorrectAnswerIndices(question);
   
   resultEl.innerHTML = buildResultHTML(question, answerIndices);
+  
+  // Add event listener to the new Edit Answer button
+  const editAnswerBtn = document.getElementById('editAnswerButton');
+  if (editAnswerBtn) {
+    editAnswerBtn.addEventListener('click', openAnswerEditorModal);
+  }
+  
   highlightCorrectChoices(answerIndices);
 }
 
