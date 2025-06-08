@@ -297,9 +297,9 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-/*------------*/ 
-/*  Get Logs  */
-/*-------------*/ 
+/*-------------------*/ 
+/*  Get Logger Logs  */
+/*-------------------*/ 
 app.get('/get-logs/:quizName', (req, res) => {
   const quizName = req.params.quizName;
   if (!quizName) {
@@ -327,6 +327,9 @@ app.get('/get-logs/:quizName', (req, res) => {
   }
 });
 
+/*----------------------*/ 
+/*  Delete Logger Logs  */
+/*----------------------*/ 
 app.post('/delete-log', (req, res) => {
   const { quizName, sessionId } = req.body;
   const logPath = path.join(logsDir, `${quizName}_logs.json`);
@@ -344,7 +347,9 @@ app.post('/delete-log', (req, res) => {
   }
 });
 
-// Log saving route
+/*--------------------*/ 
+/*  Save Logger Logs  */
+/*--------------------*/ 
 app.post('/save-log', (req, res) => {
   const { quizName, questionIndex, sessionId } = req.body;
   const logPath = path.join(logsDir, `${quizName}_logs.json`);
@@ -383,7 +388,9 @@ app.post('/save-log', (req, res) => {
     }
 });
 
-// debug logger
+/*-------------------*/ 
+/*  Save Debug Logs  */
+/*-------------------*/ 
 app.post('/save-debuglogs', (req, res) => {
   const { quizName, questionIndex, sessionId, correct, attemptNumber } = req.body;
   const logPath = path.join(logsDir, `${quizName}_debuglogs.json`);
@@ -444,6 +451,9 @@ app.post('/log-flagged', (req, res) => {
   }
 });
 
+/*---------------------*/ 
+/* Delete Flagged logs */
+/*---------------------*/ 
 app.post('/delete-flagged-log', (req, res) => {
   const { quizName, sessionId } = req.body;
   if (!quizName || !sessionId) return res.status(400).send('Missing parameters');
@@ -731,7 +741,6 @@ app.post('/prune-logs', async (req, res) => {
 /*-----------*/ 
 /*  Get logs */
 /*-----------*/ 
-// Get all log files
 app.get('/api/logs', (req, res) => {
   fs.readdir(logsDir, (err, files) => {
     if (err) return res.status(500).send('Server error');

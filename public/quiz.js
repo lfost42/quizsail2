@@ -830,13 +830,6 @@ async function handleEndSession() {
   try {
     const sessionId = getParam('session');
     const quizName = getParam('src');
-    
-    // Delete flagged log
-    await fetch('/delete-log', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ quizName, sessionId })
-    });
 
     // Delete flagged log file
     await fetch('/delete-flagged-log', {
