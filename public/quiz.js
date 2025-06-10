@@ -197,7 +197,7 @@ async function show() {
   if (!document.getElementById('complete-quiz-btn')) {
     const btn = document.createElement('button');
     btn.id = 'complete-quiz-btn';
-    btn.textContent = 'Complete Quiz';
+    btn.textContent = 'Quit Session';
     btn.onclick = showCompletionScreen;
     document.body.appendChild(btn);
   }
@@ -462,6 +462,14 @@ async function submitAnswer() {
       }
     }
 
+    // Add multi-select validation
+    if (numAnswers > 1) {
+      const selectedCount = Object.values(inputs).filter(input => input.checked).length;
+      if (selectedCount < numAnswers) {
+        alert(`Question requires ${numAnswers} answers!`);
+        return;
+      }
+    }
     // NEW VALIDATION LOGIC: Must select all correct answers
     correct = selected.length === answers.length && 
               answers.every(a => selected.includes(a));
@@ -1073,6 +1081,20 @@ function showCompletionScreen() {
   E("homeButton").visible = false
   const allQuestions = state.complete;
   let incorrectCounts = { 0: allQuestions.length, 1: 0, 2: 0, 3: 0, '4+': 0 };
+
+  const modeDisplayNames = {
+    'default': 'standard',
+    'fastmode': 'fast',
+    'lightning': 'lightning',
+    'review': 'review'
+  };
+  
+  E("stats").html = `
+    <span style="margin-right: 1vw">${source} (${modeDisplayNames[mode]})</span>
+    mastered: ${state.complete.length} ・ 
+    in-flight: 0 ・ 
+    unseen: 0
+  `;
 
   const btn = document.getElementById('complete-quiz-btn');
   if (btn) btn.remove();
