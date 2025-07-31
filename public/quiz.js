@@ -202,7 +202,12 @@ async function show() {
     document.body.appendChild(btn);
   }
 
-
+  // Remove red background at start of new question
+  const choiceForm = document.getElementById('choice_form');
+  if (choiceForm) {
+    choiceForm.classList.remove('incorrect-background');
+  }
+  
   // Check for quiz completion
   if (state.unseen.length === 0 && state.working.length === 0) {
   const allQuestions = state.complete;
@@ -440,6 +445,7 @@ async function submitAnswer() {
   const numChoices = currentItem.item.c.length;
   const numAnswers = answers.length;
   let correct = true;
+  const choiceForm = document.getElementById('choice_form');
 
   Object.values(labels).forEach(label => {
     label.e.className = '';
@@ -470,7 +476,7 @@ async function submitAnswer() {
         return;
       }
     }
-    // NEW VALIDATION LOGIC: Must select all correct answers
+    // Must select all correct answers
     correct = selected.length === answers.length && 
               answers.every(a => selected.includes(a));
     
@@ -508,8 +514,9 @@ async function submitAnswer() {
         // Mark incorrect selections
         for (const [choice, input] of Object.entries(inputs)) {
             if (input.checked && !answers.includes(choice)) {
-                labels[choice].e.style.color = '##666666';
+                labels[choice].e.style.color = '#666666';
                 correct = false;
+                choiceForm.classList.add('incorrect-background');
             }
         }
     }

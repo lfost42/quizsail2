@@ -38,7 +38,8 @@ def parse_questions_to_json(input_file, output_json):
             continue
         
         if state == 'start':
-            match_question = re.match(r'^Question\s+#?(\d+):', stripped_line)
+            # Existing pattern for Question with colon
+            match_question = re.match(r'^Question\s+#?\s*(\d+):', stripped_line)
             if match_question:
                 state = 'question'
                 current_question_number = match_question.group(1)
@@ -46,11 +47,13 @@ def parse_questions_to_json(input_file, output_json):
                 if rest:
                     current_question_lines.append(rest)
             else:
-                match_question_no_colon = re.match(r'^Question\s+#?(\d+)\b', stripped_line)
+                # Existing pattern for Question without colon
+                match_question_no_colon = re.match(r'^Question\s+#?\s*(\d+)\b', stripped_line)
                 if match_question_no_colon:
                     state = 'question'
                     current_question_number = match_question_no_colon.group(1)
                 elif state == 'start':
+                    # Existing pattern for numbered questions (e.g., "1. ")
                     match_numbered = re.match(r'^(\d+)\.\s', stripped_line)
                     if match_numbered:
                         state = 'question'
@@ -58,10 +61,34 @@ def parse_questions_to_json(input_file, output_json):
                         rest = line[len(match_numbered.group(0)):]
                         if rest:
                             current_question_lines.append(rest)
+                    else:
+                        # Existing pattern for NO. prefix
+                        match_no = re.match(r'^NO\.\s*(\d+)[.:\s]*', stripped_line)
+                        if match_no:
+                            state = 'question'
+                            current_question_number = match_no.group(1)
+                            rest = line[len(match_no.group(0)):]
+                            if rest:
+                                current_question_lines.append(rest)
+                        else:
+                            # Existing pattern for Question # prefix
+                            match_question_hash = re.match(r'^Question\s*#\s*(\d+)[.:\s]*', stripped_line)
+                            if match_question_hash:
+                                state = 'question'
+                                current_question_number = match_question_hash.group(1)
+                                rest = line[len(match_question_hash.group(0)):]
+                                if rest:
+                                    current_question_lines.append(rest)
+                            else:
+                                # NEW PATTERN: "Questions" followed by number (entire line)
+                                match_questions_plural = re.fullmatch(r'Questions\s+(\d+)[.:]?', stripped_line, re.IGNORECASE)
+                                if match_questions_plural:
+                                    state = 'question'
+                                    current_question_number = match_questions_plural.group(1)
         
         elif state == 'question':
-            if re.match(r'^[A-Z][\s]*[.:]', stripped_line) or \
-               re.match(r'^(Answer|Correct Answer):', stripped_line, re.IGNORECASE):
+            # Updated pattern to include space after Answer
+            if re.match(r'^[A-Z][\s]*[.:]', stripped_line) or re.match(r'^(Answer|Correct Answer)\s*[:.-]?\s*', stripped_line, re.IGNORECASE):
                 state = 'choices'
                 index -= 1  # Reprocess line in choices state
             else:
@@ -69,11 +96,13 @@ def parse_questions_to_json(input_file, output_json):
                     current_question_lines.append(line)
         
         elif state == 'choices':
-            if re.match(r'^(Answer|Correct Answer):', stripped_line, re.IGNORECASE):
+            # Updated pattern to handle Answer : A format
+            if re.match(r'^(Answer|Correct Answer)\s*[:.-]?\s*', stripped_line, re.IGNORECASE):
                 if current_choice is not None:
                     current_choices.append(current_choice)
                     current_choice = None
-                answer_str = re.sub(r'^(Answer|Correct Answer):\s*', '', stripped_line, flags=re.IGNORECASE)
+                # Updated pattern to handle space before/after colon
+                answer_str = re.sub(r'^(Answer|Correct Answer)\s*[:.-]?\s*', '', stripped_line, flags=re.IGNORECASE)
                 current_answer_letters = re.findall(r'[A-Z]', answer_str)
                 state = 'after_answer'
             elif re.match(r'^[A-Z][\s]*[.:]', stripped_line):
