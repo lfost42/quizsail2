@@ -900,40 +900,35 @@ async function generateNewQuizzes() {
     suffix = category[0].replace('+', '');
   } 
   else if (category[0] === 'a') {
-  const uniqueIndices = new Set();
-  state.complete.forEach(q => {
-    if (q.incorrectTries === 0) return;
-    const questionCategory = getAttemptCategory(q.incorrectTries);
-    if (q.incorrectTries === 0 || uniqueIndices.has(q.index)) return;
-    uniqueIndices.add(q.index);
-    flaggedQuestions.push({
-      index: q.index,
-      incorrectTries: q.incorrectTries,
-      sequence: 1
-    });
-  });
-
-  // Add validation filter
-  flaggedQuestions = flaggedQuestions.filter(q => q.index < content.length);
-  if (flaggedQuestions.length === 0) {
-    throw new Error('No valid questions after index validation');
+      // Only add each question ONCE
+      const uniqueIndices = new Set();
+      state.complete.forEach(q => {
+          if (q.incorrectTries === 0) return;
+          if (uniqueIndices.has(q.index)) return; // Prevent duplicates
+          
+          uniqueIndices.add(q.index);
+          flaggedQuestions.push({
+              index: q.index,
+              incorrectTries: q.incorrectTries,
+              sequence: 1  // Only one copy
+          });
+      });
+      suffix = 'a';
   }
-    suffix = 'a';
-  } 
   else {
-    // Specific attempt counts
-    const attemptCount = parseInt(category[0]);
-    state.complete.forEach(q => {
-      const questionCategory = getAttemptCategory(q.incorrectTries);
-      if (q.incorrectTries === attemptCount) {
-        flaggedQuestions.push({
-          index: q.index,
-          incorrectTries: q.incorrectTries,
-          sequence: 1
-        });
-      }
-    });
-    suffix = category[0].replace('+', '');
+      // Specific attempt counts - KEEP AS IS
+      const attemptCount = parseInt(category[0]);
+      state.complete.forEach(q => {
+          const questionCategory = getAttemptCategory(q.incorrectTries);
+          if (q.incorrectTries === attemptCount) {
+              flaggedQuestions.push({
+                  index: q.index,
+                  incorrectTries: q.incorrectTries,
+                  sequence: 1  // Only one copy
+              });
+          }
+      });
+      suffix = category[0].replace('+', '');
   }
 
   if (flaggedQuestions.length === 0) {

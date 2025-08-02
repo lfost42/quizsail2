@@ -1,0 +1,632 @@
+[
+  {
+    "q": "Northern Trail Outfitters has two products. Both products are added to a one year quote. The Adventure in a Box product has a list price of $10 with a discount of 50%. What is the expected Net Total of Premium Support?\n\nAdventure in a Box\nPricing Method = List\nSubscription Pricing = Fixed Price\nSubscription Term = 1 month\nInclude in Percent of Total = True\n\nPremium Support \nPricing Method = List\nSubscription Pricing = Percent of Total\nSubscription Term = 1 month\nPercent of Total (%) = 10%\nPercent of Total Base = List",
+    "c": [
+      "$60.00",
+      "$54.00",
+      "$12.00",
+      "$6.00"
+    ],
+    "a": [
+      "$12.00"
+    ],
+    "e": "List Price of Adventure in a Box (1 month) = $10\n$10 × 12 months = $120 (List Total)\nPremium Support Net Total = 10% of $120 = $12"
+  },
+  {
+    "q": "Universal Containers must be able to create Quotes that contain Quote Lines with different Start Dates. Order Products must be separated into Orders after generation based on the Start Dates. How can a CPQ Specialist meet this business requirement?",
+    "c": [
+      "Separate Quotes must be created for each unique Start Date.",
+      "Set both the Order by Quote Line Group and Ordered checkboxes to True.",
+      "Change Default Order Start Date in CPQ Package settings to Quote Start Date.",
+      "Set the Order By picklist on the Quote to SBQQ__StartDate__c, and the Ordered checkbox to True."
+    ],
+    "a": [
+      "Set the Order By picklist on the Quote to SBQQ__StartDate__c, and the Ordered checkbox to True."
+    ],
+    "e": "Set the Order By picklist on the Quote to SBQQ__StartDate__c, and the Ordered checkbox to True. This directly addresses the requirement. Setting Order By to SBQQ__StartDate__c will ensure that lines with different start dates are grouped into separate orders, and the Ordered checkbox enables the order generation functionality."
+  },
+  {
+    "q": "When can a user expect the Conference Pass Product to be added to the Quote during the quoting process?",
+    "c": [
+      "The user calculates a Quote.",
+      "The user selects a Configuration Attribute value for a Product.",
+      "The user saves the Quote.",
+      "The user selects a Product for the Quote."
+    ],
+    "a": [
+      "The user selects a Product for the Quote."
+    ],
+    "e": "Adding the product to the quote describes the user's initiating action that causes the Conference Pass Product to be added."
+  },
+  {
+    "q": "A user created two Quotes related to an Opportunity. The user has changed the Primary Quote by checking the Primary checkbox on the non-Primary Quote. After performing this action, the amount or the Opportunity fails to update and the Quote Lines fails to sync to the Opportunity. What is the root cause of this issue?",
+    "c": [
+      "The triggers have been disabled in the Installed Package Settings",
+      "Twin fields between the Quote Line and the Opportunity Product need to be set up.",
+      "The Primary field on the Quote is missing from the Quote object's Calculating Fields field set.",
+      "Primary Quote Keeps Opportunity Products is set to FALSE in the Installed Package Settings."
+    ],
+    "a": [
+      "Primary Quote Keeps Opportunity Products is set to FALSE in the Installed Package Settings."
+    ],
+    "e": "'Primary Quote Keeps Opportunity Products' directly controls how Opportunity Products are managed during a Primary Quote change (specifically, what happens to the old ones). It's a critical part of the Quote-to-Opportunity sync strategy. When set to false, the following occurs (for non-Primary Quotes):\n- The Opportunity Products that were generated from the old Primary Quote are deleted from the Opportunity.\n- New Opportunity Products are then created (or updated) from the lines of the newly designated Primary Quote.\n- Result: This behavior aims to keep the Opportunity Products clean and ensure they always reflect only the currently designated Primary Quote, by actively removing products from previous Primary Quotes."
+  },
+  {
+    "q": "Universal Containers (UC) sells a Product in four geographical regions that comes in 10 colors and four sizes. Instead of having a separate SKU for all combinations, UC needs the sales reps to specify location, color, and size during configuration. What CPQ functionality can UCs admin leverage to meet this requirement?",
+    "c": [
+      "Configuration Attributes.",
+      "Product Options.",
+      "Product Features.",
+      "Option constraints."
+    ],
+    "a": [
+      "Configuration Attributes."
+    ],
+    "e": "Configuration Attributes in Salesforce CPQ allow sales reps to enter or select values (e.g., location, color, size) during bundle configuration. These values: Do not require separate SKUs for every combination. Can be used to drive logic (e.g., show/hide options, apply price rules). Are ideal when the product doesn't change physically, but requires customization input from the rep."
+  },
+  {
+    "q": "The admin at Universal Containers has received feedback about the amount of horizontal scrolling necessary to access Clone and Delete actions on Quote Lines in the Quote Line Editor. What should the admin do to resolve this issue?",
+    "c": [
+      "Move the Clone and Delete actions into the Quote Line Editor drawers.",
+      "Change the Actions Column Placement in package settings to Left.",
+      "Update the Custom Action Location to left.",
+      "Set a lower value in the Display Order field in the Custom Action record."
+    ],
+    "a": [
+      "Change the Actions Column Placement in package settings to Left."
+    ],
+    "e": "By default, Action buttons (Clone, Delete, etc.) appear on the right side of the Quote Line Editor. This placement can force users to scroll horizontally if there are many columns. Salesforce CPQ has a package setting called Actions Column Placement that allows you to move these action buttons to the left side of the editor. Moving actions to the left reduces horizontal scrolling because users see the buttons immediately when they open the editor."
+  },
+  {
+    "q": "The admin at Universal Containers wants to add Maintenance and Support products to the parent bundle. Maintenance and Support products should display in separate sections during configuration, with the Support products displaying above the Maintenance products. How should the admin set up the Product to meet both requirements?",
+    "c": [
+      "Create two Production Options Maintenance and Support. Maintenance will always display first, due to alphabetical ordering.",
+      "Create two Product Features, Maintenance and Support. The Support feature should have a lower value in the Number field.",
+      "Create two Product Features, Maintenance and Support. Maintenance will always display first, due to alphabetical ordering.",
+      "Create two Product Options, Maintenance and Support. The Support option should have a lower value in the Number field."
+    ],
+    "a": [
+      "Create two Product Features, Maintenance and Support. The Support feature should have a lower value in the Number field."
+    ],
+    "e": "Product Features create separate sections in the bundle configuration (unlike Product Options, which are just line items within a feature). The display order of Product Features is controlled by the Number field (also known as Sort Order). Lower numbers display first. To have Support products display above Maintenance products, the Support feature should have a lower Number value than Maintenance. Alphabetical ordering does not control feature display order."
+  },
+  {
+    "q": "A user needs to amend a contract and change prices to reflect new discounts for existing active subscriptions and assets. How should the user achieve this?",
+    "c": [
+      "Clone the Quote Lines which need to be updated. Modify the desired discounts on the cloned Quote Lines. Update the original Quote Lines to a Quantity of Zero.",
+      "Change the status of the contract to Draft. Make price changes on the original quote used to generate the contract and check Contracted on the Opportunity again.",
+      "Change the values for Net Price on the subscription or Price field on the asset. Amend the contract and use Refresh Prices.",
+      "Create a Price Book with Price Book Entries to reflect the new prices. Populate the Contract Amendment Price Book ID field with the new Price."
+    ],
+    "a": [
+      "Clone the Quote Lines which need to be updated. Modify the desired discounts on the cloned Quote Lines. Update the original Quote Lines to a Quantity of Zero."
+    ],
+    "e": "- When amending a contract in Salesforce CPQ, if you want to change the price of existing subscriptions or assets, the standard approach is to Set the quantity of the original line to zero (effectively \"removing\" it). Clone the product onto a new quote line, apply the new discounts or pricing, and include it in the amendment quote."
+  },
+  {
+    "q": "Universal Containers needs sales reps to look up Campaign records to associate with specific Quote Lines in the Quote Line Editor. The admin created a lookup field on the Quote Line object that relates to the Campaign object, then added the lookup field Into the Line Editor Field Set on the Quote Line object. What does the admin need to do so the sales reps can search Campaign records in the Quote Line Editor without seeing a warning message?",
+    "c": [
+      "Create a twin field on the Campaign object using the same API name as the lookup field.",
+      "Create and populate a Field Set on the Campaign object named CPQ_Lookup.",
+      "Add the name of the lookup field into the Line Editor Field Set on the Quote object.",
+      "Add the lookup field to the Quote Line page layout."
+    ],
+    "a": [
+      "Create and populate a Field Set on the Campaign object named CPQ_Lookup."
+    ],
+    "e": "When you add a lookup field to the Quote Line object that points to a custom or standard object (like Campaign), Salesforce CPQ requires a special Field Set named CPQ_Lookup on the target object (in this case, Campaign). This Field Set controls which fields are searchable and displayed in the lookup search dialog inside the Quote Line Editor. If this Field Set is missing or empty, CPQ will show a warning message when users try to search for Campaign records in the lookup field."
+  },
+  {
+    "q": "Product A has the 'One per Unit' option selected within the Asset Conversion picklist. Users are reporting that when they modify the quantity for Product A on on amendment Quote, the following error displays: 'Product cannot be refunded. The quantity of Line # cannot decrease without a corresponding update.' What should the CPQ specialist do to ensure sales raps can edit the quantity of asset-based products within an amendment Quote?",
+    "c": [
+      "Set the Asset Amendment Behavior field value to 'Default'",
+      "Set the Asset Amendment Behavior field value to 'Allow Refund'.",
+      "Set the Asset Conversion field value to 'One per Quote'.",
+      "Conversion field value to 'None'."
+    ],
+    "a": [
+      "Set the Asset Amendment Behavior field value to 'Allow Refund'."
+    ],
+    "e": "The error message “Product cannot be refunded. The quantity of Line # cannot decrease without a corresponding update.” happens because Salesforce CPQ is preventing the quantity on an asset-based product from decreasing during an amendment. This restriction exists because, by default, CPQ doesn’t allow negative quantity adjustments on assets unless explicitly allowed. To enable users to reduce (refund) the quantity of asset-based products on amendment Quotes, the Asset Amendment Behavior setting on the Product should be set to \"Allow Refund\". This setting tells CPQ to allow quantity decreases (refunds) on amendment Quotes, resolving the error and allowing users to edit the quantity downward."
+  },
+  {
+    "q": "Universal Containers sells Tiny Boxes for $0.005 each. Tiny Boxes are Non Discountable. How should the admin set the decimal precision for the unit price?",
+    "c": [
+      "Edit the Unit Price field on the Quote Line object and set the precision to 3.",
+      "Set the Unit Price Scale to 3 in the Pricing and Calculation Package Settings.",
+      "Set the Unit Price Scale field to 3 on the tiny boxes Product record.",
+      "Use a Price Rule that sets the Net Unit Price to $0.005 when the product is added to a Quote."
+    ],
+    "a": [
+      "Set the Unit Price Scale to 3 in the Pricing and Calculation Package Settings."
+    ],
+    "e": "Salesforce CPQ has a dedicated setting under Setup > Installed Packages > Salesforce CPQ > Configure > Pricing and Calculation called \"Unit Price Scale.\" This setting controls the number of decimal places used in all unit price calculations and storage within CPQ. Setting it to 3 would allow for values like $0.005."
+  },
+  {
+    "q": "Universal Containers uses Contracted Pricing to set pricing for specific distributors and those distributors business units (child accounts). Product A has a Product Family of Storage and a list price of $300. The parent account has a Contracted Price set to $200 and a filter based on the Product Family of Storage. Which two ways can the admin set Product A back to list price on a business unit account?",
+    "c": [
+      "Set Ignore Parent Contracted Prices to true on the parent contracted price.",
+      "Create a new contracted price for Product A on the business unit account with a price of $300.",
+      "Create a new contracted price record for Product A on the business unit account and set its Ignore Parent Contracted prices to true.",
+      "Set Ignore Parent Contracted Prices to true on the business unit account record."
+    ],
+    "a": [
+      "Create a new contracted price for Product A on the business unit account with a price of $300.",
+      "Set Ignore Parent Contracted Prices to true on the business unit account record."
+    ],
+    "e": "- Create a new contracted price for Product A on the business unit account with a price of $300. By creating a specific Contracted Price record for Product A on the business unit's account, you are creating an explicit override. Child-level contracted prices always take precedence over inherited parent-level ones. If you set this new contracted price to $300, it effectively sets the price back to list for that specific product on that specific child account.\n- Set Ignore Parent Contracted Prices to true on the business unit account record. By checking the Ignore Parent Contracted Prices field on the business unit account record, you are telling Salesforce CPQ to no longer inherit any contracted prices from its parent. As a result, Product A on this business unit account will no longer use the inherited $200 contracted price and will revert to its standard pricing, which in this case is the list price of $300."
+  },
+  {
+    "q": "The sales manager at Universal containers wants to ensure that bundles: Cannot be reconfigured when a Renewal Quote is created. Allow sales reps to configure bundles only on new or amendment quotes. What should the CPQ specialist configure to meet these requirements?",
+    "c": [
+      "Ensure SBQQ__ReconfigurationDisabled__c is set to TRUE on the Bundle product.",
+      "Create a Custom Action Condition on the Reconfigure Line custom action where SBQQ__Type__c is equal to 'Renewal'.",
+      "Create a Custom Action Condition on the Reconfigure Line custom action where SBQQ__Type__c is not equal to 'Renewal'.",
+      "Ensure SBQQ__ReconfigurationDisabled__c is set to 'Disabled' on the Bundle product."
+    ],
+    "a": [
+      "Create a Custom Action Condition on the Reconfigure Line custom action where SBQQ__Type__c is not equal to 'Renewal'."
+    ],
+    "e": "- Create a Custom Action Condition on the Reconfigure Line custom action where SBQQ__Type__c is not equal to 'Renewal'. By creating a condition on the \"Reconfigure Line\" custom action that checks if the Quote's SBQQ__Type__c field is not equal to 'Renewal', the system ensures that sales reps can only click the \"Reconfigure Line\" button (and thus reconfigure bundles) when the quote is a 'New' or 'Amendment' type. Conversely, when a Renewal Quote is created, the condition will be false, automatically hiding or disabling the reconfigure option, thereby preventing bundles from being reconfigured on renewal quotes as required."
+  },
+  {
+    "q": "A customer is implementing CPQ to support two languages. Which two portions of text can be translated using the Salesforce CPQ localization object? Choose 2 answers",
+    "c": [
+      "Picklist values in the Product Family field on the Product object",
+      "Configuration Attribute picklist values",
+      "The Feature Name field on the Configure Products page",
+      "HTML Template Content in the Quote document"
+    ],
+    "a": [
+      "HTML Template Content in the Quote document",
+      "The Feature Name field on the Configure Products page"
+    ],
+    "e": "- The Feature Name field on the Configure Products page. In Salesforce CPQ bundles, Features are used to categorize and group product options within the configurator (e.g., \"Storage Options,\" \"Support Plan\"). The names of these features are part of the CPQ user interface. The CPQ Localization object specifically includes fields to allow for the translation of these Feature Names, ensuring that the bundle configuration page displays in the user's chosen language.\n- HTML Template Content in the Quote document. Salesforce CPQ enables highly customized Quote Documents through HTML Templates. These templates often contain static text, headers, footers, or instructional phrases embedded directly in the HTML. The CPQ Localization object provides a mechanism to define \"Localization Keys\" within your HTML template. You then provide translations for these keys in the Localization object, allowing the static content within your generated Quote Documents to display in the customer's preferred language."
+  },
+  {
+    "q": "An admin has set the Group Field on one of the Quote templates. On output documents for Quote A, Quote Lines appear to be grouped incorrectly. What are two explanations for this grouping? Choose 2 answers",
+    "c": [
+      "Modified By field on the user's Quote was last modified before the new Quote Template was implemented.",
+      "Bundles on Quote A contain a Configuration Attribute designating location.",
+      "There are Quote Line Groups related to Quote A.",
+      "Template Section with Template Content of Line Items type has a value in Group Field."
+    ],
+    "a": [
+      "There are Quote Line Groups related to Quote A.",
+      "Template Section with Template Content of Line Items type has a value in Group Field."
+    ],
+    "e": "- There are Quote Line Groups related to Quote A. If Quote Line Groups exist on the quote, Salesforce CPQ will use those to group line items, which can affect or override grouping based on the template's Group Field setting. This may cause unexpected grouping behavior.\n- Template Section with Template Content of Line Items type has a value in Group Field.\nThe Group Field on the Template Section dictates which field to group by in the output document. If this field is set incorrectly or doesn't match the data on the Quote Lines, it can cause grouping to appear wrong."
+  },
+  {
+    "q": "Universal Containers has a multi-layer bundle with a Percent of Total option in the first level. This Precent of Total options calculation should be based on other options in the same level. How should the admin set this up?",
+    "c": [
+      "Set the Percent of Total Scope field on the Product Option record to a value of Components.",
+      "Set the Percent of Total Category field on each Product in the bundle to the same value.",
+      "Set the Percent of Total Scope field on the Product Option record to a value of package.",
+      "Set the Percent of Total Scope field on the Product Option record to a value of Group."
+    ],
+    "a": [
+      "Set the Percent of Total Scope field on the Product Option record to a value of Components."
+    ],
+    "e": "When using a Percent of Total (PoT) product in a multi-layer bundle, the Percent of Total Scope setting determines which products the percent calculation is based on. Components means → The Percent of Total product will calculate its value based on other sibling options at the same level in the bundle (i.e., its sibling components)."
+  },
+  {
+    "q": "Universal Containers wants to give a 25% discount on a specific Product Option purchased in the Big Box bundle. In which two ways could the admin configure CPQ to automatically apply this discount? Choose 2 answers",
+    "c": [
+      "Set the Option Discount (%) field on the Product Feature for the bundle.",
+      "Set the Option Discount (%) field on the Product Option for the bundle.",
+      "Set Discounted by Package to TRUE on the Product Option for the bundle.",
+      "Create a Price Rule that applies the 25% discount when the product is added as part of the bundle."
+    ],
+    "a": [
+      "Set the Option Discount (%) field on the Product Option for the bundle.",
+      "Create a Price Rule that applies the 25% discount when the product is added as part of the bundle."
+    ],
+    "e": "- Set the Option Discount (%) field on the Product Option for the bundle. The Option Discount (%) field is found on the Product Option record itself. If you set this field to 25 (representing 25%), any time this specific Product Option is selected within its bundle, a 25% discount will be automatically applied to its price.\n- Create a Price Rule that applies the 25% discount when the product is added as part of the bundle. This is a more flexible and powerful method, especially if the discount logic is conditional or complex.\nThe Price Rule would have Price Conditions that identify the specific Product Option (e.g., Quote Line.Product Code equals the product code of the option, AND Quote Line.Bundle equals the Big Box bundle's ID or name). The Price Action would then set the SBQQ__Discount__c or SBQQ__DiscountPercent__c field on the Quote Line to 25."
+  },
+  {
+    "q": "Universal Containers offers the same Products in different regions of the country. Each sales rep is assigned to a single region numbered 1 through 10. Each region has some Products which are region-specific and unavailable to users from other regions. Managers can add Products to a sales reps Quotes that are inaccessible to other sales reps. Which two steps should the admin take to meet the business requirement? Choose 2 answers",
+    "c": [
+      "Add a Search Filter to the add Products Custom Action to filter Products based on the current user.",
+      "Create a single Price Book with all Products. Share the Price Book with all users.",
+      "Create a Price Book per region for sales reps. Share the regional Price Book with appropriate sales",
+      "Use Product rules to hide Products from some sales reps."
+    ],
+    "a": [
+      "Add a Search Filter to the add Products Custom Action to filter Products based on the current user.",
+      "Use Product rules to hide Products from some sales reps."
+    ],
+    "e": "- Using a Search Filter on the Add Products action can dynamically filter Products by the sales rep’s region, restricting what they see when adding Products.\n- Creating regional Price Books limits product visibility through standard Salesforce sharing; sales reps see only products in their Price Book. Managers can have access to multiple Price Books to add any product.\n* A single Price Book shared with all users wouldn’t restrict product visibility by region.\n* Product Rules typically work on configuration and pricing logic, not on restricting product visibility per user or region."
+  },
+  {
+    "q": "An admin wants to map Configuration Attribute values to Quote Lines that are for parent bundle products only. The fields are set up to correctly map between Quote Lines and Product Options. Which setup will ensure this condition is met?",
+    "c": [
+      "On the child options: Apply Immediately is False and Apply Immediately Context is Always.",
+      "On the Configuration Attribute: Auto-Select is False.",
+      "On the Configuration Attribute: Apply to Product Options is False.",
+      "On the bundled parent: Apply to Product Options is False."
+    ],
+    "a": [
+      "On the Configuration Attribute: Apply to Product Options is False."
+    ],
+    "e": "- To map Configuration Attribute values to parent bundle Quote Lines only and prevent them from mapping to child Product Option Quote Lines, the relevant setting is on the Configuration Attribute record itself. When Apply to Product Options is False, the value will not propagate to the child Product Option Quote Lines. It will remain associated only with the parent bundle's Quote Line.\n* Apply Immediately is a field on Configuration Attributes and Price Rules, not typically on Product Options in a way that controls value propagation. \n* Auto-Select on a Configuration Attribute determines if the attribute's value is automatically chosen based on conditions.\n* The Apply to Product Options field is on the Configuration Attribute record itself, not directly on the Product (bundled parent) record."
+  },
+  {
+    "q": "Universal Containers implemented CPQ Contract Amendment functionality via the Amend button on the Opportunity. Since an Account can have many different Contracts, the admin implemented a Contract Name field to allow the user to enter identifying information on each Contract record. How can the admin ensure that the user is presented with the custom Contract Name field when the user initiates an Amendment?",
+    "c": [
+      "Create a custom Field Set on Contract and add the custom Contract Name fields to the field Set.",
+      "Add the custom Contract Name field into the Active Contract Lookup Field Set on the Opportunity object.",
+      "Add the custom Contract Name field into the Active Contract Lookup Field Set on the Contract object.",
+      "Create a custom Page Layout and add the custom Contract Name field to the layout."
+    ],
+    "a": [
+      "Add the custom Contract Name field into the Active Contract Lookup Field Set on the Contract object."
+    ],
+    "e": "- Add the custom Contract Name field into the Active Contract Lookup Field Set on the Contract object. \nBy adding the custom Contract Name field to this specific Field Set, it ensures that the field will be visible as a column in the Contract selection modal, allowing the sales rep to easily identify the correct Contract to amend based on its name."
+  },
+  {
+    "q": "Universal Containers wants to show a Monthly Price column on the Quote Document if the Quote has Payment Terms of Net 30. In addition to creating the Monthly Price Line Column, which two Configurations are needed to satisfy this requirement? Choose 2 answers",
+    "c": [
+      "Set the Conditional Print Field on the Line Column record.",
+      "Include Monthly Price in the Quote Line Editor Field set.",
+      "Create a custom formula Indicating if the Payment Terms are Net 30.",
+      "Create an additional Line Items section without the Monthly Price field."
+    ],
+    "a": [
+      "Set the Conditional Print Field on the Line Column record.",
+      "Create a custom formula Indicating if the Payment Terms are Net 30."
+    ],
+    "e": "- Create a custom formula Indicating if the Payment Terms are Net 30. You need a field on the Quote Line object that evaluates to TRUE when the parent Quote's Payment Terms are \"Net 30\" and FALSE otherwise. This will be a formula field (e.g., Show_Monthly_Price_Column__c) on Quote Line, with a formula similar to SBQQ__Quote__r.SBQQ__PaymentTerms__c = \"Net 30\".\n- Set the Conditional Print Field on the Line Column record. On the Line Column record for \"Monthly Price\", you will set the Conditional Print Field to the custom formula field (Show_Monthly_Price_Column__c). This tells CPQ to only display this column on the Quote Document when that formula field evaluates to TRUE for a given Quote Line."
+  },
+  {
+    "q": "Universal Containers requires an output document that has Quote Terms localized to three languages, selectable by the user. Which two tasks should the admin complete to set up localization of the quote PDF?",
+    "c": [
+      "Create Localization records for individual Quote Terms for all three languages.",
+      "Create a Quote picklist field named output Language, With language codes as values.",
+      "Enable \"Allow Output in Different Languages\" In the managed package settings.",
+      "Set the Quote Term field Language to the desired output language for each Quote Term."
+    ],
+    "a": [
+      "Create Localization records for individual Quote Terms for all three languages.",
+      "Enable \"Allow Output in Different Languages\" In the managed package settings."
+    ],
+    "e": "- Create Localization records for individual Quote Terms for all three languages. For each Quote Term that needs to be localized, you must create a separate Localization record (SBQQ__Localization__c) for each target language. Each Localization record would link to the original Quote Term and contain its translated text.\n- Enable \"Allow Output in Different Languages\" In the managed package settings. Salesforce CPQ has a global setting, usually found within the \"Quote & Order\" or \"Documents\" section of the CPQ Package Settings, that must be explicitly enabled to allow document generation in multiple languages based on localization records. This setting acts as a master switch that tells CPQ to look for and utilize the Localization records when generating documents. Without this enabled, even if you have Localization records, the system won't apply the translations to the output document."
+  },
+  {
+    "q": "Northern Trail Outfitters has two products. Both products are added to a one year quote. The Adventure in a Box product has a list price of $10 with a discount of 50%. What is the expected Net Total of Premium Support?\n\nAdventure in a Box\nPricing Method = List\nSubscription Pricing = Fixed Price\nSubscription Term = 1 month\nInclude in Percent of Total = True\n\nPremium Support \nPricing Method = List\nSubscription Pricing = Percent of Total\nSubscription Term = 1 month\nPercent of Total (%) = 10%\nPercent of Total Base = List",
+    "c": [
+      "$60.00",
+      "$54.00",
+      "$12.00",
+      "$6.00"
+    ],
+    "a": [
+      "$12.00"
+    ],
+    "e": "List Price of Adventure in a Box (1 month) = $10\n$10 × 12 months = $120 (List Total)\nPremium Support Net Total = 10% of $120 = $12",
+    "originalIndex": 7,
+    "incorrectTries": 1
+  },
+  {
+    "q": "The sales manager at Universal containers wants to ensure that bundles: Cannot be reconfigured when a Renewal Quote is created. Allow sales reps to configure bundles only on new or amendment quotes. What should the CPQ specialist configure to meet these requirements?",
+    "c": [
+      "Ensure SBQQ__ReconfigurationDisabled__c is set to TRUE on the Bundle product.",
+      "Create a Custom Action Condition on the Reconfigure Line custom action where SBQQ__Type__c is equal to 'Renewal'.",
+      "Create a Custom Action Condition on the Reconfigure Line custom action where SBQQ__Type__c is not equal to 'Renewal'.",
+      "Ensure SBQQ__ReconfigurationDisabled__c is set to 'Disabled' on the Bundle product."
+    ],
+    "a": [
+      "Create a Custom Action Condition on the Reconfigure Line custom action where SBQQ__Type__c is not equal to 'Renewal'."
+    ],
+    "e": "- Create a Custom Action Condition on the Reconfigure Line custom action where SBQQ__Type__c is not equal to 'Renewal'. By creating a condition on the \"Reconfigure Line\" custom action that checks if the Quote's SBQQ__Type__c field is not equal to 'Renewal', the system ensures that sales reps can only click the \"Reconfigure Line\" button (and thus reconfigure bundles) when the quote is a 'New' or 'Amendment' type. Conversely, when a Renewal Quote is created, the condition will be false, automatically hiding or disabling the reconfigure option, thereby preventing bundles from being reconfigured on renewal quotes as required.",
+    "originalIndex": 108,
+    "incorrectTries": 1
+  },
+  {
+    "q": "Universal Containers requires an output document that has Quote Terms localized to three languages, selectable by the user. Which two tasks should the admin complete to set up localization of the quote PDF?",
+    "c": [
+      "Create Localization records for individual Quote Terms for all three languages.",
+      "Create a Quote picklist field named output Language, With language codes as values.",
+      "Enable \"Allow Output in Different Languages\" In the managed package settings.",
+      "Set the Quote Term field Language to the desired output language for each Quote Term."
+    ],
+    "a": [
+      "Create Localization records for individual Quote Terms for all three languages.",
+      "Enable \"Allow Output in Different Languages\" In the managed package settings."
+    ],
+    "e": "- Create Localization records for individual Quote Terms for all three languages. For each Quote Term that needs to be localized, you must create a separate Localization record (SBQQ__Localization__c) for each target language. Each Localization record would link to the original Quote Term and contain its translated text.\n- Enable \"Allow Output in Different Languages\" In the managed package settings. Salesforce CPQ has a global setting, usually found within the \"Quote & Order\" or \"Documents\" section of the CPQ Package Settings, that must be explicitly enabled to allow document generation in multiple languages based on localization records. This setting acts as a master switch that tells CPQ to look for and utilize the Localization records when generating documents. Without this enabled, even if you have Localization records, the system won't apply the translations to the output document.",
+    "originalIndex": 170,
+    "incorrectTries": 1
+  },
+  {
+    "q": "An admin has set the Group Field on one of the Quote templates. On output documents for Quote A, Quote Lines appear to be grouped incorrectly. What are two explanations for this grouping? Choose 2 answers",
+    "c": [
+      "Modified By field on the user's Quote was last modified before the new Quote Template was implemented.",
+      "Bundles on Quote A contain a Configuration Attribute designating location.",
+      "There are Quote Line Groups related to Quote A.",
+      "Template Section with Template Content of Line Items type has a value in Group Field."
+    ],
+    "a": [
+      "There are Quote Line Groups related to Quote A.",
+      "Template Section with Template Content of Line Items type has a value in Group Field."
+    ],
+    "e": "- There are Quote Line Groups related to Quote A. If Quote Line Groups exist on the quote, Salesforce CPQ will use those to group line items, which can affect or override grouping based on the template's Group Field setting. This may cause unexpected grouping behavior.\n- Template Section with Template Content of Line Items type has a value in Group Field.\nThe Group Field on the Template Section dictates which field to group by in the output document. If this field is set incorrectly or doesn't match the data on the Quote Lines, it can cause grouping to appear wrong.",
+    "originalIndex": 111,
+    "incorrectTries": 1
+  },
+  {
+    "q": "Universal Containers wants to show a Monthly Price column on the Quote Document if the Quote has Payment Terms of Net 30. In addition to creating the Monthly Price Line Column, which two Configurations are needed to satisfy this requirement? Choose 2 answers",
+    "c": [
+      "Set the Conditional Print Field on the Line Column record.",
+      "Include Monthly Price in the Quote Line Editor Field set.",
+      "Create a custom formula Indicating if the Payment Terms are Net 30.",
+      "Create an additional Line Items section without the Monthly Price field."
+    ],
+    "a": [
+      "Set the Conditional Print Field on the Line Column record.",
+      "Create a custom formula Indicating if the Payment Terms are Net 30."
+    ],
+    "e": "- Create a custom formula Indicating if the Payment Terms are Net 30. You need a field on the Quote Line object that evaluates to TRUE when the parent Quote's Payment Terms are \"Net 30\" and FALSE otherwise. This will be a formula field (e.g., Show_Monthly_Price_Column__c) on Quote Line, with a formula similar to SBQQ__Quote__r.SBQQ__PaymentTerms__c = \"Net 30\".\n- Set the Conditional Print Field on the Line Column record. On the Line Column record for \"Monthly Price\", you will set the Conditional Print Field to the custom formula field (Show_Monthly_Price_Column__c). This tells CPQ to only display this column on the Quote Document when that formula field evaluates to TRUE for a given Quote Line.",
+    "originalIndex": 159,
+    "incorrectTries": 2
+  },
+  {
+    "q": "When can a user expect the Conference Pass Product to be added to the Quote during the quoting process?",
+    "c": [
+      "The user calculates a Quote.",
+      "The user selects a Configuration Attribute value for a Product.",
+      "The user saves the Quote.",
+      "The user selects a Product for the Quote."
+    ],
+    "a": [
+      "The user selects a Product for the Quote."
+    ],
+    "e": "Adding the product to the quote describes the user's initiating action that causes the Conference Pass Product to be added.",
+    "originalIndex": 33,
+    "incorrectTries": 1
+  },
+  {
+    "q": "The admin at Universal Containers wants to add Maintenance and Support products to the parent bundle. Maintenance and Support products should display in separate sections during configuration, with the Support products displaying above the Maintenance products. How should the admin set up the Product to meet both requirements?",
+    "c": [
+      "Create two Production Options Maintenance and Support. Maintenance will always display first, due to alphabetical ordering.",
+      "Create two Product Features, Maintenance and Support. The Support feature should have a lower value in the Number field.",
+      "Create two Product Features, Maintenance and Support. Maintenance will always display first, due to alphabetical ordering.",
+      "Create two Product Options, Maintenance and Support. The Support option should have a lower value in the Number field."
+    ],
+    "a": [
+      "Create two Product Features, Maintenance and Support. The Support feature should have a lower value in the Number field."
+    ],
+    "e": "Product Features create separate sections in the bundle configuration (unlike Product Options, which are just line items within a feature). The display order of Product Features is controlled by the Number field (also known as Sort Order). Lower numbers display first. To have Support products display above Maintenance products, the Support feature should have a lower Number value than Maintenance. Alphabetical ordering does not control feature display order.",
+    "originalIndex": 61,
+    "incorrectTries": 2
+  },
+  {
+    "q": "A user created two Quotes related to an Opportunity. The user has changed the Primary Quote by checking the Primary checkbox on the non-Primary Quote. After performing this action, the amount or the Opportunity fails to update and the Quote Lines fails to sync to the Opportunity. What is the root cause of this issue?",
+    "c": [
+      "The triggers have been disabled in the Installed Package Settings",
+      "Twin fields between the Quote Line and the Opportunity Product need to be set up.",
+      "The Primary field on the Quote is missing from the Quote object's Calculating Fields field set.",
+      "Primary Quote Keeps Opportunity Products is set to FALSE in the Installed Package Settings."
+    ],
+    "a": [
+      "Primary Quote Keeps Opportunity Products is set to FALSE in the Installed Package Settings."
+    ],
+    "e": "'Primary Quote Keeps Opportunity Products' directly controls how Opportunity Products are managed during a Primary Quote change (specifically, what happens to the old ones). It's a critical part of the Quote-to-Opportunity sync strategy. When set to false, the following occurs (for non-Primary Quotes):\n- The Opportunity Products that were generated from the old Primary Quote are deleted from the Opportunity.\n- New Opportunity Products are then created (or updated) from the lines of the newly designated Primary Quote.\n- Result: This behavior aims to keep the Opportunity Products clean and ensure they always reflect only the currently designated Primary Quote, by actively removing products from previous Primary Quotes.",
+    "originalIndex": 34,
+    "incorrectTries": 1
+  },
+  {
+    "q": "Universal Containers needs sales reps to look up Campaign records to associate with specific Quote Lines in the Quote Line Editor. The admin created a lookup field on the Quote Line object that relates to the Campaign object, then added the lookup field Into the Line Editor Field Set on the Quote Line object. What does the admin need to do so the sales reps can search Campaign records in the Quote Line Editor without seeing a warning message?",
+    "c": [
+      "Create a twin field on the Campaign object using the same API name as the lookup field.",
+      "Create and populate a Field Set on the Campaign object named CPQ_Lookup.",
+      "Add the name of the lookup field into the Line Editor Field Set on the Quote object.",
+      "Add the lookup field to the Quote Line page layout."
+    ],
+    "a": [
+      "Create and populate a Field Set on the Campaign object named CPQ_Lookup."
+    ],
+    "e": "When you add a lookup field to the Quote Line object that points to a custom or standard object (like Campaign), Salesforce CPQ requires a special Field Set named CPQ_Lookup on the target object (in this case, Campaign). This Field Set controls which fields are searchable and displayed in the lookup search dialog inside the Quote Line Editor. If this Field Set is missing or empty, CPQ will show a warning message when users try to search for Campaign records in the lookup field.",
+    "originalIndex": 71,
+    "incorrectTries": 1
+  },
+  {
+    "q": "Universal Containers must be able to create Quotes that contain Quote Lines with different Start Dates. Order Products must be separated into Orders after generation based on the Start Dates. How can a CPQ Specialist meet this business requirement?",
+    "c": [
+      "Separate Quotes must be created for each unique Start Date.",
+      "Set both the Order by Quote Line Group and Ordered checkboxes to True.",
+      "Change Default Order Start Date in CPQ Package settings to Quote Start Date.",
+      "Set the Order By picklist on the Quote to SBQQ__StartDate__c, and the Ordered checkbox to True."
+    ],
+    "a": [
+      "Set the Order By picklist on the Quote to SBQQ__StartDate__c, and the Ordered checkbox to True."
+    ],
+    "e": "Set the Order By picklist on the Quote to SBQQ__StartDate__c, and the Ordered checkbox to True. This directly addresses the requirement. Setting Order By to SBQQ__StartDate__c will ensure that lines with different start dates are grouped into separate orders, and the Ordered checkbox enables the order generation functionality.",
+    "originalIndex": 16,
+    "incorrectTries": 3
+  },
+  {
+    "q": "Universal Containers implemented CPQ Contract Amendment functionality via the Amend button on the Opportunity. Since an Account can have many different Contracts, the admin implemented a Contract Name field to allow the user to enter identifying information on each Contract record. How can the admin ensure that the user is presented with the custom Contract Name field when the user initiates an Amendment?",
+    "c": [
+      "Create a custom Field Set on Contract and add the custom Contract Name fields to the field Set.",
+      "Add the custom Contract Name field into the Active Contract Lookup Field Set on the Opportunity object.",
+      "Add the custom Contract Name field into the Active Contract Lookup Field Set on the Contract object.",
+      "Create a custom Page Layout and add the custom Contract Name field to the layout."
+    ],
+    "a": [
+      "Add the custom Contract Name field into the Active Contract Lookup Field Set on the Contract object."
+    ],
+    "e": "- Add the custom Contract Name field into the Active Contract Lookup Field Set on the Contract object. \nBy adding the custom Contract Name field to this specific Field Set, it ensures that the field will be visible as a column in the Contract selection modal, allowing the sales rep to easily identify the correct Contract to amend based on its name.",
+    "originalIndex": 154,
+    "incorrectTries": 1
+  },
+  {
+    "q": "The admin at Universal Containers has received feedback about the amount of horizontal scrolling necessary to access Clone and Delete actions on Quote Lines in the Quote Line Editor. What should the admin do to resolve this issue?",
+    "c": [
+      "Move the Clone and Delete actions into the Quote Line Editor drawers.",
+      "Change the Actions Column Placement in package settings to Left.",
+      "Update the Custom Action Location to left.",
+      "Set a lower value in the Display Order field in the Custom Action record."
+    ],
+    "a": [
+      "Change the Actions Column Placement in package settings to Left."
+    ],
+    "e": "By default, Action buttons (Clone, Delete, etc.) appear on the right side of the Quote Line Editor. This placement can force users to scroll horizontally if there are many columns. Salesforce CPQ has a package setting called Actions Column Placement that allows you to move these action buttons to the left side of the editor. Moving actions to the left reduces horizontal scrolling because users see the buttons immediately when they open the editor.",
+    "originalIndex": 59,
+    "incorrectTries": 1
+  },
+  {
+    "q": "A customer is implementing CPQ to support two languages. Which two portions of text can be translated using the Salesforce CPQ localization object? Choose 2 answers",
+    "c": [
+      "Picklist values in the Product Family field on the Product object",
+      "Configuration Attribute picklist values",
+      "The Feature Name field on the Configure Products page",
+      "HTML Template Content in the Quote document"
+    ],
+    "a": [
+      "HTML Template Content in the Quote document",
+      "The Feature Name field on the Configure Products page"
+    ],
+    "e": "- The Feature Name field on the Configure Products page. In Salesforce CPQ bundles, Features are used to categorize and group product options within the configurator (e.g., \"Storage Options,\" \"Support Plan\"). The names of these features are part of the CPQ user interface. The CPQ Localization object specifically includes fields to allow for the translation of these Feature Names, ensuring that the bundle configuration page displays in the user's chosen language.\n- HTML Template Content in the Quote document. Salesforce CPQ enables highly customized Quote Documents through HTML Templates. These templates often contain static text, headers, footers, or instructional phrases embedded directly in the HTML. The CPQ Localization object provides a mechanism to define \"Localization Keys\" within your HTML template. You then provide translations for these keys in the Localization object, allowing the static content within your generated Quote Documents to display in the customer's preferred language.",
+    "originalIndex": 110,
+    "incorrectTries": 1
+  },
+  {
+    "q": "Universal Containers wants to give a 25% discount on a specific Product Option purchased in the Big Box bundle. In which two ways could the admin configure CPQ to automatically apply this discount? Choose 2 answers",
+    "c": [
+      "Set the Option Discount (%) field on the Product Feature for the bundle.",
+      "Set the Option Discount (%) field on the Product Option for the bundle.",
+      "Set Discounted by Package to TRUE on the Product Option for the bundle.",
+      "Create a Price Rule that applies the 25% discount when the product is added as part of the bundle."
+    ],
+    "a": [
+      "Set the Option Discount (%) field on the Product Option for the bundle.",
+      "Create a Price Rule that applies the 25% discount when the product is added as part of the bundle."
+    ],
+    "e": "- Set the Option Discount (%) field on the Product Option for the bundle. The Option Discount (%) field is found on the Product Option record itself. If you set this field to 25 (representing 25%), any time this specific Product Option is selected within its bundle, a 25% discount will be automatically applied to its price.\n- Create a Price Rule that applies the 25% discount when the product is added as part of the bundle. This is a more flexible and powerful method, especially if the discount logic is conditional or complex.\nThe Price Rule would have Price Conditions that identify the specific Product Option (e.g., Quote Line.Product Code equals the product code of the option, AND Quote Line.Bundle equals the Big Box bundle's ID or name). The Price Action would then set the SBQQ__Discount__c or SBQQ__DiscountPercent__c field on the Quote Line to 25.",
+    "originalIndex": 130,
+    "incorrectTries": 1
+  },
+  {
+    "q": "Universal Containers uses Contracted Pricing to set pricing for specific distributors and those distributors business units (child accounts). Product A has a Product Family of Storage and a list price of $300. The parent account has a Contracted Price set to $200 and a filter based on the Product Family of Storage. Which two ways can the admin set Product A back to list price on a business unit account?",
+    "c": [
+      "Set Ignore Parent Contracted Prices to true on the parent contracted price.",
+      "Create a new contracted price for Product A on the business unit account with a price of $300.",
+      "Create a new contracted price record for Product A on the business unit account and set its Ignore Parent Contracted prices to true.",
+      "Set Ignore Parent Contracted Prices to true on the business unit account record."
+    ],
+    "a": [
+      "Create a new contracted price for Product A on the business unit account with a price of $300.",
+      "Set Ignore Parent Contracted Prices to true on the business unit account record."
+    ],
+    "e": "- Create a new contracted price for Product A on the business unit account with a price of $300. By creating a specific Contracted Price record for Product A on the business unit's account, you are creating an explicit override. Child-level contracted prices always take precedence over inherited parent-level ones. If you set this new contracted price to $300, it effectively sets the price back to list for that specific product on that specific child account.\n- Set Ignore Parent Contracted Prices to true on the business unit account record. By checking the Ignore Parent Contracted Prices field on the business unit account record, you are telling Salesforce CPQ to no longer inherit any contracted prices from its parent. As a result, Product A on this business unit account will no longer use the inherited $200 contracted price and will revert to its standard pricing, which in this case is the list price of $300.",
+    "originalIndex": 104,
+    "incorrectTries": 1
+  },
+  {
+    "q": "Universal Containers has a multi-layer bundle with a Percent of Total option in the first level. This Precent of Total options calculation should be based on other options in the same level. How should the admin set this up?",
+    "c": [
+      "Set the Percent of Total Scope field on the Product Option record to a value of Components.",
+      "Set the Percent of Total Category field on each Product in the bundle to the same value.",
+      "Set the Percent of Total Scope field on the Product Option record to a value of package.",
+      "Set the Percent of Total Scope field on the Product Option record to a value of Group."
+    ],
+    "a": [
+      "Set the Percent of Total Scope field on the Product Option record to a value of Components."
+    ],
+    "e": "When using a Percent of Total (PoT) product in a multi-layer bundle, the Percent of Total Scope setting determines which products the percent calculation is based on. Components means → The Percent of Total product will calculate its value based on other sibling options at the same level in the bundle (i.e., its sibling components).",
+    "originalIndex": 124,
+    "incorrectTries": 2
+  },
+  {
+    "q": "An admin wants to map Configuration Attribute values to Quote Lines that are for parent bundle products only. The fields are set up to correctly map between Quote Lines and Product Options. Which setup will ensure this condition is met?",
+    "c": [
+      "On the child options: Apply Immediately is False and Apply Immediately Context is Always.",
+      "On the Configuration Attribute: Auto-Select is False.",
+      "On the Configuration Attribute: Apply to Product Options is False.",
+      "On the bundled parent: Apply to Product Options is False."
+    ],
+    "a": [
+      "On the Configuration Attribute: Apply to Product Options is False."
+    ],
+    "e": "- To map Configuration Attribute values to parent bundle Quote Lines only and prevent them from mapping to child Product Option Quote Lines, the relevant setting is on the Configuration Attribute record itself. When Apply to Product Options is False, the value will not propagate to the child Product Option Quote Lines. It will remain associated only with the parent bundle's Quote Line.\n* Apply Immediately is a field on Configuration Attributes and Price Rules, not typically on Product Options in a way that controls value propagation. \n* Auto-Select on a Configuration Attribute determines if the attribute's value is automatically chosen based on conditions.\n* The Apply to Product Options field is on the Configuration Attribute record itself, not directly on the Product (bundled parent) record.",
+    "originalIndex": 150,
+    "incorrectTries": 1
+  },
+  {
+    "q": "A user needs to amend a contract and change prices to reflect new discounts for existing active subscriptions and assets. How should the user achieve this?",
+    "c": [
+      "Clone the Quote Lines which need to be updated. Modify the desired discounts on the cloned Quote Lines. Update the original Quote Lines to a Quantity of Zero.",
+      "Change the status of the contract to Draft. Make price changes on the original quote used to generate the contract and check Contracted on the Opportunity again.",
+      "Change the values for Net Price on the subscription or Price field on the asset. Amend the contract and use Refresh Prices.",
+      "Create a Price Book with Price Book Entries to reflect the new prices. Populate the Contract Amendment Price Book ID field with the new Price."
+    ],
+    "a": [
+      "Clone the Quote Lines which need to be updated. Modify the desired discounts on the cloned Quote Lines. Update the original Quote Lines to a Quantity of Zero."
+    ],
+    "e": "- When amending a contract in Salesforce CPQ, if you want to change the price of existing subscriptions or assets, the standard approach is to Set the quantity of the original line to zero (effectively \"removing\" it). Clone the product onto a new quote line, apply the new discounts or pricing, and include it in the amendment quote.",
+    "originalIndex": 65,
+    "incorrectTries": 1
+  },
+  {
+    "q": "Universal Containers sells Tiny Boxes for $0.005 each. Tiny Boxes are Non Discountable. How should the admin set the decimal precision for the unit price?",
+    "c": [
+      "Edit the Unit Price field on the Quote Line object and set the precision to 3.",
+      "Set the Unit Price Scale to 3 in the Pricing and Calculation Package Settings.",
+      "Set the Unit Price Scale field to 3 on the tiny boxes Product record.",
+      "Use a Price Rule that sets the Net Unit Price to $0.005 when the product is added to a Quote."
+    ],
+    "a": [
+      "Set the Unit Price Scale to 3 in the Pricing and Calculation Package Settings."
+    ],
+    "e": "Salesforce CPQ has a dedicated setting under Setup > Installed Packages > Salesforce CPQ > Configure > Pricing and Calculation called \"Unit Price Scale.\" This setting controls the number of decimal places used in all unit price calculations and storage within CPQ. Setting it to 3 would allow for values like $0.005.",
+    "originalIndex": 103,
+    "incorrectTries": 1
+  },
+  {
+    "q": "Product A has the 'One per Unit' option selected within the Asset Conversion picklist. Users are reporting that when they modify the quantity for Product A on on amendment Quote, the following error displays: 'Product cannot be refunded. The quantity of Line # cannot decrease without a corresponding update.' What should the CPQ specialist do to ensure sales raps can edit the quantity of asset-based products within an amendment Quote?",
+    "c": [
+      "Set the Asset Amendment Behavior field value to 'Default'",
+      "Set the Asset Amendment Behavior field value to 'Allow Refund'.",
+      "Set the Asset Conversion field value to 'One per Quote'.",
+      "Conversion field value to 'None'."
+    ],
+    "a": [
+      "Set the Asset Amendment Behavior field value to 'Allow Refund'."
+    ],
+    "e": "The error message “Product cannot be refunded. The quantity of Line # cannot decrease without a corresponding update.” happens because Salesforce CPQ is preventing the quantity on an asset-based product from decreasing during an amendment. This restriction exists because, by default, CPQ doesn’t allow negative quantity adjustments on assets unless explicitly allowed. To enable users to reduce (refund) the quantity of asset-based products on amendment Quotes, the Asset Amendment Behavior setting on the Product should be set to \"Allow Refund\". This setting tells CPQ to allow quantity decreases (refunds) on amendment Quotes, resolving the error and allowing users to edit the quantity downward.",
+    "originalIndex": 72,
+    "incorrectTries": 1
+  },
+  {
+    "q": "Universal Containers (UC) sells a Product in four geographical regions that comes in 10 colors and four sizes. Instead of having a separate SKU for all combinations, UC needs the sales reps to specify location, color, and size during configuration. What CPQ functionality can UCs admin leverage to meet this requirement?",
+    "c": [
+      "Configuration Attributes.",
+      "Product Options.",
+      "Product Features.",
+      "Option constraints."
+    ],
+    "a": [
+      "Configuration Attributes."
+    ],
+    "e": "Configuration Attributes in Salesforce CPQ allow sales reps to enter or select values (e.g., location, color, size) during bundle configuration. These values: Do not require separate SKUs for every combination. Can be used to drive logic (e.g., show/hide options, apply price rules). Are ideal when the product doesn't change physically, but requires customization input from the rep.",
+    "originalIndex": 54,
+    "incorrectTries": 3
+  },
+  {
+    "q": "Universal Containers offers the same Products in different regions of the country. Each sales rep is assigned to a single region numbered 1 through 10. Each region has some Products which are region-specific and unavailable to users from other regions. Managers can add Products to a sales reps Quotes that are inaccessible to other sales reps. Which two steps should the admin take to meet the business requirement? Choose 2 answers",
+    "c": [
+      "Add a Search Filter to the add Products Custom Action to filter Products based on the current user.",
+      "Create a single Price Book with all Products. Share the Price Book with all users.",
+      "Create a Price Book per region for sales reps. Share the regional Price Book with appropriate sales",
+      "Use Product rules to hide Products from some sales reps."
+    ],
+    "a": [
+      "Add a Search Filter to the add Products Custom Action to filter Products based on the current user.",
+      "Use Product rules to hide Products from some sales reps."
+    ],
+    "e": "- Using a Search Filter on the Add Products action can dynamically filter Products by the sales rep’s region, restricting what they see when adding Products.\n- Creating regional Price Books limits product visibility through standard Salesforce sharing; sales reps see only products in their Price Book. Managers can have access to multiple Price Books to add any product.\n* A single Price Book shared with all users wouldn’t restrict product visibility by region.\n* Product Rules typically work on configuration and pricing logic, not on restricting product visibility per user or region.",
+    "originalIndex": 132,
+    "incorrectTries": 2
+  }
+]
