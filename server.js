@@ -614,33 +614,26 @@ app.post('/generate-quiz', async (req, res) => {
       }
     });
   } else if (category[0] === 'a') {
-    filteredQuestions = sourceContent.filter((_, index) => 
-      flaggedQuestions.some(fq => 
-        fq.index === index && 
-        fq.incorrectTries > 0
-      )
-    );
-    const questionMap = new Map();
+        const questionMap = new Map();
     
-    // First pass: create map of original questions
+    // Build map of original questions by index
     sourceContent.forEach((question, index) => {
       questionMap.set(index, question);
     });
 
-    // Second pass: create new questions with unique indices
-    let newIndex = 0;
+    filteredQuestions = []; // Start with empty array
+
     flaggedQuestions.forEach(fq => {
       const originalQuestion = questionMap.get(fq.index);
       if (originalQuestion) {
-        // Create a new question object with a unique index
+        // Create a new question object
         const newQuestion = JSON.parse(JSON.stringify(originalQuestion));
-        newQuestion.originalIndex = fq.index; // Keep track of original index
-        newQuestion.incorrectTries = fq.incorrectTries; // Store incorrect tries
+        newQuestion.originalIndex = fq.index;
+        newQuestion.incorrectTries = fq.incorrectTries;
         filteredQuestions.push(newQuestion);
-        newIndex++;
       }
     });
-  } else {
+    } else {
     // Original behavior for specific categories
     filteredQuestions = sourceContent.filter((_, index) => {
       return flaggedQuestions.some(fq => {
