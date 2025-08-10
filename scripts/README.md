@@ -1,23 +1,23 @@
 # Textbook Quiz Helper Scripts
 
-These scripts were created to streamline the creation of online quizzes scrapted from books and Udemy. I currently have one for Sybex (book) Practice Test's and Dion's Practice Exams on Udemy. I will make more as needed. I will not provide raw or json files. 
+These scripts were created to streamline the creation of online quizzes scraped from books and Udemy. I currently have one for Sybex (book) Practice Test's and Dion's Practice Exams on Udemy. I will make more as needed. I will not provide raw or json files. 
 
 The majority of the work is copy and pasting these into a file and adding the appropriate suffix indicator and adding them to the quiz_generators folder. However, files will often require tweaking to get the appropriate result. For example, I needed to manually append lines when they began with an IP address so they weren't read as a new question. If you have any thoughts on improving this, send me a note. 
 
-None of my scripts delete raw files. This is becuase I've had to go back and adjust them after creating the json file. 
+None of my scripts delete raw files. This is because I've had to go back and adjust them after creating the json file. 
 
 ### codify.py
-* Takes a text input, wraps it in < code > tags, adds \n line breaks, and provides the output in a single line to paste back into your raw data file. 
+* Takes a text input, wraps it in < code > tags, adds \n line breaks, and provides the output in a single line to paste back into your raw data file. These days I use Review Mode these days as it's easier to add code that way.
 
 ### sybex_q.py
 
 * input file: txt that ends with _rawq
 * Everything between Chapter and the next question line will be deleted. 
-* Questions must be preceeded by a number follwed by a period and a space. 
+* Questions must be preceded by a number followed by a period and a space. 
 * Numbers must not be equal to the immediately previous or next number. 
-* Numbers do not need to be sequential or unique ine the file. 
+* Numbers do not need to be sequential or unique line the file. 
 
-* Choice lines must be preceeded with a single capital letter follwed by a period and a space. 
+* Choice lines must be preceded with a single capital letter followed by a period and a space. 
 * Everything between Chapter and the next question line will be deleted. 
 * output file: will replace _rawq with _q
 
@@ -25,16 +25,16 @@ None of my scripts delete raw files. This is becuase I've had to go back and adj
 
 * Input file: txt that ends with _rawa  
 * Text should be numbered lines followed by the letter answer/s and explanation (copy and paste them from the appendix into a txt file). 
-* The number will be moved to its own line preceeded with a blank line. 
+* The number will be moved to its own line preceded with a blank line. 
 * A string of capital letters followed by a comma or period and a space will be read as a set of answers to the question and appear in its own line. 
-* An answer indicator "-" will preceed the answer line; commas and periods will be stripped.
-* An explanation indicator "--" preceed the explanation line.
+* An answer indicator "-" will precede the answer line; commas and periods will be stripped.
+* An explanation indicator "--" precede the explanation line.
 * Explanations lines will be moved to the same line.
 * Output file: will replace _rawa with _a
 
 ### sybex_quiz.py
 
-I separated these into 2 steps to make it easier to troublehoot if the _q and _a otuput files don't match for whatever reason. It may require adjusting to get it to work. Line numbers are provided if any issues found. 
+I separated these into 2 steps to make it easier to troubleshoot if the _q and _a output files don't match for whatever reason. It may require adjusting to get it to work. Line numbers are provided if any issues found. 
 
 * Input file: txt that ands with _a and _q (auto generated from sybex_a.py and sybex_q.py)
 * The numbers in _a and _q must appear in the same order. 
@@ -51,7 +51,7 @@ I separated these into 2 steps to make it easier to troublehoot if the _q and _a
 ### dion_quiz.py
 
 * Input file: txt that ends with _rawm
-* Takes the result text from Jason Dion quizzes on Udemy and parses them into a quizsail json file. 
+* Takes the result text from Dion quizzes on Udemy and parses them into a quizsail json file. This has since been updated to handle most Udemy quizzes. 
 * Parses the correct answer/s
 * Output file: file.json
 

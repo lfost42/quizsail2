@@ -28,7 +28,7 @@ At the end of each session, options are given to generate a new quiz with:
 🔥 Option to refresh a quiz after 5 sessions: removes the questions that were answered correctly on the first try at least 3 out of the last 5 sessions. Original quiz is moved to the "retired" directory.  
 
 #### Review Mode
-✅ Scroll through all questions, answers and explanations. 
+✅ Scroll through all questions, answers and explanations.  
 ✅ Add or modify current explanation  
 ✅ Modify current answer  
 ✅ Modify current question  
