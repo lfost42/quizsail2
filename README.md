@@ -1,7 +1,9 @@
 # QuizSail 2.0
 Test Prep Engine, forked from [jmatzen](https://github.com/jmatzen/quizsail). 
 
-I started to need additional functionality as I started to utilize this for other certificaiton exams, most notably CompTIA. I needed a way to scrape questions from a book and create quizzes out of them, especially when the questions and answers were on different pages. 
+![logo](./logo.png)
+
+I started to need additional functionality as I started to utilize this for certification exams for both Salesforce and other industry certs like CompTIA. I needed a way to scrape questions from a book and create the proper json files, especially when the questions and answers were on different pages. I also needed edit functionality for the quiz and make it handle code blocks. Other features were added over time out of need or request. 
 
 #### QuizSail is a test prep engine
 The test prep engine uses a technique called *assumed competency*.  This technique assumes that if you answer the question correctly the first time that you already know the answer. Because of this, it's running on sort of an honor system, so if the user is not sure what the answer is they should not enter any answer at all instead of guessing.
@@ -11,14 +13,14 @@ QuizSail's competency system works by holding a certain number of questions from
 ## List of updates for QuizSail 2.0
 
 #### Generate Quizzes With Questions Marked as Incorrect
-At the end of each session, options are given to genereate a new quiz with:  
+At the end of each session, options are given to generate a new quiz with:  
 
-🔥 All questions  
-🔥 All questions weighted (questions are added the number of times they were answered incorrectly)  
 🔥 Questions marked incorrect on the first try  
 🔥 Questions marked incorrect 2x during the session  
 🔥 Questions marked incorrect 3x during the session  
 🔥 Question marked incorrect 4 or more times during the session  
+🔥 All questions  
+🔥 All questions weighted (questions are added the number of times they were answered incorrectly)  
 
 #### Refresh Quiz
 🔥 Log functionality that keeps track of all successful first attempts for the last 10 sessions.  
@@ -58,7 +60,6 @@ At the end of each session, options are given to genereate a new quiz with:
 📃 [codify.py](scripts/quiz_generators/) takes input text, wraps it in < code > tags, adds line breaks, and outputs it into a single line to past back into a quiz json file.  
 📃 [dion_quiz.py](scripts/quiz_generators/) to convert the results of a Jason Dion practice test (from Udemy) into a quizsail json file.  
 📃 [Sybex Scripts](scripts/quiz_generators) to convert Sybex practice tests (1 file for questions/choices and 1 file for the answers/explanations) into a quizsail json file.  
-📃 [Script](scripts/explanation_adder/) to add an json explanation item to any working json file (this is a placeholder, you'll need to fill in the explanations).  
 > See my scripts [README](scripts/README.md) file for more info.  
 
 ## Getting Started

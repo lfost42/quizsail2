@@ -1,9 +1,9 @@
 [
   {
-    "q": "Sample question 1 \nThis is a modified question testing\n\n<code>this is what code blocks will look like</code>",
+    "q": "Sample question 1 \n\n<code>\nThis is what code lines will look like. \n</code>",
     "c": [
       "Choice 1",
-      "Choice 2 modified"
+      "Choice 2"
     ],
     "a": [
       "Choice 1"
