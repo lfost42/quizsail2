@@ -11,7 +11,7 @@ const logsDir = path.join(PUBLIC_DIR, 'logs');
 const quizDir = path.join(PUBLIC_DIR, 'quizzes');
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 const retiredDir = path.join(quizDir, 'retired');
 if (!fs.existsSync(retiredDir)) {

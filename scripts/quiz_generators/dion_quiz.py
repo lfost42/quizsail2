@@ -27,15 +27,19 @@ skip = 0
 in_question = False
 current_choices = []
 question_written = False
+current_q_explanation = ""  # Track explanation for current question
 
-def finalize_question(correct_ans, processed, current_choices):
+def finalize_question(correct_ans, processed, current_choices, current_q_explanation):
     if correct_ans:
         processed.append("===ANSWERS===\n")
         for ans in correct_ans:
             processed.append(f"{ans}\n")
         processed.append("===EXPLANATION===\n")
+        processed.append(f"{current_q_explanation}\n")
         correct_ans = []
-    return correct_ans, processed, []
+        current_choices = []
+        current_q_explanation = ""
+    return correct_ans, processed, current_choices, current_q_explanation
 
 while current_idx < len(raw_lines):
     line = raw_lines[current_idx]
@@ -54,9 +58,10 @@ while current_idx < len(raw_lines):
     # Handle question start - both patterns
     if re.match(r'Question \d+', stripped) or re.match(r'^\d+\. ', line):
         # Finalize previous question
-        correct_ans, processed, current_choices = finalize_question(correct_ans, processed, current_choices)
+        correct_ans, processed, current_choices, current_q_explanation = finalize_question(correct_ans, processed, current_choices, current_q_explanation)
         in_question = True
         question_written = False
+        current_q_explanation = ""  # Reset for new question
         
         # Add QUESTION delimiter
         processed.append("===QUESTION===\n")
@@ -85,6 +90,20 @@ while current_idx < len(raw_lines):
             correct_ans.append(ans)
             processed.append(ans_line)
             current_idx += 1
+
+            # Check for explanation after correct answer
+            if current_idx < len(raw_lines) and raw_lines[current_idx].strip() == "Explanation":
+                current_idx += 1  # Skip "Explanation" line
+                if current_idx < len(raw_lines):
+                    current_q_explanation = raw_lines[current_idx].strip()  # Store explanation
+                    current_idx += 1  # Skip explanation line
+        continue
+    
+    # Skip explanations for incorrect choices
+    if in_question and question_written and stripped == "Explanation":
+        current_idx += 1  # Skip "Explanation" line
+        if current_idx < len(raw_lines):
+            current_idx += 1  # Skip explanation text
         continue
     
     # Handle correct answers from repeated choices
@@ -93,19 +112,12 @@ while current_idx < len(raw_lines):
         current_idx += 1
         continue
     
-    if stripped == 'Overall explanation' and correct_ans:
-        processed.append("===ANSWERS===\n")
-        for ans in correct_ans:
-            processed.append(f"{ans}\n")
-        processed.append("===EXPLANATION===\n")
-        if current_idx + 1 < len(raw_lines):
-            processed.append(raw_lines[current_idx + 1])
-            current_idx += 2
-        else:
-            current_idx += 1
-        correct_ans = []
-        current_choices = []
-        in_question = False
+    # Handle overall explanations
+    if stripped in ['Overall explanation', 'Explanation'] and correct_ans:
+        current_idx += 1  # Skip marker line
+        if current_idx < len(raw_lines):
+            current_q_explanation = raw_lines[current_idx].strip()  # Update explanation
+            current_idx += 1  # Skip explanation line
         continue
     
     # Process content
@@ -120,10 +132,10 @@ while current_idx < len(raw_lines):
     current_idx += 1
 
 # Finalize last question
-correct_ans, processed, current_choices = finalize_question(correct_ans, processed, current_choices)
+correct_ans, processed, current_choices, current_q_explanation = finalize_question(correct_ans, processed, current_choices, current_q_explanation)
 
 # Write temporary file
-temp_file = os.path.join(output_dir, input_file.replace('_rawd.txt', '_dion.txt'))
+temp_file = os.path.join(output_dir, input_file.replace('_rawd.txt', '_udemy.txt'))
 with open(temp_file, 'w') as f:
     f.writelines(processed)
 
