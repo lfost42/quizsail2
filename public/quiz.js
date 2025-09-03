@@ -197,7 +197,7 @@ async function show() {
   if (!document.getElementById('complete-quiz-btn')) {
     const btn = document.createElement('button');
     btn.id = 'complete-quiz-btn';
-    btn.textContent = '🚫';
+    btn.textContent = '❌';
     btn.onclick = showCompletionScreen;
     document.body.appendChild(btn);
   }
