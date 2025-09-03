@@ -471,7 +471,7 @@ async function submitAnswer() {
     // Add multi-select validation
     if (numAnswers > 1) {
       const selectedCount = Object.values(inputs).filter(input => input.checked).length;
-      if (selectedCount > 0 && selectedCount !== numAnswers) {
+      if (selectedCount < numAnswers) {
         alert(`Question requires ${numAnswers} answers!`);
         return;
       }
@@ -479,7 +479,7 @@ async function submitAnswer() {
     // Must select all correct answers
     correct = selected.length === answers.length && 
               answers.every(a => selected.includes(a));
-
+    
     // Reset labels
     Object.values(labels).forEach(label => {
       label.e.className = '';

@@ -213,8 +213,7 @@
           left: 1em;
           bottom: 2.7em;
           z-index: 1000;
-          background: var(--secondary-color);
-          padding: 0.05em 0.1em;
+          padding: 0.0001em 0.001em;
           border : 0.06em solid var(--danger-color);
           border-radius: 1em;
           cursor: pointer;
@@ -358,6 +357,8 @@
             right: 1em;
             display: flex;
             align-items: center;
+            background-color: var(--surface-light);
+            color: var(--primary-color);
             gap: 0.5em;
             z-index: 1000;
             font-weight:600;
@@ -368,8 +369,10 @@
             font-weight: 600;
             font-size: 1.1em;
             padding-right: 0.5vw;
+            padding-left: 0.5vh;
             transform: translateY(0.5vh);
           }
+
           #homeButton {
             position: relative;
             top: auto;
