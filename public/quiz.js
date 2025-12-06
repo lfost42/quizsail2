@@ -612,16 +612,9 @@ async function submitAnswer() {
   await saveState();
 
   let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers.join(', ')}`;
-  // Add explanation if available
+  // Add explanation if available - SIMPLIFIED since processTextWithCode handles arrays
   if (item.e) {
-      let explanationText;
-      if (Array.isArray(item.e)) {
-          // Join array elements with line breaks
-          explanationText = item.e.map(exp => processTextWithCode(exp)).join('<br>');
-      } else {
-          explanationText = processTextWithCode(item.e);
-      }
-      resultMessage += `<br><br>${explanationText}`;
+      resultMessage += `<br><br>${processTextWithCode(item.e)}`;
   } else {
       resultMessage += `<br><br>Explanation not provided.`;
   }
