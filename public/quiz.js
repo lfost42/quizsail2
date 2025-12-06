@@ -614,7 +614,14 @@ async function submitAnswer() {
   let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers.join(', ')}`;
   // Add explanation if available
   if (item.e) {
-      resultMessage += `<br><br>${processTextWithCode(item.e)}`;
+      let explanationText;
+      if (Array.isArray(item.e)) {
+          // Join array elements with line breaks
+          explanationText = item.e.map(exp => processTextWithCode(exp)).join('<br>');
+      } else {
+          explanationText = processTextWithCode(item.e);
+      }
+      resultMessage += `<br><br>${explanationText}`;
   } else {
       resultMessage += `<br><br>Explanation not provided.`;
   }
@@ -1216,7 +1223,12 @@ function handleRetireQuiz() {
 function processTextWithCode(text) {
     if (!text) return text; // handle undefined or null
 
-    // Split text into segments (code blocks and regular text)
+    // If it's an array, process each element
+    if (Array.isArray(text)) {
+        return text.map(item => processTextWithCode(item)).join('<br>');
+    }
+
+    // If a string, split text into segments (code blocks and regular text)
     const segments = text.split(/(<code>[\s\S]*?<\/code>)/g);
     let result = '';
 
