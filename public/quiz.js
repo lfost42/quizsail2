@@ -612,7 +612,7 @@ async function submitAnswer() {
   await saveState();
 
   let resultMessage = correct ? "✅ CORRECT! " : `🚫 Try again! ➡️ ${answers.join(', ')}`;
-  // Add explanation if available - SIMPLIFIED since processTextWithCode handles arrays
+  // Add explanation if available
   if (item.e) {
       resultMessage += `<br><br>${processTextWithCode(item.e)}`;
   } else {
@@ -1216,12 +1216,7 @@ function handleRetireQuiz() {
 function processTextWithCode(text) {
     if (!text) return text; // handle undefined or null
 
-    // If it's an array, process each element
-    if (Array.isArray(text)) {
-        return text.map(item => processTextWithCode(item)).join('<br>');
-    }
-
-    // If a string, split text into segments (code blocks and regular text)
+    // Split text into segments (code blocks and regular text)
     const segments = text.split(/(<code>[\s\S]*?<\/code>)/g);
     let result = '';
 
